@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "dgSpecHash": "xLsJeZSdg7pCgNloeeCFU9zEvoiE/m9JEkOyqrYM2dK/4s+J4NMBFEQyMIHy1PKgb7fEo3LKIA/gyUV9GE+hiA==",
+  "success": true,
+  "projectFilePath": "C:\\Users\\Administrator\\Documents\\My Games\\Terraria\\ModLoader\\Mod Sources\\NPCAttacker\\NPCAttacker.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\Administrator\\.nuget\\packages\\tmodloader.codeassist\\0.1.2\\tmodloader.codeassist.0.1.2.nupkg.sha512"
+  ],
+  "logs": []
+}
