@@ -5,6 +5,10 @@ You can craft this near a Demon Altar using
 and an Advanced Advanced Combat Techniques, which can be obtained by fishing during Blood Moon.
 An interesting weapon, have a good time :)
 
+Changelog:
+v0.2
+-Now NPCs can be armed with player's weapons!
+
 
 使用指挥棒，摆脱被动，领导NPC击败面前的所有敌人！
 你可以在恶魔祭坛旁边用
@@ -12,3 +16,7 @@ An interesting weapon, have a good time :)
 [i:2352] * 10, [i:2353] * 10,
 和一本先进先进作战手册合成，该物品可以在血月钓鱼获得。
 一个有趣的武器，祝你玩的开心:)
+
+更新日志:
+v0.2
+-现在玩家可以用自己的武器武装NPC了！

@@ -1,10 +1,10 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using NPCAttacker.Buffs;
+using NPCAttacker.Items;
+using System;
 using Terraria;
 using Terraria.ModLoader;
-using Microsoft.Xna.Framework.Graphics;
-using System;
-using NPCAttacker.Items;
-using NPCAttacker.Buffs;
 
 namespace NPCAttacker.NPCs
 {

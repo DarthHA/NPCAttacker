@@ -1,16 +1,19 @@
-﻿using Terraria;
+﻿using Microsoft.Xna.Framework;
+using NPCAttacker.Items;
+using NPCAttacker.NPCs;
+using NPCAttacker.UI;
+using System;
+using System.Collections.Generic;
+using System.Reflection;
+using Terraria;
+using Terraria.GameContent.Events;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Microsoft.Xna.Framework;
-using System;
-using Terraria.GameContent.Events;
-using System.Reflection;
-using NPCAttacker.NPCs;
-using NPCAttacker.Items;
+using Terraria.UI;
 
 namespace NPCAttacker
 {
-	public class NPCAttacker : Mod
+    public class NPCAttacker : Mod
 	{
 		public const float Default = 0f;
 		public const float Walking = 1f;
@@ -32,19 +35,103 @@ namespace NPCAttacker
 		public const float Talking4 = 17f;
 		public const float TalkingBartenderToPlayer = 6f;
 
-        public override void Load()
+		public static string FocusText1 = "";
+		public static string FocusText3 = "";
+
+		public UINPCExtraButton _UINPCExtraButton;
+		public UserInterface _UINPCExtraButtonUserInterface;
+
+
+		public ArmUI _ArmUI;
+		public UserInterface _ArmUserInterface;
+
+		public static NPCAttacker Instance;
+
+		public NPCAttacker()
+        {
+			Instance = this;
+        }
+
+		public override void Load()
         {
 			On.Terraria.NPC.AI_007_TownEntities += AIHook;
 			On.Terraria.NPC.StrikeNPC += StrikeNPCHook;
+			On.Terraria.Main.DrawNPCChatButtons += DrawNPCChatButtonsHook;
+
+			_UINPCExtraButton = new UINPCExtraButton();
+			_UINPCExtraButton.Activate();
+			_UINPCExtraButtonUserInterface = new UserInterface();
+			_UINPCExtraButtonUserInterface.SetState(_UINPCExtraButton);
+
+			_ArmUI = new ArmUI();
+			_ArmUI.Activate();
+			_ArmUserInterface = new UserInterface();
+			_ArmUserInterface.SetState(_ArmUI);
+
+			AddTrans();
 		}
 
         public override void Unload()
         {
 			On.Terraria.NPC.AI_007_TownEntities -= AIHook;
 			On.Terraria.NPC.StrikeNPC -= StrikeNPCHook;
-        }
+			On.Terraria.Main.DrawNPCChatButtons -= DrawNPCChatButtonsHook;
+			Instance = null;
+		}
 
-        public static double StrikeNPCHook(On.Terraria.NPC.orig_StrikeNPC orig,NPC self,int Damage, float knockBack, int hitDirection, bool crit = false, bool noEffect = false, bool fromNet = false)
+		public override void UpdateUI(GameTime gameTime)
+		{
+			if (ArmUI.Visible)
+			{
+				_ArmUserInterface?.Update(gameTime);
+			}
+			if (UINPCExtraButton.Visible)
+			{
+				_UINPCExtraButtonUserInterface?.Update(gameTime);
+			}
+			base.UpdateUI(gameTime);
+		}
+
+
+		public override void ModifyInterfaceLayers(List<GameInterfaceLayer> layers)
+		{
+			int MouseTextIndex = layers.FindIndex(layer => layer.Name.Equals("Vanilla: Death Text"));
+			if (MouseTextIndex != -1)
+			{
+				layers.Insert(MouseTextIndex, new LegacyGameInterfaceLayer(
+				    "NPCAttacker : NPCExtraButton",
+					delegate
+					{
+					    if (UINPCExtraButton.Visible)
+						{
+							_UINPCExtraButton.Draw(Main.spriteBatch);
+						}
+						return true;
+					},
+					InterfaceScaleType.UI)
+			   );
+			}
+
+			int inventoryIndex = layers.FindIndex(layer => layer.Name.Equals("Vanilla: Inventory"));
+			if (inventoryIndex != -1)
+			{
+				layers.Insert(inventoryIndex, new LegacyGameInterfaceLayer(
+					"NPCAttacker : ArmUI",
+					delegate 
+					{
+						if (ArmUI.Visible)
+						{
+							_ArmUserInterface.Draw(Main.spriteBatch, new GameTime());
+						}
+						return true;
+					},
+					InterfaceScaleType.UI)
+				);
+			}
+			base.ModifyInterfaceLayers(layers);
+		}
+
+		public static double StrikeNPCHook(On.Terraria.NPC.orig_StrikeNPC orig,NPC self,int Damage, float knockBack, int hitDirection, bool crit = false, bool noEffect = false, bool fromNet = false)
 		{
 			if ((!self.townNPC && self.type != NPCID.SkeletonMerchant) || NoMode())
             {
@@ -448,10 +535,8 @@ namespace NPCAttacker
 					npc.defense += 8;
 				}
 
-
-
-                if (BuffNPC())             //只要战斗状态就有额外加成
-                {
+				if (BuffNPC())             //战斗状态，没装武器的加成
+				{
 					int k = 1;
 					if (NPC.downedMoonlord)
 					{
@@ -464,6 +549,45 @@ namespace NPCAttacker
 					else if (Main.hardMode)
 					{
 						k = 4;
+					}
+					bool UseWeapon = false;
+					if (!npc.GetGlobalNPC<ArmedGNPC>().Weapon.IsAir)
+					{
+						switch (NPCID.Sets.AttackType[npc.type])
+						{
+							case 0:
+								if (npc.GetGlobalNPC<ArmedGNPC>().Weapon.thrown)
+                                {
+									UseWeapon = true;
+                                }
+								break;
+							case 1:
+								if (npc.GetGlobalNPC<ArmedGNPC>().Weapon.ranged)
+								{
+									UseWeapon = true;
+								}
+								break;
+							case 2:
+								if (npc.GetGlobalNPC<ArmedGNPC>().Weapon.magic)
+								{
+									UseWeapon = true;
+								}
+								break;
+							case 3:
+								if (npc.GetGlobalNPC<ArmedGNPC>().Weapon.melee &&
+									!npc.GetGlobalNPC<ArmedGNPC>().Weapon.noMelee &&
+									!npc.GetGlobalNPC<ArmedGNPC>().Weapon.noUseGraphic &&
+									npc.GetGlobalNPC<ArmedGNPC>().Weapon.useStyle == ItemUseStyleID.SwingThrow)
+								{
+									UseWeapon = true;
+								}
+								break;
+						}
+					}
+					if (UseWeapon)
+					{
+						k = 1;
+						dmgMult = 1;
 					}
 					switch (NPCID.Sets.AttackType[npc.type])
                     {
@@ -479,9 +603,12 @@ namespace NPCAttacker
 						case 3:
 							dmgMult += (Main.LocalPlayer.meleeDamage - 1) * k * 2;
 							break;
-					}
+                    }
+
 					npc.defense += Main.LocalPlayer.statDefense;
-                }
+				}
+
+
 				NPCLoader.BuffTownNPC(ref dmgMult, ref npc.defense);
 			}
 
@@ -512,6 +639,7 @@ namespace NPCAttacker
 				}
 				npc.localAI[0] = flag2.ToInt();
 			}
+
 			if ((npc.type == NPCID.Duck || npc.type == NPCID.DuckWhite) && Main.netMode != NetmodeID.MultiplayerClient && (npc.velocity.Y > 4f || npc.velocity.Y < -4f || npc.wet))
 			{
 				int direction = npc.direction;
@@ -1258,7 +1386,7 @@ namespace NPCAttacker
 							{
 								flag18 = Collision.DrownCollision(npc.position + new Vector2(npc.width * npc.direction, 0f), npc.width, npc.height, 1f);
 							}
-							flag18 = (flag18 || Collision.DrownCollision(npc.position + new Vector2(npc.width * npc.direction, npc.height * 2 - 16 - (flag17 ? 16 : 0)), npc.width, 16 + (flag17 ? 16 : 0), 1f));
+							flag18 = flag18 || Collision.DrownCollision(npc.position + new Vector2(npc.width * npc.direction, npc.height * 2 - 16 - (flag17 ? 16 : 0)), npc.width, 16 + (flag17 ? 16 : 0), 1f);
 							if (flag18 && npc.localAI[3] <= 0f)
 							{
 								flag15 = true;
@@ -2638,6 +2766,13 @@ namespace NPCAttacker
 				if (CanAtk && NPCID.Sets.AttackType[npc.type] == 0 && (AttackMode() || (npc.velocity.Y == 0f && NPCID.Sets.AttackAverageChance[npc.type] > 0 && Main.rand.Next(NPCID.Sets.AttackAverageChance[npc.type] * 2) == 0)))
 				{
 					int AttackTime = NPCID.Sets.AttackTime[npc.type];
+					if (BuffNPC() && !npc.GetGlobalNPC<ArmedGNPC>().Weapon.IsAir)
+					{
+						if (npc.GetGlobalNPC<ArmedGNPC>().Weapon.thrown)
+						{
+							AttackTime = npc.GetGlobalNPC<ArmedGNPC>().Weapon.useAnimation;
+						}
+					}
 					int TargetRight2 = (ShootDir == 1) ? TargetRight : TargetLeft;
 					int TargetLeft2 = (ShootDir == 1) ? TargetLeft : TargetRight;
 					if (TargetRight2 != -1 && !Collision.CanHit(npc.Center, 0, 0, Main.npc[TargetRight2].Center, 0, 0))
@@ -2666,6 +2801,13 @@ namespace NPCAttacker
 				else if (CanAtk && NPCID.Sets.AttackType[npc.type] == 1 && (AttackMode() || (npc.velocity.Y == 0f && NPCID.Sets.AttackAverageChance[npc.type] > 0 && Main.rand.Next(NPCID.Sets.AttackAverageChance[npc.type] * 2) == 0)))
 				{
 					int AttackTime = NPCID.Sets.AttackTime[npc.type];
+					if (BuffNPC() && !npc.GetGlobalNPC<ArmedGNPC>().Weapon.IsAir)
+					{
+						if (npc.GetGlobalNPC<ArmedGNPC>().Weapon.ranged)
+						{
+							AttackTime = npc.GetGlobalNPC<ArmedGNPC>().Weapon.useAnimation;
+						}
+					}
 					int TargetRight2 = (ShootDir == 1) ? TargetRight : TargetLeft;
 					int TargetLeft2 = (ShootDir == 1) ? TargetLeft : TargetRight;
 					if (TargetRight2 != -1 && !Collision.CanHitLine(npc.Center, 0, 0, Main.npc[TargetRight2].Center, 0, 0))
@@ -2698,6 +2840,13 @@ namespace NPCAttacker
 				if (CanAtk && NPCID.Sets.AttackType[npc.type] == 2 && (AttackMode() || (npc.velocity.Y == 0f && NPCID.Sets.AttackAverageChance[npc.type] > 0 && Main.rand.Next(NPCID.Sets.AttackAverageChance[npc.type] * 2) == 0)))
 				{
 					int AttackTime = NPCID.Sets.AttackTime[npc.type];
+					if(BuffNPC() && !npc.GetGlobalNPC<ArmedGNPC>().Weapon.IsAir)
+                    {
+                        if (npc.GetGlobalNPC<ArmedGNPC>().Weapon.magic)
+                        {
+							AttackTime = npc.GetGlobalNPC<ArmedGNPC>().Weapon.useAnimation;
+						}
+                    }
 					int TargetRight2 = (ShootDir == 1) ? TargetRight : TargetLeft;
 					int TargetLeft2 = (ShootDir == 1) ? TargetLeft : TargetRight;
 					if (TargetRight2 != -1 && !Collision.CanHitLine(npc.Center, 0, 0, Main.npc[TargetRight2].Center, 0, 0))
@@ -2735,6 +2884,16 @@ namespace NPCAttacker
 				if (CanAtk && NPCID.Sets.AttackType[npc.type] == 3 && (AttackMode() || (npc.velocity.Y == 0f && NPCID.Sets.AttackAverageChance[npc.type] > 0 && Main.rand.Next(NPCID.Sets.AttackAverageChance[npc.type] * 2) == 0)))
 				{
 					int AttackTime = NPCID.Sets.AttackTime[npc.type];
+					if (BuffNPC() && !npc.GetGlobalNPC<ArmedGNPC>().Weapon.IsAir)
+					{
+						if (npc.GetGlobalNPC<ArmedGNPC>().Weapon.melee && 
+							npc.GetGlobalNPC<ArmedGNPC>().Weapon.useStyle == ItemUseStyleID.SwingThrow &&
+							!npc.GetGlobalNPC<ArmedGNPC>().Weapon.noMelee &&
+							!npc.GetGlobalNPC<ArmedGNPC>().Weapon.noUseGraphic)
+						{
+							AttackTime = npc.GetGlobalNPC<ArmedGNPC>().Weapon.useAnimation;
+						}
+					}
 					int TargetRight2 = (ShootDir == 1) ? TargetRight : TargetLeft;
 					int TargetLeft2 = (ShootDir == 1) ? TargetLeft : TargetRight;
 					if (TargetRight2 != -1 && !Collision.CanHit(npc.Center, 0, 0, Main.npc[TargetRight2].Center, 0, 0))
@@ -2796,6 +2955,13 @@ namespace NPCAttacker
 			}
 		}
 
+		public static void DrawNPCChatButtonsHook(On.Terraria.Main.orig_DrawNPCChatButtons orig, int superColor, Color chatColor, int numLines, string focusText, string focusText3)
+		{
+			FocusText1 = focusText;
+			FocusText3 = focusText3;
+			orig.Invoke(superColor, chatColor, numLines, focusText, focusText3);
+		}
+
 
 		public static bool AttackMode()
         {
@@ -2816,5 +2982,29 @@ namespace NPCAttacker
         {
 			return Main.LocalPlayer.HeldItem.type == ModContent.ItemType<AttackerStick>();
         }
+
+		public static Item CloneItem(Item target)
+        {
+			Item result = new Item();
+			result.netDefaults(target.netID);
+			result = result.CloneWithModdedDataFrom(target);
+			result.favorited = target.favorited;
+			result.stack = target.stack;
+			result.prefix = target.prefix;
+			return result;
+        }
+
+
+		public void AddTrans()
+        {
+			TranslationUtils.AddTranslation("Arm", "武装");
+			TranslationUtils.AddTranslation("ArmUIHoverText", "Arm this NPC", "武装该NPC");
+			TranslationUtils.AddTranslation("ArmUIarmered", "Remove this weapon here to disarm this NPC", "将该物品移除以解除NPC武装");
+			TranslationUtils.AddTranslation("ArmUIunarmered1", "Place a weapon here to arm this NPC", "放置武器以武装该NPC");
+			TranslationUtils.AddTranslation("ArmUIunarmered2", "Note: NPCs of different classes can only equip their corresponding classes' weapons", "注意，不同职业的NPC只能装备对应职业的武器");
+		}
 	}
+
+
+	
 }

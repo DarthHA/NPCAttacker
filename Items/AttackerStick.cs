@@ -1,7 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
 using NPCAttacker.NPCs;
-using System;
-using System.Collections.Generic;
 using Terraria;
 using Terraria.ID;
 using Terraria.Localization;
@@ -9,7 +7,7 @@ using Terraria.ModLoader;
 
 namespace NPCAttacker.Items
 {
-	public class AttackerStick : ModItem
+    public class AttackerStick : ModItem
 	{
 		public override void SetStaticDefaults()
 		{
@@ -18,12 +16,14 @@ namespace NPCAttacker.Items
 			Tooltip.SetDefault(
 				"Left click to allow all town NPCs to attack at your mouse position\n" +
 				"In hardmode, right click to let them assemble to your mouse position\n" +
-				"NPCs will get bonus from your stats and game progress\n" +
+				"After defeating Moon Lord, you can arm NPCs with weapons when holding this\n" +
+				"When holding this, NPCs will get bonus from your stats and game progress\n" +
 				"\'All units! Ready, aim, and fire!\'");
 			Tooltip.AddTranslation(GameCulture.Chinese,
 				"使用左键会允许所有城镇NPC攻击你的鼠标位置\n" +
 				"困难模式后，右键让他们集结到你的鼠标位置\n" +
-				"NPC会根据你的属性和游戏时期得到加成\n" +
+				"击败月球领主后，当你手持该物品时可以为NPC配备武器\n" +
+				"手持该物品时NPC会根据你的属性和游戏时期得到加成\n" +
 				"\'所有单位！预备，瞄准，开火！\'");
 			Item.staff[item.type] = true;
 		}
@@ -120,5 +120,4 @@ namespace NPCAttacker.Items
         }
 
     }
-
 }

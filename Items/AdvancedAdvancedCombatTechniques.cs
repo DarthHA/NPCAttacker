@@ -1,14 +1,11 @@
-﻿using Microsoft.Xna.Framework;
-using System;
-using System.Collections.Generic;
-using Terraria;
+﻿using Terraria;
 using Terraria.ID;
 using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace NPCAttacker.Items
 {
-	public class AdvancedAdvancedCombatTechniques : ModItem
+    public class AdvancedAdvancedCombatTechniques : ModItem
 	{
 		public override void SetStaticDefaults()
 		{
@@ -127,26 +124,5 @@ namespace NPCAttacker.Items
             }
         }
     }
-
-	public class FishingPlayerGetter : ModPlayer
-    {
-		public override void CatchFish(Item fishingRod, Item bait, int power, int liquidType, int poolSize, int worldLayer, int questFish, ref int caughtType, ref bool junk)
-		{
-			if (junk)
-			{
-				return;
-			}
-			if (Main.bloodMoon && liquidType == 0 && worldLayer == 1 && power > 30)
-            {
-				if (!player.HasItem(ModContent.ItemType<AdvancedAdvancedCombatTechniques>()) && !player.HasItem(ModContent.ItemType<AttackerStick>()))
-				{
-					if (Main.rand.Next(20) == 1)
-					{
-						caughtType = ModContent.ItemType<AdvancedAdvancedCombatTechniques>();
-					}
-				}
-            }
-		}
-	}
 
 }
