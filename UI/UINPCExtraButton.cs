@@ -75,6 +75,13 @@ namespace NPCAttacker.UI
 			if (MouseHovering()) Scale *= 1.1f;
 			Vector2 Unit = new Vector2(1f);
 			Color chatColor = Color.Red;
+			if (Main.LocalPlayer.talkNPC != -1)
+			{
+				if (Main.npc[Main.LocalPlayer.talkNPC].type == NPCID.Nurse)
+				{
+					chatColor = CombatText.HealLife;
+				}
+			}
 			ChatManager.DrawColorCodedStringWithShadow(Main.spriteBatch, Main.fontMouseText, LocalizedText, Pos + Size * Unit * 0.5f, chatColor, 0f, Size * 0.5f, Scale * Unit, -1f, 2f);
 		}
 

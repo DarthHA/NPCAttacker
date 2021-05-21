@@ -87,20 +87,14 @@ namespace NPCAttacker.Items
 			else
 			{
 				Main.PlaySound(mod.GetLegacySoundSlot(SoundType.Custom, "Sounds/Whistles"), player.Center);
-				if(!NPC.AnyNPCs(ModContent.NPCType<AssembleNPC>()))
+				foreach (NPC npc in Main.npc)
 				{
-					NPC.NewNPC((int)Main.MouseWorld.X, (int)Main.MouseWorld.Y, ModContent.NPCType<AssembleNPC>(), default, player.whoAmI);
+					if (npc.active && npc.type == ModContent.NPCType<AssembleNPC>())
+					{
+						npc.active = false;
+					}
 				}
-                else 
-				{
-					foreach(NPC npc in Main.npc)
-                    {
-						if(npc.active && npc.type == ModContent.NPCType<AssembleNPC>())
-                        {
-							npc.active = false;
-                        }
-                    }
-                }
+				NPC.NewNPC((int)Main.MouseWorld.X, (int)Main.MouseWorld.Y, ModContent.NPCType<AssembleNPC>(), default, player.whoAmI);
 			}
 			player.talkNPC = -1;
 			return false;

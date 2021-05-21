@@ -51,9 +51,9 @@ namespace NPCAttacker
 						{
 							if (npc.modNPC == null && npc.type == VanillaType)
 							{
-								if (npc.GetGlobalNPC<ArmedGNPC>().Weapon.IsAir)
+								if (ArmedGNPC.GetWeapon(npc).IsAir)
 								{
-									npc.GetGlobalNPC<ArmedGNPC>().Weapon = NPCAttacker.CloneItem(WeaponToNPC[type]);
+									npc.GetGlobalNPC<ArmedGNPC>().Weapon = SomeUtils.CloneItem(WeaponToNPC[type]);
 									break;
 								}
 							}
@@ -70,9 +70,9 @@ namespace NPCAttacker
 							{
 								if (npc.modNPC.mod.Name == ModName && npc.modNPC.Name == ModNPCName)
 								{
-									if (npc.GetGlobalNPC<ArmedGNPC>().Weapon.IsAir)
+									if (ArmedGNPC.GetWeapon(npc).IsAir)
 									{
-										npc.GetGlobalNPC<ArmedGNPC>().Weapon = NPCAttacker.CloneItem(WeaponToNPC[type]);
+										npc.GetGlobalNPC<ArmedGNPC>().Weapon = SomeUtils.CloneItem(WeaponToNPC[type]);
 										break;
 									}
 								}
@@ -92,7 +92,7 @@ namespace NPCAttacker
 			{
 				if (npc.active && (npc.townNPC || npc.type == NPCID.SkeletonMerchant))
 				{
-					if (!npc.GetGlobalNPC<ArmedGNPC>().Weapon.IsAir)
+					if (!ArmedGNPC.GetWeapon(npc).IsAir)
 					{
 						string TypeOrName;
 						if (npc.modNPC == null)
@@ -103,8 +103,8 @@ namespace NPCAttacker
 						{
 							TypeOrName = npc.modNPC.mod.Name + ":" + npc.modNPC.Name;
 						}
-						WeaponToNPC.Add(TypeOrName, npc.GetGlobalNPC<ArmedGNPC>().Weapon);
-						//npc.GetGlobalNPC<ArmedGNPC>().Weapon.TurnToAir();
+						WeaponToNPC.Add(TypeOrName,ArmedGNPC.GetWeapon(npc));
+						//ArmedGNPC.GetWeapon(npc).TurnToAir();
 					}
 				}
 			}

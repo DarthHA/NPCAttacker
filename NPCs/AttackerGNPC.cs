@@ -9,7 +9,7 @@ namespace NPCAttacker.NPCs
     {
         public override void UpdateLifeRegen(NPC npc, ref int damage)
         {
-            if (npc.HasBuff(BuffID.DryadsWardDebuff) && NPCAttacker.BuffNPC())
+            if (npc.HasBuff(BuffID.DryadsWardDebuff) && SomeUtils.BuffNPC())
             {
                 int baseDmg = 4;
                 float Multiplier = 1f;
@@ -80,7 +80,7 @@ namespace NPCAttacker.NPCs
         {
             if (target.townNPC || target.type == NPCID.SkeletonMerchant)
             {
-                if (NPCAttacker.BuffNPC())
+                if (SomeUtils.BuffNPC())
                 {
                     damage = (int)(damage * (1 - Main.LocalPlayer.endurance));
 
@@ -105,7 +105,7 @@ namespace NPCAttacker.NPCs
         {
             if (npc.townNPC || npc.type == NPCID.SkeletonMerchant)
             {
-                if (NPCAttacker.BuffNPC())
+                if (SomeUtils.BuffNPC())
                 {
                     damage = (int)(damage * (1 - Main.LocalPlayer.endurance));
 
@@ -129,7 +129,7 @@ namespace NPCAttacker.NPCs
         {
             if (npc.townNPC || npc.type == NPCID.SkeletonMerchant)
             {
-                if (NPCAttacker.BuffNPC())
+                if (SomeUtils.BuffNPC())
                 {
                     if (npc.HasBuff(BuffID.DryadsWard))
                     {
@@ -166,7 +166,7 @@ namespace NPCAttacker.NPCs
         {
             if (npc.townNPC || npc.type == NPCID.SkeletonMerchant)
             {
-                if (NPCAttacker.AssembleMode() || NPCAttacker.AttackMode())
+                if (SomeUtils.AssembleMode() || SomeUtils.AttackMode())
                 {
                     return false;
                 }
@@ -200,7 +200,7 @@ namespace NPCAttacker.NPCs
                     projectile.Kill();
                     int DamageTaken = target.lifeMax - target.life;
                     int HealLife = 20;
-                    if (NPCAttacker.BuffNPC())
+                    if (SomeUtils.BuffNPC())
                     {
                         if (NPC.downedMoonlord)
                         {
@@ -213,6 +213,23 @@ namespace NPCAttacker.NPCs
                         else if (Main.hardMode)
                         {
                             HealLife = 25;
+                        }
+                        if (NPC.AnyNPCs(NPCID.Nurse))
+                        {
+                            NPC nurse = Main.npc[NPC.FindFirstNPC(NPCID.Nurse)];
+                            if (!ArmedGNPC.GetWeapon(nurse).IsAir)
+                            {
+                                HealLife = ArmedGNPC.GetWeapon(nurse).healLife / 2;
+                                if (ArmedGNPC.GetWeapon(nurse).buffType > 0)
+                                {
+                                    target.AddBuff(ArmedGNPC.GetWeapon(nurse).buffType, ArmedGNPC.GetWeapon(nurse).buffTime);
+                                }
+
+                                if (ArmedGNPC.GetWeapon(nurse).UseSound != null)
+                                {
+                                    Main.PlaySound(ArmedGNPC.GetWeapon(nurse).UseSound, projectile.Center);
+                                }
+                            }
                         }
 
                         if (NPC.downedPlantBoss)
@@ -257,7 +274,7 @@ namespace NPCAttacker.NPCs
         {
             if (projectile.npcProj)
             {
-                if (NPCAttacker.BuffNPC())
+                if (SomeUtils.BuffNPC())
                 {
                     if (projectile.melee)
                     {
@@ -274,6 +291,19 @@ namespace NPCAttacker.NPCs
                     else if (projectile.thrown)
                     {
                         crit = Main.rand.Next(100) <= Main.LocalPlayer.magicCrit;
+                    }
+
+                    if (projectile.type == ProjectileID.NurseSyringeHurt)
+                    {
+                        crit = false;
+                        if (NPC.AnyNPCs(NPCID.Nurse))
+                        {
+                            NPC nurse = Main.npc[NPC.FindFirstNPC(NPCID.Nurse)];
+                            if (!ArmedGNPC.GetWeapon(nurse).IsAir)
+                            {
+                                damage += (int)(ArmedGNPC.GetWeapon(nurse).healLife * 2f);
+                            }
+                        }
                     }
                 }
             }

@@ -8,6 +8,10 @@ An interesting weapon, have a good time :)
 Changelog:
 v0.2
 -Now NPCs can be armed with player's weapons!
+v0.3
+-Fixed issues related to armed NPC.
+-Nurse can equip healing or buff potions now.
+
 
 
 使用指挥棒，摆脱被动，领导NPC击败面前的所有敌人！
@@ -20,3 +24,6 @@ v0.2
 更新日志:
 v0.2
 -现在玩家可以用自己的武器武装NPC了！
+v0.3
+-武装NPC相关bug修复。
+-护士可以装备治疗或增益药水。

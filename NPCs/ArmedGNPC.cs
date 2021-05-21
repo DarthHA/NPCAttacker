@@ -10,14 +10,15 @@ namespace NPCAttacker.NPCs
     {
         public override bool InstancePerEntity => true;
         public Item Weapon = new Item();
+        public int NPCTargetForSpecialUse = -1;
         public bool MeleeAttacked = false;
 
         public override void AI(NPC npc)
         {
-            if (!NPCAttacker.BuffNPC()) return;
+            if (!SomeUtils.BuffNPC()) return;
             if (npc.townNPC && NPCID.Sets.AttackType[npc.type] == 3)
             {
-                if (npc.ai[0] != NPCAttacker.MeleeAtk)
+                if (npc.ai[0] != NPCOverrideAI.MeleeAtk)
                 {
                     MeleeAttacked = false;
                 }
@@ -26,56 +27,64 @@ namespace NPCAttacker.NPCs
 
         public override void DrawTownAttackGun(NPC npc, ref float scale, ref int item, ref int closeness)
         {
-            if (!NPCAttacker.BuffNPC()) return;
+            if (!SomeUtils.BuffNPC()) return;
             if (Weapon.IsAir) return;
-            if (Weapon.ranged)
-            {
-                item = Weapon.type;
-            }
+            item = Weapon.type;
         }
 
         public override void DrawTownAttackSwing(NPC npc, ref Texture2D item, ref int itemSize, ref float scale, ref Vector2 offset)
         {
-            if (!NPCAttacker.BuffNPC()) return;
+            if (!SomeUtils.BuffNPC()) return;
             if (Weapon.IsAir) return;
-            if (Weapon.noMelee || Weapon.noUseGraphic || Weapon.useStyle != ItemUseStyleID.SwingThrow) return;
-            if (Weapon.melee)
-            {
-                item = Main.itemTexture[Weapon.type];
-                scale = Weapon.scale;
-            }
+            item = Main.itemTexture[Weapon.type];
+            scale = Weapon.scale;
         }
 
         public override void TownNPCAttackSwing(NPC npc, ref int itemWidth, ref int itemHeight)
         {
-            if (!NPCAttacker.BuffNPC()) return;
+            if (!SomeUtils.BuffNPC()) return;
             if (Weapon.IsAir) return;
-            if (Weapon.noMelee || Weapon.noUseGraphic || Weapon.useStyle != ItemUseStyleID.SwingThrow) return;
-            if (Weapon.melee)
+
+            itemWidth = Weapon.width;
+            itemHeight = Weapon.height;
+            if (Weapon.shoot != ProjectileID.None)
             {
-                itemWidth = Weapon.width;
-                itemHeight = Weapon.height;
-                if (Weapon.shoot != ProjectileID.None) 
+                if (!MeleeAttacked)
                 {
-                    if (!MeleeAttacked)
+                    MeleeAttacked = true;
+
+                    bool ShouldShoot = true;
+                    int shoot = Weapon.shoot;
+                    int dmg = Main.LocalPlayer.GetWeaponDamage(Weapon);
+                    float Kb = Main.LocalPlayer.GetWeaponKnockback(Weapon, Weapon.knockBack);
+                    Vector2 Pos = npc.Center;
+                    Vector2 Speed;
+                    if (SomeUtils.AttackMode())
                     {
-                        MeleeAttacked = true;
-                        Vector2 ShootVel;
-                        if (NPCAttacker.AttackMode())
-                        {
-                            ShootVel = Vector2.Normalize(Main.MouseWorld - npc.Center);
-                        }
-                        else
-                        {
-                            ShootVel = new Vector2(1, 0) * npc.direction;
-                        }
-                        int protmp = Projectile.NewProjectile(npc.Center, ShootVel * Weapon.shootSpeed, Weapon.shoot, (int)(Weapon.damage * Main.LocalPlayer.meleeDamage), Weapon.knockBack, Main.myPlayer);
+                        Speed = Vector2.Normalize(Main.MouseWorld - npc.Center) * Weapon.shootSpeed;
+                    }
+                    else
+                    {
+                        Speed = new Vector2(1, 0) * npc.direction * Weapon.shootSpeed;
+                    }
+                    if (Weapon.modItem != null)
+                    {
+                        ShouldShoot = Weapon.modItem.Shoot(Main.LocalPlayer, ref Pos, ref Speed.X, ref Speed.Y, ref shoot, ref dmg, ref Kb);
+                    }
+                    if (ShouldShoot)
+                    {
+                        int protmp = Projectile.NewProjectile(Pos, Speed, shoot, dmg, Kb, Main.myPlayer);
                         Main.projectile[protmp].npcProj = true;
                         Main.projectile[protmp].noDropItem = true;
-                        if (Weapon.UseSound != null)
+                        Main.projectile[protmp].usesLocalNPCImmunity = true;
+                        if (Main.projectile[protmp].localNPCHitCooldown > 10)
                         {
-                            Main.PlaySound(Weapon.UseSound, npc.Center);
+                            Main.projectile[protmp].localNPCHitCooldown = 10;
                         }
+                    }
+                    if (Weapon.UseSound != null)
+                    {
+                        Main.PlaySound(Weapon.UseSound, npc.Center);
                     }
                 }
             }
@@ -83,144 +92,184 @@ namespace NPCAttacker.NPCs
 
         public override void TownNPCAttackStrength(NPC npc, ref int damage, ref float knockback)
         {
-            if (!NPCAttacker.BuffNPC()) return;
+            if (!SomeUtils.BuffNPC()) return;
             if (Weapon.IsAir) return;
-
-            if (NPCID.Sets.AttackType[npc.type] == 0 && Weapon.thrown)
+            if (npc.type == NPCID.Nurse) return;
+            damage = Main.LocalPlayer.GetWeaponDamage(Weapon);
+            knockback = Main.LocalPlayer.GetWeaponKnockback(Weapon, knockback);
+            if (Weapon.ranged && Weapon.useAmmo > 0)
             {
-                damage = Weapon.damage;
-            }
-            else if (NPCID.Sets.AttackType[npc.type] == 1 && Weapon.ranged)
-            {
-                damage = Weapon.damage;
-            }
-            else if (NPCID.Sets.AttackType[npc.type] == 2 && Weapon.magic)
-            {
-                damage = Weapon.damage;
-            }
-            else if (NPCID.Sets.AttackType[npc.type] == 3 && Weapon.melee)
-            {
-                if (Weapon.useStyle == ItemUseStyleID.SwingThrow)
-                {
-                    damage = Weapon.damage;
-                }
+                damage += SomeUtils.GetAmmoDmg(Weapon);
             }
         }
 
 
         public override void TownNPCAttackProjSpeed(NPC npc, ref float multiplier, ref float gravityCorrection, ref float randomOffset)
         {
-            if (!NPCAttacker.BuffNPC()) return;
+            if (!SomeUtils.BuffNPC()) return;
             if (Weapon.IsAir) return;
-            if (NPCID.Sets.AttackType[npc.type] == 0 && Weapon.thrown)
+            if (npc.type == NPCID.Nurse) return;
+            switch (NPCID.Sets.AttackType[npc.type])
             {
-                float k = Weapon.shootSpeed / multiplier;
-                multiplier = Weapon.shootSpeed;
-                gravityCorrection *= k;
-                randomOffset /= 3;
+                case 0:
+                    float k = Weapon.shootSpeed / multiplier;
+                    multiplier = Weapon.shootSpeed * Main.LocalPlayer.thrownVelocity;
+                    gravityCorrection *= k;
+                    randomOffset /= 3;
+                    break;
+                case 1:
+                    multiplier = Weapon.shootSpeed;
+                    break;
+                case 2:
+                    multiplier = Weapon.shootSpeed;
+                    randomOffset /= 2;
+                    break;
+                default:
+                    break;
             }
-            else if (NPCID.Sets.AttackType[npc.type] == 1 && Weapon.ranged)
-            {
-                multiplier = Weapon.shootSpeed;
-            }
-            else if (NPCID.Sets.AttackType[npc.type] == 2 && Weapon.magic)
-            {
-                multiplier = Weapon.shootSpeed;
-                randomOffset /= 2;
-            }
+
         }
 
         public override void TownNPCAttackCooldown(NPC npc, ref int cooldown, ref int randExtraCooldown)
         {
-            if (!NPCAttacker.BuffNPC()) return;
+            if (!SomeUtils.BuffNPC()) return;
             if (Weapon.IsAir) return;
-            if (NPCID.Sets.AttackType[npc.type] == 0 && Weapon.thrown)
-            {
-                cooldown = Weapon.useAnimation;
-                randExtraCooldown = 1;
-            }
-            else if (NPCID.Sets.AttackType[npc.type] == 1 && Weapon.ranged)
-            {
-                cooldown = Weapon.useAnimation;
-                randExtraCooldown = 1;
-            }
-            else if (NPCID.Sets.AttackType[npc.type] == 2 && Weapon.magic)
-            {
-                cooldown = Weapon.useAnimation;
-                randExtraCooldown = 1;
-            }
-            else if (NPCID.Sets.AttackType[npc.type] == 3 && Weapon.melee)
-            {
-                if (Weapon.useStyle == ItemUseStyleID.SwingThrow && !Weapon.noMelee && !Weapon.noUseGraphic)
-                {
-                    cooldown = Weapon.useAnimation;
-                    randExtraCooldown = 1;
-                }
-            }
+            if (npc.type == NPCID.Nurse) return;
+            cooldown = Weapon.useTime;
+            randExtraCooldown = 1;
         }
 
         public override void TownNPCAttackProj(NPC npc, ref int projType, ref int attackDelay)
         {
-            if (!NPCAttacker.BuffNPC()) return;
+            if (!SomeUtils.BuffNPC()) return;
             if (Weapon.IsAir) return;
-            if (NPCID.Sets.AttackType[npc.type] == 0 && Weapon.thrown)
+            if (npc.type == NPCID.Nurse) return;
+            attackDelay = 1;
+
+            if (NPCID.Sets.AttackType[npc.type] == 0 || NPCID.Sets.AttackType[npc.type] == 2)
             {
-                if (Weapon.shoot != ProjectileID.None)
+                int shoot = Weapon.shoot;
+                if (npc.localAI[3] == 0)
                 {
-                    attackDelay = 1;
-                    projType = Weapon.shoot;
-                }
-            }
-            else if (NPCID.Sets.AttackType[npc.type] == 1 && Weapon.ranged)
-            {
-                if (Weapon.shoot != ProjectileID.None)
-                {
-                    if (Weapon.useAmmo == AmmoID.Dart || Weapon.useAmmo == AmmoID.Bullet)
+                    if (Weapon.modItem != null)
                     {
-                        if (Weapon.shoot == ProjectileID.PurificationPowder || Weapon.shoot == ProjectileID.Xenopopper)
+                        int dmg = Main.LocalPlayer.GetWeaponDamage(Weapon);
+                        Vector2 Pos = npc.Center;
+                        Vector2 Speed;
+                        if (NPCTargetForSpecialUse != -1)
                         {
-                            int shoot = PickAmmo(Weapon);
-                            if (shoot > 0)
-                            {
-                                attackDelay = 1;
-                                projType = shoot;
-                            }
+                            Speed = Vector2.Normalize(Main.npc[NPCTargetForSpecialUse].Center - npc.Center) * Weapon.shootSpeed;
                         }
                         else
                         {
-                            attackDelay = 1;
-                            projType = Weapon.shoot;
+                            Speed = new Vector2(npc.direction, 0) * Weapon.shootSpeed;
+                        }
+                        float Kb = Weapon.knockBack;
+                        if (Weapon.modItem.Shoot(Main.LocalPlayer, ref Pos, ref Speed.X, ref Speed.Y, ref shoot, ref dmg, ref Kb))
+                        {
+                            projType = shoot;
+                        }
+                        else
+                        {
+                            projType = 0;
                         }
                     }
                     else
                     {
-                        attackDelay = 1;
-                        projType = Weapon.shoot;
+                        projType = shoot;
                     }
                 }
                 else
                 {
-                    if (Weapon.useAmmo > 0)
-                    {
-                        int shoot = PickAmmo(Weapon);
-                        if (shoot > 0)
-                        {
-                            attackDelay = 1;
-                            projType = shoot;
-                        }
-                    }
+                    projType = 0;
                 }
-
                 
             }
-            else if (NPCID.Sets.AttackType[npc.type] == 2 && Weapon.magic)
+            else if (NPCID.Sets.AttackType[npc.type] == 1)                  //大头射手
             {
-                if (Weapon.shoot != ProjectileID.None)
+                if (!SomeUtils.HasAmmo(Weapon))
                 {
-                    attackDelay = 1;
-                    projType = Weapon.shoot;
+                    projType = 0;
+                    return;
                 }
+                if (npc.localAI[3] == 0)
+                {
+                    if (Weapon.modItem != null)
+                    {
+                        int shoot;
+                        if (SomeUtils.ItsAmmoShootProj(Weapon) > 0)
+                        {
+                            shoot = SomeUtils.PickAmmo(Weapon);
+                        }
+                        else
+                        {
+                            shoot = Weapon.shoot;
+                        }
+
+                        int dmg = Main.LocalPlayer.GetWeaponDamage(Weapon);
+                        Vector2 Pos = npc.Center;
+                        Vector2 Speed;
+                        if (NPCTargetForSpecialUse != -1)
+                        {
+                            Speed = Vector2.Normalize(Main.npc[NPCTargetForSpecialUse].Center - npc.Center) * Weapon.shootSpeed;
+                        }
+                        else
+                        {
+                            Speed = new Vector2(npc.direction, 0) * Weapon.shootSpeed;
+                        }
+                        float Kb = Weapon.knockBack;
+                        if (Weapon.modItem.Shoot(Main.LocalPlayer, ref Pos, ref Speed.X, ref Speed.Y, ref shoot, ref dmg, ref Kb))
+                        {
+                            projType = shoot;
+                        }
+                        else
+                        {
+                            projType = 0;
+                        }
+                    }
+                    else
+                    {
+                        if (SomeUtils.ItsAmmoShootProj(Weapon) > 0)
+                        {
+                            bool ForceChange = false;
+                            if (Weapon.useAmmo == AmmoID.Bullet || Weapon.useAmmo == AmmoID.Arrow || Weapon.useAmmo == AmmoID.Dart || Weapon.useAmmo == AmmoID.NailFriendly)
+                            {
+                                if (SomeUtils.IsUseSpecialProj[Weapon.type] != 0)
+                                {
+                                    ForceChange = true;
+                                }
+                            }
+                            if (ForceChange)
+                            {
+                                projType = SomeUtils.IsUseSpecialProj[Weapon.type];
+                            }
+                            else
+                            {
+                                projType = SomeUtils.PickAmmo(Weapon);
+                            }
+                        }
+                        else
+                        {
+                            projType = Weapon.shoot;
+                            if (Weapon.type == ItemID.Toxikarp)
+                            {
+                                projType = ProjectileID.ToxicBubble;
+                            }
+                            if (Weapon.type == ItemID.Harpoon)
+                            {
+                                projType = ProjectileID.Harpoon;
+                            }
+                        }
+
+                    }
+                }
+                else
+                {
+                    projType = 0;
+                }
+
             }
+            
         }
 
         public override void NPCLoot(NPC npc)
@@ -236,124 +285,9 @@ namespace NPCAttacker.NPCs
 
 
 
-        public int PickAmmo(Item sItem)
+        public static Item GetWeapon(NPC npc)
         {
-            int shoot = 0;
-            bool canShoot = false;
-            Item item = new Item();
-            bool Found = false;
-            for (int i = 54; i < 58; i++)
-            {
-                if (Main.LocalPlayer.inventory[i].ammo == sItem.useAmmo && Main.LocalPlayer.inventory[i].stack > 0)
-                {
-                    item = Main.LocalPlayer.inventory[i];
-                    canShoot = true;
-                    Found = true;
-                    break;
-                }
-            }
-            if (!Found)
-            {
-                for (int j = 0; j < 54; j++)
-                {
-                    if (Main.LocalPlayer.inventory[j].ammo == sItem.useAmmo && Main.LocalPlayer.inventory[j].stack > 0)
-                    {
-                        item = Main.LocalPlayer.inventory[j];
-                        canShoot = true;
-                        break;
-                    }
-                }
-            }
-
-            if (canShoot)
-            {
-                if (sItem.type == ItemID.SnowmanCannon)
-                {
-                    shoot = 338 + item.type - 771;
-                    if (shoot > 341)
-                    {
-                        shoot = 341;
-                    }
-                }
-                else if (sItem.useAmmo == AmmoID.Rocket)
-                {
-                    shoot += item.shoot;
-                }
-                else if (sItem.useAmmo == 780)
-                {
-                    shoot += item.shoot;
-                }
-                else if (item.shoot > ProjectileID.None)
-                {
-                    shoot = item.shoot;
-                }
-                if (sItem.type == ItemID.HellwingBow && shoot == 1)
-                {
-                    shoot = 485;
-                }
-                if (sItem.type == ItemID.ShadowFlameBow)
-                {
-                    shoot = 495;
-                }
-                if (sItem.type == ItemID.BoneGlove && shoot == 21)
-                {
-                    shoot = 532;
-                }
-                
-                if (shoot == 42)
-                {
-                    if (item.type == ItemID.EbonsandBlock)
-                    {
-                        shoot = 65;
-                    }
-                    else if (item.type == ItemID.PearlsandBlock)
-                    {
-                        shoot = 68;
-                    }
-                    else if (item.type == ItemID.CrimsandBlock)
-                    {
-                        shoot = 354;
-                    }
-                }
-                if (sItem.type == ItemID.BeesKnees && shoot == 1)
-                {
-                    shoot = 469;
-                }
-                if (sItem.type == ItemID.ShadowFlameBow)
-                {
-                    shoot = ProjectileID.ShadowFlameArrow;
-                }
-                if (sItem.type == ItemID.MoltenFury && shoot == 1)
-                {
-                    shoot = ProjectileID.FlamingArrow;
-                }
-                if (sItem.type == ItemID.PulseBow)
-                {
-                    shoot = ProjectileID.PulseBolt;
-                }
-                if (sItem.type == ItemID.IceBow)
-                {
-                    shoot = ProjectileID.FrostburnArrow;
-                }
-                if (sItem.type == ItemID.Marrow)
-                {
-                    shoot = ProjectileID.BoneArrow;
-                }
-                if (sItem.type == ItemID.DD2BetsyBow)
-                {
-                    shoot = ProjectileID.DD2BetsyArrow;
-                }
-                if (sItem.type == ItemID.Uzi || sItem.type == ItemID.SniperRifle)
-                {
-                    shoot = ProjectileID.BulletHighVelocity;
-                }
-                if (sItem.type == ItemID.Xenopopper)
-                {
-                    shoot = ProjectileID.MoonlordBullet;
-                }
-                return shoot;
-            }
-            return 0;
+            return npc.GetGlobalNPC<ArmedGNPC>().Weapon;
         }
     }
 }

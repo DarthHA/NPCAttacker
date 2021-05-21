@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using NPCAttacker.NPCs;
+using System;
 using Terraria;
 using Terraria.ID;
 using Terraria.UI;
@@ -28,29 +29,34 @@ namespace NPCAttacker.UI
 		public bool ValidItem(Item item)
         {
 			if (item.IsAir) return true;
-			if (item.damage == 0 || item.accessory || item.channel) return false;
+			if (item.accessory || item.channel) return false;
 			if (Main.LocalPlayer.talkNPC == -1) return true;
 			NPC npc = Main.npc[Main.LocalPlayer.talkNPC];
 			if (NPCID.Sets.AttackType[npc.type] == 0)
 			{
-				return item.thrown;
+				if (npc.type == NPCID.Nurse)
+				{
+					return (item.healLife > 0 || item.buffType > 0 || item.potion) && item.stack >= Math.Min(30, item.maxStack);
+				}
+				return item.thrown && item.stack >= Math.Min(99, item.maxStack);
 			}
+
 			else if (NPCID.Sets.AttackType[npc.type] == 1)
-            {
+			{
 				return item.ranged;
-            }
+			}
 			else if (NPCID.Sets.AttackType[npc.type] == 2)
-            {
+			{
 				return item.magic;
-            }
+			}
 			else if (NPCID.Sets.AttackType[npc.type] == 3)
-            {
+			{
 				return item.melee && !item.noMelee && !item.noUseGraphic;
-            }
-            else
-            {
+			}
+			else
+			{
 				return false;
-            }
+			}
         }
 		public override void OnDeactivate() 
 		{
@@ -69,7 +75,7 @@ namespace NPCAttacker.UI
 			else
 			{
 				NPC TalkNPC = Main.npc[Main.LocalPlayer.talkNPC];
-				TalkNPC.GetGlobalNPC<ArmedGNPC>().Weapon = NPCAttacker.CloneItem(_vanillaItemSlot.Item);
+				TalkNPC.GetGlobalNPC<ArmedGNPC>().Weapon = SomeUtils.CloneItem(_vanillaItemSlot.Item);
 			}
 		}
 
@@ -94,14 +100,42 @@ namespace NPCAttacker.UI
 			if (!_vanillaItemSlot.Item.IsAir)
 			{
 				string message = TranslationUtils.GetTranslation("ArmUIarmered");
-				ChatManager.DrawColorCodedStringWithShadow(Main.spriteBatch, Main.fontMouseText, message, new Vector2(slotX + 50, slotY), new Color(Main.mouseTextColor, Main.mouseTextColor, Main.mouseTextColor, Main.mouseTextColor), 0f, Vector2.Zero, Vector2.One, -1f, 2f);
+				ChatManager.DrawColorCodedStringWithShadow(Main.spriteBatch, Main.fontMouseText, message, new Vector2(slotX + 50, slotY + 50), new Color(Main.mouseTextColor, Main.mouseTextColor, Main.mouseTextColor, Main.mouseTextColor), 0f, Vector2.Zero, Vector2.One, -1f, 2f);
 			}
 			else
 			{
 				string message1 = TranslationUtils.GetTranslation("ArmUIunarmered1");
-				string message2 = TranslationUtils.GetTranslation("ArmUIunarmered2");
-				ChatManager.DrawColorCodedStringWithShadow(Main.spriteBatch, Main.fontMouseText, message1, new Vector2(slotX + 50, slotY), new Color(Main.mouseTextColor, Main.mouseTextColor, Main.mouseTextColor, Main.mouseTextColor), 0f, Vector2.Zero, Vector2.One, -1f, 2f);
-				ChatManager.DrawColorCodedStringWithShadow(Main.spriteBatch, Main.fontMouseText, message2, new Vector2(slotX + 50, slotY + 50), new Color(Main.mouseTextColor, Main.mouseTextColor, Main.mouseTextColor, Main.mouseTextColor), 0f, Vector2.Zero, Vector2.One, -1f, 2f);
+				string message2 = TranslationUtils.GetTranslation("ArmUINote");
+				string ClassInfo = "";
+				if (Main.LocalPlayer.talkNPC != -1)
+                {
+					NPC talkNPC = Main.npc[Main.LocalPlayer.talkNPC];
+                    switch (NPCID.Sets.AttackType[talkNPC.type])
+                    {
+						case 0:
+							if (talkNPC.type == NPCID.Nurse)
+							{
+								ClassInfo = TranslationUtils.GetTranslation("ArmUIClassNurse");
+							}
+							else
+							{
+								ClassInfo = TranslationUtils.GetTranslation("ArmUIClassThrown");
+							}
+							break;
+						case 1:
+							ClassInfo = TranslationUtils.GetTranslation("ArmUIClassRanged");
+							break;
+						case 2:
+							ClassInfo = TranslationUtils.GetTranslation("ArmUIClassMagic");
+							break;
+						case 3:
+							ClassInfo = TranslationUtils.GetTranslation("ArmUIClassMelee");
+							break;
+                    }
+                }
+				ChatManager.DrawColorCodedStringWithShadow(Main.spriteBatch, Main.fontMouseText, message1, new Vector2(slotX + 50, slotY + 50), new Color(Main.mouseTextColor, Main.mouseTextColor, Main.mouseTextColor, Main.mouseTextColor), 0f, Vector2.Zero, Vector2.One, -1f, 2f);
+				ChatManager.DrawColorCodedStringWithShadow(Main.spriteBatch, Main.fontMouseText, ClassInfo, new Vector2(slotX + 50, slotY + 100), new Color(Main.mouseTextColor, Main.mouseTextColor, Main.mouseTextColor, Main.mouseTextColor), 0f, Vector2.Zero, Vector2.One, -1f, 2f);
+				ChatManager.DrawColorCodedStringWithShadow(Main.spriteBatch, Main.fontMouseText, message2, new Vector2(slotX + 50, slotY + 150), new Color(Main.mouseTextColor, Main.mouseTextColor, Main.mouseTextColor, Main.mouseTextColor), 0f, Vector2.Zero, Vector2.One, -1f, 2f);
 			}
 		}
 
@@ -122,7 +156,7 @@ namespace NPCAttacker.UI
 				NPC TalkNPC = Main.npc[Main.LocalPlayer.talkNPC];
 				if (!TalkNPC.GetGlobalNPC<ArmedGNPC>().Weapon.IsAir)
 				{
-					_vanillaItemSlot.Item = NPCAttacker.CloneItem(TalkNPC.GetGlobalNPC<ArmedGNPC>().Weapon);
+					_vanillaItemSlot.Item = SomeUtils.CloneItem(TalkNPC.GetGlobalNPC<ArmedGNPC>().Weapon);
 				}
 			}
 		}
