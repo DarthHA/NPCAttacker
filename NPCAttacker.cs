@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using NPCAttacker.NPCs;
+using NPCAttacker.Projectiles;
 using NPCAttacker.UI;
 using System.Collections.Generic;
 using System.Reflection;
@@ -49,12 +50,16 @@ namespace NPCAttacker
 
 			AddTrans();
 		}
-
+        public override void PostSetupContent()
+        {
+			VanillaItemProjFix.Load();
+		}
         public override void Unload()
         {
 			On.Terraria.NPC.AI_007_TownEntities -= AIHook;
 			On.Terraria.NPC.StrikeNPC -= StrikeNPCHook;
 			On.Terraria.Main.DrawNPCChatButtons -= DrawNPCChatButtonsHook;
+			VanillaItemProjFix.UnLoad();
 			Instance = null;
 		}
 
@@ -417,7 +422,7 @@ namespace NPCAttacker
 
 		public static void AIHook(On.Terraria.NPC.orig_AI_007_TownEntities orig,NPC self)
         {
-			if (!SomeUtils.NoMode() && (self.townNPC || self.type == NPCID.SkeletonMerchant))
+			if (SomeUtils.BuffNPC() && (self.townNPC || self.type == NPCID.SkeletonMerchant))
 			{
 				Rectangle Screen = new Rectangle((int)Main.screenPosition.X, (int)Main.screenPosition.Y, Main.screenWidth, Main.screenHeight);
 				if (self.Hitbox.Intersects(Screen))
@@ -448,10 +453,10 @@ namespace NPCAttacker
 			TranslationUtils.AddTranslation("ArmUIarmered", "Remove this weapon here to disarm this NPC", "将该物品移除以解除NPC武装");
 			TranslationUtils.AddTranslation("ArmUIunarmered1", "Place a weapon here to arm this NPC", "放置武器以武装该NPC");
 			TranslationUtils.AddTranslation("ArmUIClassMelee", "This NPC can be equipped with broadsword-like melee weapon[i:426]", "该NPC可以装备阔剑型的近战武器[i:426]");
-			TranslationUtils.AddTranslation("ArmUIClassRanged", "This NPC can be equipped with ranged weapon[i:533],but you need to prepare enough ammos for it[i:1302]", "该NPC可以装备远程武器[i:533],但你得准备足够多的弹药[i:1302]");
+			TranslationUtils.AddTranslation("ArmUIClassRanged", "This NPC can be equipped with ranged weapon[i:533],but you need to prepare enough ammos for it(>= 999)[i:1302]", "该NPC可以装备远程武器[i:533],但你得准备足够多的弹药(>= 999)[i:1302]");
 			TranslationUtils.AddTranslation("ArmUIClassMagic", "This NPC can be equipped with magic weapon[i:1931]", "该NPC可以装备魔法武器[i:1931]");
-			TranslationUtils.AddTranslation("ArmUIClassThrown", "This NPC can be equipped with enough thrown weapon[i:42]", "该NPC可以装备足够多的投掷武器[i:42]");
-			TranslationUtils.AddTranslation("ArmUIClassNurse", "This NPC can be equipped with enough healing or buff potion[i:188]", "该NPC可以装备足够多的治疗或者增益药水[i:188]");
+			TranslationUtils.AddTranslation("ArmUIClassThrown", "This NPC can be equipped with enough thrown weapon(>= 99 if comsumable)[i:42]", "该NPC可以装备足够多的投掷武器(>= 99 如果是消耗品)[i:42]");
+			TranslationUtils.AddTranslation("ArmUIClassNurse", "This NPC can be equipped with enough healing or buff potion(>= 30)[i:188]", "该NPC可以装备足够多的治疗或者增益药水(>= 30)[i:188]");
 			TranslationUtils.AddTranslation("ArmUINote", "Note: It may be difficult for NPCs to use some special weapon[i:3541]", "注意：NPC难以使用比较特别的武器[i:3541]");
 		}
 

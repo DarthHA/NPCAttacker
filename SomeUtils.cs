@@ -230,14 +230,6 @@ namespace NPCAttacker
                 {
                     shoot = ProjectileID.BulletHighVelocity;
                 }
-                if (sItem.type == ItemID.Xenopopper)
-                {
-                    shoot = ProjectileID.MoonlordBullet;
-                }
-                if (sItem.type == ItemID.OnyxBlaster)
-                {
-                    shoot = 661;
-                }
                 return shoot;
             }
             return 0;
@@ -245,43 +237,7 @@ namespace NPCAttacker
 
 
 
-        public static int[] IsUseSpecialProj = ItemID.Sets.Factory.CreateIntSet(0, new int[]
-        {
-            ItemID.BeesKnees,
-            ProjectileID.BeeArrow,
-
-            ItemID.HellwingBow,
-            ProjectileID.Hellwing,
-
-            ItemID.MoltenFury,
-            ProjectileID.HellfireArrow,
-
-            ItemID.Marrow,
-            ProjectileID.BoneArrow,
-
-            ItemID.IceBow,
-            ProjectileID.FrostburnArrow,
-
-            ItemID.PulseBow,
-            ProjectileID.PulseBolt,
-
-            ItemID.DD2BetsyBow,
-            ProjectileID.DD2BetsyArrow,
-
-
-            ItemID.Uzi,
-            ProjectileID.BulletHighVelocity,
-
-            ItemID.SniperRifle,
-            ProjectileID.BulletHighVelocity,
-
-            ItemID.OnyxBlaster,
-            661,
-
-            ItemID.NailGun,
-            ProjectileID.NailFriendly
-
-        });
+        
 
 
         public static bool AttackMode()
