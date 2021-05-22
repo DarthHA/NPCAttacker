@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using NPCAttacker.Projectiles;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -73,6 +74,10 @@ namespace NPCAttacker.NPCs
                     }
                     if (ShouldShoot)
                     {
+                        if (VanillaItemProjFix.TransFormProj(Weapon.type) != -1)
+                        {
+                            shoot = VanillaItemProjFix.TransFormProj(Weapon.type);
+                        }
                         int protmp = Projectile.NewProjectile(Pos, Speed, shoot, dmg, Kb, Main.myPlayer);
                         Main.projectile[protmp].npcProj = true;
                         Main.projectile[protmp].noDropItem = true;
@@ -94,7 +99,11 @@ namespace NPCAttacker.NPCs
         {
             if (!SomeUtils.BuffNPC()) return;
             if (Weapon.IsAir) return;
-            if (npc.type == NPCID.Nurse) return;
+            if (npc.type == NPCID.Nurse) 
+            {
+                damage += Weapon.healLife * 2;
+                return; 
+            }
             damage = Main.LocalPlayer.GetWeaponDamage(Weapon);
             knockback = Main.LocalPlayer.GetWeaponKnockback(Weapon, knockback);
             if (Weapon.ranged && Weapon.useAmmo > 0)
@@ -115,14 +124,14 @@ namespace NPCAttacker.NPCs
                     float k = Weapon.shootSpeed / multiplier;
                     multiplier = Weapon.shootSpeed * Main.LocalPlayer.thrownVelocity;
                     gravityCorrection *= k;
-                    randomOffset /= 3;
+                    randomOffset = 0;
                     break;
                 case 1:
                     multiplier = Weapon.shootSpeed;
                     break;
                 case 2:
                     multiplier = Weapon.shootSpeed;
-                    randomOffset /= 2;
+                    randomOffset = 0;
                     break;
                 default:
                     break;
@@ -177,6 +186,10 @@ namespace NPCAttacker.NPCs
                     else
                     {
                         projType = shoot;
+                        if (VanillaItemProjFix.TransFormProj(Weapon.type) != -1)
+                        {
+                            projType = VanillaItemProjFix.TransFormProj(Weapon.type);
+                        }
                     }
                 }
                 else
@@ -234,14 +247,14 @@ namespace NPCAttacker.NPCs
                             bool ForceChange = false;
                             if (Weapon.useAmmo == AmmoID.Bullet || Weapon.useAmmo == AmmoID.Arrow || Weapon.useAmmo == AmmoID.Dart || Weapon.useAmmo == AmmoID.NailFriendly)
                             {
-                                if (SomeUtils.IsUseSpecialProj[Weapon.type] != 0)
+                                if (VanillaItemProjFix.IsUseSpecialProj[Weapon.type] != 0)
                                 {
                                     ForceChange = true;
                                 }
                             }
                             if (ForceChange)
                             {
-                                projType = SomeUtils.IsUseSpecialProj[Weapon.type];
+                                projType = VanillaItemProjFix.IsUseSpecialProj[Weapon.type];
                             }
                             else
                             {
@@ -260,7 +273,10 @@ namespace NPCAttacker.NPCs
                                 projType = ProjectileID.Harpoon;
                             }
                         }
-
+                        if (VanillaItemProjFix.TransFormProj(Weapon.type) != -1)
+                        {
+                            projType = VanillaItemProjFix.TransFormProj(Weapon.type);
+                        }
                     }
                 }
                 else

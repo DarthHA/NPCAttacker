@@ -1,4 +1,5 @@
-using Microsoft.Xna.Framework;
+ï»¿using Microsoft.Xna.Framework;
+using NPCAttacker.Projectiles;
 using System;
 using Terraria;
 using Terraria.GameContent.Events;
@@ -17,7 +18,7 @@ namespace NPCAttacker.NPCs
 		public const float Sit = 5f;
 		public const float TalkingPartyToPlayer = 6f;
 		public const float TalkingToPlayer = 7f;
-		public const float WalkingForBattle = 8f;            //²»È·¶¨
+		public const float WalkingForBattle = 8f;            //ä¸ç¡®å®š
 		public const float Interacting = 9f;
 		public const float ThrowerAtk = 10f;
 		public const float PriateSpecial = 11f;
@@ -33,7 +34,7 @@ namespace NPCAttacker.NPCs
 
 		public static void AI_007_TownEntities(NPC npc)
 		{
-			bool ShouldGoHome = Main.raining;             //ÊÇ·ñTP»Ø¼Ò
+			bool ShouldGoHome = Main.raining;             //æ˜¯å¦TPå›å®¶
 			if (!Main.dayTime)
 			{
 				ShouldGoHome = true;
@@ -48,7 +49,7 @@ namespace NPCAttacker.NPCs
 			}
 			float dmgMult = 1f;
 
-			if (Main.expertMode)                //Ê÷Ñı»¤ÓÓ
+			if (Main.expertMode)                //æ ‘å¦–æŠ¤ä½‘
 			{
 				npc.defense = npc.dryadWard ? (npc.defDefense + 10) : npc.defDefense;
 			}
@@ -57,7 +58,7 @@ namespace NPCAttacker.NPCs
 				npc.defense = npc.dryadWard ? (npc.defDefense + 6) : npc.defDefense;
 			}
 
-			if (npc.townNPC || npc.type == NPCID.SkeletonMerchant)       //°´Á÷³ÌÇ¿»¯NPC·ÀÓùºÍÉËº¦
+			if (npc.townNPC || npc.type == NPCID.SkeletonMerchant)       //æŒ‰æµç¨‹å¼ºåŒ–NPCé˜²å¾¡å’Œä¼¤å®³
 			{
 				if (NPC.downedBoss1)
 				{
@@ -115,7 +116,7 @@ namespace NPCAttacker.NPCs
 					npc.defense += 8;
 				}
 
-				if (SomeUtils.BuffNPC())             //Õ½¶·×´Ì¬£¬Ã»×°ÎäÆ÷µÄ¼Ó³É
+				if (SomeUtils.BuffNPC())             //æˆ˜æ–—çŠ¶æ€ï¼Œæ²¡è£…æ­¦å™¨çš„åŠ æˆ
 				{
 					int k = 1;
 					if (NPC.downedMoonlord)
@@ -159,7 +160,7 @@ namespace NPCAttacker.NPCs
 				NPCLoader.BuffTownNPC(ref dmgMult, ref npc.defense);
 			}
 
-			if (npc.type == NPCID.SantaClaus && Main.netMode != NetmodeID.MultiplayerClient && !Main.xMas)           //Ê¥µ®ÀÏÈË×ÔÉ±
+			if (npc.type == NPCID.SantaClaus && Main.netMode != NetmodeID.MultiplayerClient && !Main.xMas)           //åœ£è¯è€äººè‡ªæ€
 			{
 				npc.StrikeNPCNoInteraction(9999, 0f, 0, false, false, false);
 				if (Main.netMode == NetmodeID.Server)
@@ -173,7 +174,7 @@ namespace NPCAttacker.NPCs
 				npc.localAI[0] = Main.rand.Next(1, 5);
 			}
 
-			if (npc.type == NPCID.Mechanic)           //¿ØÖÆ»úĞµÊ¦»ØĞıïÚ¹¥»÷
+			if (npc.type == NPCID.Mechanic)           //æ§åˆ¶æœºæ¢°å¸ˆå›æ—‹é•–æ”»å‡»
 			{
 				bool flag2 = false;
 				for (int i = 0; i < 1000; i++)
@@ -193,11 +194,11 @@ namespace NPCAttacker.NPCs
 				npc.Transform(npc.type + 1);
 				npc.TargetClosest(true);
 				npc.direction = direction;
-				npc.netUpdate = true;             //Ñ¼×ÓĞÎÌ¬ÇĞ»»
+				npc.netUpdate = true;             //é¸­å­å½¢æ€åˆ‡æ¢
 				return;
 			}
 
-			switch (npc.type)                 //ÊÇ·ñ¾ÈÁËÈË
+			switch (npc.type)                 //æ˜¯å¦æ•‘äº†äºº
 			{
 				case NPCID.Stylist:
 					NPC.savedStylist = true;
@@ -221,7 +222,7 @@ namespace NPCAttacker.NPCs
 					break;
 			}
 
-			if (npc.type >= NPCID.None && NPCID.Sets.TownCritter[npc.type] && npc.target == 255)           //ÅĞ¶¨Î»ÖÃ
+			if (npc.type >= NPCID.None && NPCID.Sets.TownCritter[npc.type] && npc.target == 255)           //åˆ¤å®šä½ç½®
 			{
 				npc.TargetClosest(true);
 				if (npc.position.X < Main.player[npc.target].position.X)
@@ -259,7 +260,7 @@ namespace NPCAttacker.NPCs
 				npc.direction = 1;
 			}
 
-			foreach (Player talkPlayer in Main.player)             //ÓëÍæ¼Ò¶Ô»°Ê±¶Ô×¼Íæ¼Ò
+			foreach (Player talkPlayer in Main.player)             //ä¸ç©å®¶å¯¹è¯æ—¶å¯¹å‡†ç©å®¶
 			{
 				if (talkPlayer.active && talkPlayer.talkNPC == npc.whoAmI)
 				{
@@ -275,7 +276,7 @@ namespace NPCAttacker.NPCs
 				}
 			}
 
-			if (npc.ai[3] == 1f)           //ÅĞ¶¨ÀÏÈËËÀÍö
+			if (npc.ai[3] == 1f)           //åˆ¤å®šè€äººæ­»äº¡
 			{
 				npc.life = -1;
 				npc.HitEffect(0, 10.0);
@@ -323,7 +324,7 @@ namespace NPCAttacker.NPCs
 				}
 			}
 
-			if (npc.type == NPCID.Angler && npc.homeless && npc.wet)              //ÅİË®Óæ·ò£¿
+			if (npc.type == NPCID.Angler && npc.homeless && npc.wet)              //æ³¡æ°´æ¸”å¤«ï¼Ÿ
 			{
 				if (npc.Center.X / 16f < 380f || npc.Center.X / 16f > Main.maxTilesX - 380)
 				{
@@ -348,7 +349,7 @@ namespace NPCAttacker.NPCs
 				return;
 			}
 
-			//Ë²ÒÆ»Ø¼Ò£¬´«Í³ÒÕÄÜ
+			//ç¬ç§»å›å®¶ï¼Œä¼ ç»Ÿè‰ºèƒ½
 			if (!npc.homeless && Main.netMode != NetmodeID.MultiplayerClient && npc.townNPC && (ShouldGoHome || Main.tileDungeon[Main.tile[TileCoordX, TileCoordY].type]) && (TileCoordX != npc.homeTileX || TileCoordY != TrueHomeTile))
 			{
 				bool ShouldGoHome2 = true;
@@ -428,7 +429,7 @@ namespace NPCAttacker.NPCs
 				}
 				else if (SomeUtils.AssembleMode())
 				{
-					//Ò»ÎŞËù»ñ
+					//ä¸€æ— æ‰€è·
 					HasTarget = false;
 				}
 				else
@@ -494,7 +495,7 @@ namespace NPCAttacker.NPCs
 							npc.netUpdate = true;
 						}
 					}
-					else if (npc.ai[0] != ThrowerAtk && npc.ai[0] != RangerAtk && npc.ai[0] != NurseHeal && npc.ai[0] != MageAtk && npc.ai[0] != MeleeAtk)    //Ã»ÓĞ¹¥»÷Ê±
+					else if (npc.ai[0] != ThrowerAtk && npc.ai[0] != RangerAtk && npc.ai[0] != NurseHeal && npc.ai[0] != MageAtk && npc.ai[0] != MeleeAtk)    //æ²¡æœ‰æ”»å‡»æ—¶
 					{
 						if (NPCID.Sets.PrettySafe[npc.type] != -1 && NPCID.Sets.PrettySafe[npc.type] < NearestDist)
 						{
@@ -1197,18 +1198,18 @@ namespace NPCAttacker.NPCs
 					npc.netUpdate = true;
 				}
 			}
-			else if (npc.ai[0] == ThrowerAtk)               //Í¶ÊÖ¹¥»÷
+			else if (npc.ai[0] == ThrowerAtk)               //æŠ•æ‰‹æ”»å‡»
 			{
 				int ProjType = 0;
 				int ProjDmg = 0;
 				float knockBack = 0f;
 				float SpeedMultiplier = 0f;
-				int AtkDelay = 0;    //NPCÔÚ³öÕĞºó¶à³¤Ê±¼ä²Å»á·¢Éäµ¯Ä»
+				int AtkDelay = 0;    //NPCåœ¨å‡ºæ‹›åå¤šé•¿æ—¶é—´æ‰ä¼šå‘å°„å¼¹å¹•
 				int AtkCD = 0;
 				int AtkExtraRandCD = 0;
-				float gravityCorrection = 0f;             //ÖØÁ¦ĞŞÕı
+				float gravityCorrection = 0f;             //é‡åŠ›ä¿®æ­£
 				float AtkRange = NPCID.Sets.DangerDetectRange[npc.type];
-				float randomOffset = 0f;                 //¾«×¼¶È
+				float randomOffset = 0f;                 //ç²¾å‡†åº¦
 
 				int Target = -1;
 				if (ShootDir == 1 && npc.spriteDirection == 1 && TargetRight != -1)
@@ -1376,6 +1377,7 @@ namespace NPCAttacker.NPCs
 					Main.projectile[protmp].npcProj = true;
 					Main.projectile[protmp].noDropItem = true;
 					Main.projectile[protmp].usesLocalNPCImmunity = true;
+					Main.projectile[protmp].GetGlobalProjectile<AttackerGProj>().ProjTarget = Target;
 					if (Main.projectile[protmp].localNPCHitCooldown > 10)
 					{
 						Main.projectile[protmp].localNPCHitCooldown = 10;
@@ -1398,7 +1400,7 @@ namespace NPCAttacker.NPCs
 					npc.netUpdate = true;
 				}
 			}
-			else if (npc.ai[0] == RangerAtk)              //ÉäÊÖÀà
+			else if (npc.ai[0] == RangerAtk)              //å°„æ‰‹ç±»
 			{
 				int ProjType = 0;
 				int ProjDmg = 0;
@@ -1408,7 +1410,7 @@ namespace NPCAttacker.NPCs
 				int AtkRandExtraCD = 0;
 				float knockBack2 = 0f;
 				float gravityCorrection = 0f;
-				bool inBetweenShots = false;               //Á¬Éä¼ä¸ô
+				bool inBetweenShots = false;               //è¿å°„é—´éš”
 				float randomOffset = 0f;
 				if (NPCID.Sets.AttackTime[npc.type] == npc.ai[1])
 				{
@@ -1676,6 +1678,7 @@ namespace NPCAttacker.NPCs
 					Main.projectile[protmp].noDropItem = true;
 					Main.projectile[protmp].usesLocalNPCImmunity = true;
 					Main.projectile[protmp].localNPCHitCooldown = 10;
+					Main.projectile[protmp].GetGlobalProjectile<AttackerGProj>().ProjTarget = Target;
 
 					if (!ArmedGNPC.GetWeapon(npc).IsAir)
 					{
@@ -1702,7 +1705,7 @@ namespace NPCAttacker.NPCs
 					npc.netUpdate = true;
 				}
 			}
-			else if (npc.ai[0] == NurseHeal)             //»¤Ê¿ÖÎÁÆ
+			else if (npc.ai[0] == NurseHeal)             //æŠ¤å£«æ²»ç–—
 			{
 				npc.velocity.X *= 0.8f;
 				if (NPCID.Sets.AttackTime[npc.type] == npc.ai[1])
@@ -1732,7 +1735,7 @@ namespace NPCAttacker.NPCs
 					npc.netUpdate = true;
 				}
 			}
-			else if (npc.ai[0] == MageAtk)           //·¨Ê¦¹¥»÷
+			else if (npc.ai[0] == MageAtk)           //æ³•å¸ˆæ”»å‡»
 			{
 				int ProjType = 0;
 				int ProjDmg = 0;
@@ -1832,10 +1835,12 @@ namespace NPCAttacker.NPCs
 					}
 					vector5 *= SpeedMultiplier;
 					vector5 += Utils.RandomVector2(Main.rand, -randomOffset, randomOffset);
-					if (npc.type == NPCID.Wizard)
+					if (ArmedGNPC.GetWeapon(npc).IsAir)
 					{
-						int AtkAmount = Utils.SelectRandom(Main.rand, new int[]
+						if (npc.type == NPCID.Wizard)
 						{
+							int AtkAmount = Utils.SelectRandom(Main.rand, new int[]
+							{
 							1,
 							1,
 							1,
@@ -1843,11 +1848,46 @@ namespace NPCAttacker.NPCs
 							2,
 							2,
 							3
-						});
-						for (int i = 0; i < AtkAmount; i++)
+							});
+							for (int i = 0; i < AtkAmount; i++)
+							{
+								Vector2 vector6 = Utils.RandomVector2(Main.rand, -3.4f, 3.4f);
+								int protmp = Projectile.NewProjectile(npc.Center.X + npc.spriteDirection * 16, npc.Center.Y - 2f, vector5.X + vector6.X, vector5.Y + vector6.Y, ProjType, ProjDmg, knockBack3, Main.myPlayer, 0f, 0f);
+								Main.projectile[protmp].npcProj = true;
+								Main.projectile[protmp].noDropItem = true;
+								Main.projectile[protmp].usesLocalNPCImmunity = true;
+								if (Main.projectile[protmp].localNPCHitCooldown > 10)
+								{
+									Main.projectile[protmp].localNPCHitCooldown = 10;
+								}
+								Main.projectile[protmp].GetGlobalProjectile<AttackerGProj>().ProjTarget = Target;
+							}
+						}
+						else if (npc.type == NPCID.Truffle)
 						{
-							Vector2 vector6 = Utils.RandomVector2(Main.rand, -3.4f, 3.4f);
-							int protmp = Projectile.NewProjectile(npc.Center.X + npc.spriteDirection * 16, npc.Center.Y - 2f, vector5.X + vector6.X, vector5.Y + vector6.Y, ProjType, ProjDmg, knockBack3, Main.myPlayer, 0f, 0f);
+							if (Target != -1)
+							{
+								Vector2 vector7 = Main.npc[Target].position - Main.npc[Target].Size * 2f + Main.npc[Target].Size * Utils.RandomVector2(Main.rand, 0f, 1f) * 5f;
+								int TryCount = 10;
+								while (TryCount > 0 && WorldGen.SolidTile(Framing.GetTileSafely((int)vector7.X / 16, (int)vector7.Y / 16)))
+								{
+									TryCount--;
+									vector7 = Main.npc[Target].position - Main.npc[Target].Size * 2f + Main.npc[Target].Size * Utils.RandomVector2(Main.rand, 0f, 1f) * 5f;
+								}
+								int protmp = Projectile.NewProjectile(vector7.X, vector7.Y, 0f, 0f, ProjType, ProjDmg, knockBack3, Main.myPlayer, 0f, 0f);
+								Main.projectile[protmp].npcProj = true;
+								Main.projectile[protmp].noDropItem = true;
+								Main.projectile[protmp].usesLocalNPCImmunity = true;
+								if (Main.projectile[protmp].localNPCHitCooldown > 10)
+								{
+									Main.projectile[protmp].localNPCHitCooldown = 10;
+								}
+								Main.projectile[protmp].GetGlobalProjectile<AttackerGProj>().ProjTarget = Target;
+							}
+						}
+						else if (npc.type == NPCID.Dryad)
+						{
+							int protmp = Projectile.NewProjectile(npc.Center.X + npc.spriteDirection * 16, npc.Center.Y - 2f, vector5.X, vector5.Y, ProjType, ProjDmg, knockBack3, Main.myPlayer, 0f, npc.whoAmI);
 							Main.projectile[protmp].npcProj = true;
 							Main.projectile[protmp].noDropItem = true;
 							Main.projectile[protmp].usesLocalNPCImmunity = true;
@@ -1855,20 +1895,11 @@ namespace NPCAttacker.NPCs
 							{
 								Main.projectile[protmp].localNPCHitCooldown = 10;
 							}
+							Main.projectile[protmp].GetGlobalProjectile<AttackerGProj>().ProjTarget = Target;
 						}
-					}
-					else if (npc.type == NPCID.Truffle)
-					{
-						if (Target != -1)
+						else
 						{
-							Vector2 vector7 = Main.npc[Target].position - Main.npc[Target].Size * 2f + Main.npc[Target].Size * Utils.RandomVector2(Main.rand, 0f, 1f) * 5f;
-							int TryCount = 10;
-							while (TryCount > 0 && WorldGen.SolidTile(Framing.GetTileSafely((int)vector7.X / 16, (int)vector7.Y / 16)))
-							{
-								TryCount--;
-								vector7 = Main.npc[Target].position - Main.npc[Target].Size * 2f + Main.npc[Target].Size * Utils.RandomVector2(Main.rand, 0f, 1f) * 5f;
-							}
-							int protmp = Projectile.NewProjectile(vector7.X, vector7.Y, 0f, 0f, ProjType, ProjDmg, knockBack3, Main.myPlayer, 0f, 0f);
+							int protmp = Projectile.NewProjectile(npc.Center.X + npc.spriteDirection * 16, npc.Center.Y - 2f, vector5.X, vector5.Y, ProjType, ProjDmg, knockBack3, Main.myPlayer, 0f, 0f);
 							Main.projectile[protmp].npcProj = true;
 							Main.projectile[protmp].noDropItem = true;
 							Main.projectile[protmp].usesLocalNPCImmunity = true;
@@ -1876,21 +1907,11 @@ namespace NPCAttacker.NPCs
 							{
 								Main.projectile[protmp].localNPCHitCooldown = 10;
 							}
+							Main.projectile[protmp].GetGlobalProjectile<AttackerGProj>().ProjTarget = Target;
 						}
 					}
-					else if (npc.type == NPCID.Dryad)
-					{
-						int protmp = Projectile.NewProjectile(npc.Center.X + npc.spriteDirection * 16, npc.Center.Y - 2f, vector5.X, vector5.Y, ProjType, ProjDmg, knockBack3, Main.myPlayer, 0f, npc.whoAmI);
-						Main.projectile[protmp].npcProj = true;
-						Main.projectile[protmp].noDropItem = true;
-						Main.projectile[protmp].usesLocalNPCImmunity = true;
-						if (Main.projectile[protmp].localNPCHitCooldown > 10)
-						{
-							Main.projectile[protmp].localNPCHitCooldown = 10;
-						}
-					}
-					else
-					{
+                    else
+                    {
 						int protmp = Projectile.NewProjectile(npc.Center.X + npc.spriteDirection * 16, npc.Center.Y - 2f, vector5.X, vector5.Y, ProjType, ProjDmg, knockBack3, Main.myPlayer, 0f, 0f);
 						Main.projectile[protmp].npcProj = true;
 						Main.projectile[protmp].noDropItem = true;
@@ -1899,6 +1920,7 @@ namespace NPCAttacker.NPCs
 						{
 							Main.projectile[protmp].localNPCHitCooldown = 10;
 						}
+						Main.projectile[protmp].GetGlobalProjectile<AttackerGProj>().ProjTarget = Target;
 					}
 
 					if (!ArmedGNPC.GetWeapon(npc).IsAir)
@@ -1923,7 +1945,7 @@ namespace NPCAttacker.NPCs
 					npc.netUpdate = true;
 				}
 			}
-			else if (npc.ai[0] == MeleeAtk)                   //½üÕ½¹¥»÷
+			else if (npc.ai[0] == MeleeAtk)                   //è¿‘æˆ˜æ”»å‡»
 			{
 				int AtkCD = 0;
 				int AtkRandExtraCD = 0;
@@ -2141,7 +2163,7 @@ namespace NPCAttacker.NPCs
 			}
 
 
-			//NPC¼ä½»Ì¸
+			//NPCé—´äº¤è°ˆ
 			if (Main.netMode != NetmodeID.MultiplayerClient && (npc.townNPC || npc.type == NPCID.SkeletonMerchant) && !TalkingToPlayer)
 			{
 				bool NotAtk = npc.ai[0] < Stop && !HasTarget;
@@ -2172,7 +2194,7 @@ namespace NPCAttacker.NPCs
 				}
 				if (NotAtk && npc.ai[0] == Default && npc.velocity.Y == 0f && Main.rand.Next(300) == 0)
 				{
-					int talkTime = 420;       //²»Ì«È·¶¨
+					int talkTime = 420;       //ä¸å¤ªç¡®å®š
 					if (Main.rand.Next(2) == 0)
 					{
 						talkTime *= Main.rand.Next(1, 4);
@@ -2299,7 +2321,7 @@ namespace NPCAttacker.NPCs
 						}
 					}
 				}
-				else if (NotAtk && npc.ai[0] == Walking && npc.velocity.Y == 0f && Main.rand.Next(300) == 0)            //Äã×ø°¡NPC
+				else if (NotAtk && npc.ai[0] == Walking && npc.velocity.Y == 0f && Main.rand.Next(300) == 0)            //ä½ åå•ŠNPC
 				{
 					Point NPCTileCoord = npc.Center.ToTileCoordinates();
 					bool CanSit = WorldGen.InWorld(NPCTileCoord.X, NPCTileCoord.Y, 1);
@@ -2337,7 +2359,7 @@ namespace NPCAttacker.NPCs
 						}
 					}
 				}
-				//ÉñÆæ»¥¶¯£¨£¿
+				//ç¥å¥‡äº’åŠ¨ï¼ˆï¼Ÿ
 				else if (NotAtk && npc.ai[0] == Walking && npc.velocity.Y == 0f && Main.rand.Next(600) == 0 && Utils.PlotTileLine(npc.Top, npc.Bottom, npc.width, new Utils.PerLinePoint(DelegateMethods.SearchAvoidedByNPCs)))
 				{
 					Point NPCFrontCoord = (npc.Center + new Vector2(npc.direction * 10, 0f)).ToTileCoordinates();
@@ -2359,7 +2381,7 @@ namespace NPCAttacker.NPCs
 						npc.netUpdate = true;
 					}
 				}
-				//»¤Ê¿ÖÎÁÆ
+				//æŠ¤å£«æ²»ç–—
 				if (npc.ai[0] < 2f && npc.velocity.Y == 0f && npc.type == NPCID.Nurse)
 				{
 					int HealTarget = -1;
@@ -2387,7 +2409,7 @@ namespace NPCAttacker.NPCs
 						npc.netUpdate = true;
 					}
 				}
-				//Í¶ÖÀ
+				//æŠ•æ·
 				if (CanAtk && NPCID.Sets.AttackType[npc.type] == 0 && (SomeUtils.AttackMode() || (npc.velocity.Y == 0f && NPCID.Sets.AttackAverageChance[npc.type] > 0 && Main.rand.Next(NPCID.Sets.AttackAverageChance[npc.type] * 2) == 0)))
 				{
 					int AttackTime = NPCID.Sets.AttackTime[npc.type];
@@ -2419,7 +2441,7 @@ namespace NPCAttacker.NPCs
 						npc.netUpdate = true;
 					}
 				}
-				//Ô¶³Ì
+				//è¿œç¨‹
 				else if (CanAtk && NPCID.Sets.AttackType[npc.type] == 1 && (SomeUtils.AttackMode() || (npc.velocity.Y == 0f && NPCID.Sets.AttackAverageChance[npc.type] > 0 && Main.rand.Next(NPCID.Sets.AttackAverageChance[npc.type] * 2) == 0)))
 				{
 					int AttackTime = NPCID.Sets.AttackTime[npc.type];
@@ -2455,7 +2477,7 @@ namespace NPCAttacker.NPCs
 						}
 					}
 				}
-				//Ä§·¨
+				//é­”æ³•
 				if (CanAtk && NPCID.Sets.AttackType[npc.type] == 2 && (SomeUtils.AttackMode() || (npc.velocity.Y == 0f && NPCID.Sets.AttackAverageChance[npc.type] > 0 && Main.rand.Next(NPCID.Sets.AttackAverageChance[npc.type] * 2) == 0)))
 				{
 					int AttackTime = NPCID.Sets.AttackTime[npc.type];
@@ -2496,7 +2518,7 @@ namespace NPCAttacker.NPCs
 						npc.netUpdate = true;
 					}
 				}
-				//½üÕ½
+				//è¿‘æˆ˜
 				if (CanAtk && NPCID.Sets.AttackType[npc.type] == 3 && (SomeUtils.AttackMode() || (npc.velocity.Y == 0f && NPCID.Sets.AttackAverageChance[npc.type] > 0 && Main.rand.Next(NPCID.Sets.AttackAverageChance[npc.type] * 2) == 0)))
 				{
 					int AttackTime = NPCID.Sets.AttackTime[npc.type];
