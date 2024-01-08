@@ -1,0 +1,8 @@
+Use the Commander's Baton, get rid of troubles, and lead the town NPCs to defeat all enemies in front of you!
+You can craft this near a Demon Altar using 
+king statues * 3, queen statues * 3,
+love potions * 10, stink potions * 10,
+and an advanced combat techniques.
+Inspired by Red Alert 2.
+Multiplayer mode is not supported and bugs may exist.
+Have a good time :)

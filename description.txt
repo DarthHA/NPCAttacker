@@ -1,0 +1,19 @@
+Use the Commander's Baton, get rid of troubles, and lead the town NPCs to defeat all enemies in front of you!
+You can craft this near a Demon Altar using 
+[i:476] * 3, [i:477] * 3,
+[i:2352] * 10, [i:2353] * 10,
+and [i:4382].
+Inspired by Red Alert 2.
+Multiplayer mode is not supported and bugs may exist.
+Have a good time :)
+
+
+
+使用指挥棒，摆脱麻烦，领导NPC击败面前的所有敌人！
+你可以在恶魔祭坛旁边用
+[i:476] * 3, [i:477] * 3,
+[i:2352] * 10, [i:2353] * 10,
+和[i:4382]合成。
+灵感来自红色警戒2。
+不支持多人，并且可能存在bug。
+祝你玩的开心:)

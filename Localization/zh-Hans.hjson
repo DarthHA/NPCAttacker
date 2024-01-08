@@ -1,0 +1,220 @@
+Mods: {
+	NPCAttacker: {
+		ItemTooltipExtra:
+			'''
+			[c/00cfcf:鼠标左键] 未选定单位时可以框选城镇NPC，选定单位后可以发送指令，单击敌人位置时令其攻击，或者其他位置令其移动
+			可以单击国王/皇后雕像传送选定单位，击败血肉之墙后冷却减少
+			绿色光标为移动命令，红色为攻击命令，蓝色为传送命令
+			可以单击小地图和全屏地图，在此模式中无法框选NPC，但是可以选定单个城镇NPC发送命令
+			[c/00cfcf:鼠标右键] 取消选定单位
+			[c/00cfcf:{$Mods.NPCAttacker.Keybind.KeyForceAttack}] 按下期间，在使用鼠标左键时可以让选定单位强制攻击指定位置
+			[c/00cfcf:{$Mods.NPCAttacker.Keybind.KeyDisperse}] 按下后使选定单位随机散开
+			[c/00cfcf:{$Mods.NPCAttacker.Keybind.KeyGuard}] 按下后使选定单位进入[c/cf00cf:警戒模式]
+			[c/cf00cf:警戒模式]下无法移动，自动攻击范围内敌人，发送指令后取消
+			[c/00cfcf:{$Mods.NPCAttacker.Keybind.KeyStop}] 按下后使选定单位停止一切指令
+			[c/00cfcf:{$Mods.NPCAttacker.Keybind.KeyF2A}] 第一次按下选定屏幕中所有单位，第二次选定全地图的所有单位
+			全屏地图模式中按下会选定屏幕地图范围内单位
+			[c/00cfcf:{$Mods.NPCAttacker.Keybind.KeyF2A2}] 效果同上，但是只会选择与已选择的单位攻击方式相同的单位
+			[c/00cfcf:{$Mods.NPCAttacker.Keybind.KeyF}] 将视角中心调整到选定单位的中心，再次按下以取消
+			[c/00cfcf:{$Mods.NPCAttacker.Keybind.KeyTeam1}] [c/00cfcf:{$Mods.NPCAttacker.Keybind.KeyTeam2}] [c/00cfcf:{$Mods.NPCAttacker.Keybind.KeyTeam3}] [c/00cfcf:{$Mods.NPCAttacker.Keybind.KeyTeam4}]
+			与 [c/00cfcf:{$Mods.NPCAttacker.Keybind.KeyForceAttack}] 同时按下可以将选定的单位全部编为指定编队，如果选定的单位均属于该编队，则取消它们的编队
+			单独按下可以选定指定编队的所有单位
+			'''
+		ItemTooltipExtra2:
+			'''
+			在背包中时，你可以为城镇NPC装备对应的武器或者物品
+			使用可以框选城镇NPC并发出移动和进攻指令
+			推荐和快捷键使用
+			“正在建立战场控制，请稍后”
+			按下[Shift]来显示具体操作方法
+			'''
+
+		Keybind: {
+			KeyForceAttack: 强制攻击/列队
+			KeyDisperse: 散开人员
+			KeyGuard: 警戒模式
+			KeyStop: 停止命令
+			KeyF2A: 全选
+			KeyF2A2: 选择同类单位
+			KeyF: 单位跟随
+			KeyTeam1: 一号队伍
+			KeyTeam2: 二号队伍
+			KeyTeam3: 三号队伍
+			KeyTeam4: 四号队伍
+		}
+
+		UI: {
+			Arm: 武装
+			RemoveWeapon: 将该物品移除以解除NPC武装
+			PlaceAWeapon: 放置武器来武装该NPC
+			ComplexNote: 注意：NPC难以使用比较特别的武器[i:3541][i:3858]
+			NurseWeapon: 该NPC可以装备足够多的治疗药水来增强效果(>= 30)[i:188]
+			ThrowerWeapon: 该NPC可以装备近战投掷武器[i:284]或者足够多可消耗的远程武器(>= 99或满堆叠)[i:42]
+			RangerWeapon: 该NPC可以装备远程武器[i:533],但你得准备足够多的弹药
+			DryadWeapon: 该NPC可以装备足够多的魔力药水来增强效果(>= 30)[i:189]
+			MagicWeapon: 该NPC可以装备魔法武器[i:1931],但你得准备魔力药水
+			MeleeWeapon: 该NPC可以装备阔剑型的近战武器[i:426]
+			NurseWeaponDescription: 该NPC的治疗量增加了
+			DryadWeaponDescription: 该NPC将会为周围NPC提供额外的攻速，移速，防御力，以及生命恢复
+			SlotsNotAvailable: 不可用
+			AmmosLoaded: 弹药已装填
+			NoWeaponUseAmmos: 请放置对应的武器
+			PlzPutAmmos: 在这里放置对应的弹药（>=999或满堆叠）[i:1302]
+			PlzPutManaPotions: 在这里放置魔力药水（>=30或满堆叠）[i:189]
+			NoWeaponUseManaPotions: 没有装备武器
+			ManaEnough: 魔力足够使用该武器，伤害升高
+			ManaNotEnough: 魔力不足以使用该武器，伤害降低
+			FlaskLoaded: 武器已灌注
+			PlzPutFlasks: 在这里放置药剂（>=30）[i:1354]
+			AltWeaponLoaded: 该NPC将会随机使用副武器
+			PlzPutAltWeapon: 在这里放置不同的副武器
+			// EquipmentLoaded: Dryad will provide more defense to NPCs nearby
+			// PlzPutEquipment: Place defensive equipment[i:90] or accessory[i:156] here
+			BuffPotionsLoadedNurse: 护士的治疗会造成药水的增益效果
+			BuffPotionsLoadedDryad: 树妖的护佑会提供药水的增益效果
+			PlzPutBuffPotions: 在这里放置增益药水（>=30或满堆叠）[i:2349]
+			ArmorLoaded: 该NPC可以抵御更多的伤害
+			PlzPutArmor: 请在这里放置防御性装备[i:90]或饰品[i:156]
+		}
+
+		Configs: {
+			CustomConfig: {
+				DisplayName: 自意义设定
+
+				DamageModifier: {
+					Label: "[i:24]城镇NPC伤害修正"
+					Tooltip: 提高城镇NPC的伤害，最高2000%
+				}
+
+				DRModifier: {
+					Label: "[i:156]城镇NPC减伤修正"
+					Tooltip: 提高城镇NPC的减伤，最高95%
+				}
+
+				SpeedModifier: {
+					Label: "[i:54]城镇NPC移速修正"
+					Tooltip: 提高城镇NPC的移速，最高300%
+				}
+			}
+		}
+
+		PotionExtra: {
+			NPCEffects: "[c/00cfcf:对NPC的效果：]"
+			AmmoReservation: 远程伤害提高 20%
+			Archery: 远程伤害提高 10%，远程弹速提高 10%
+			Battle: 攻击速度提高 10%
+			Calm: 攻击速度降低 10%
+			Endurance: 伤害减免提高 10%
+			FeatherFall: 降低下落速度
+			Flipper: 在水中移动速度提高 50%
+			Hunter: 索敌范围提高 25%
+			Gills: NPC可以在水中呼吸
+			Invisibility: NPC变得隐身，并免疫击退
+			IronSkin: 防御提高 8
+			LifeForce: 最大生命提升 100
+			Lucky: 提高附近玩家幸运
+			MagicPower: 魔法伤害提高 20%
+			ManaRegeneration: 取消魔力不足的伤害惩罚
+			NightOwl: 夜晚索敌范围提高 50%
+			ObsidianSkin: 对熔岩免疫
+			Rage: 暴击率提高 10%
+			Regeneration: 生命再生提高
+			Shine: 使NPC发光
+			Swiftness: 移动速度提高 25%
+			Thorns: 近战攻击者伤害NPC时也会承受一定伤害
+			Titan: 击退提高 50%
+			Inferno: 点燃周围敌人
+			Wrath: 伤害提高 10%
+			Tipsy: 防御降低 4，但近战伤害和攻速提高 10%，近战暴击率提高 2%
+			WellFed1: 防御提高 2，伤害和攻速提高 5%，暴击率提高 2%，移动速度提高 20%
+			WellFed2: 防御提高 3，伤害和攻速提高 7.5%，暴击率提高 3%，移动速度提高 30%
+			WellFed3: 防御提高 4，伤害和攻速提高 10%，暴击率提高 4%，移动速度提高 40%
+		}
+
+		Keybinds: {
+			ForceAttack.DisplayName: 强制攻击/列队
+			DisperseUnits.DisplayName: 散开人员
+			AlertMode.DisplayName: 警戒模式
+			StopCommand.DisplayName: 停止命令
+			SelectAll.DisplayName: 全选
+			SelectTheSameKind.DisplayName: 选择同类单位
+			Team1.DisplayName: 一号队伍
+			Team2.DisplayName: 二号队伍
+			Team3.DisplayName: 三号队伍
+			Team4.DisplayName: 四号队伍
+			FollowUnit.DisplayName: 单位跟随
+		}
+
+		Buffs: {
+			CommandBuff: {
+				DisplayName: 指挥
+				Description: 所有城镇NPC均获得战斗强化，并且你可以武装他们
+			}
+
+			TPCDBuff: {
+				DisplayName: 传送冷却
+				Description: 你现在不能传送城镇NPC
+			}
+		}
+
+		Items: {
+			AdvancedAdvancedCombatTechniques: {
+				DisplayName: 先进先进战斗技术
+				Tooltip: 仅供测试
+			}
+
+			AttackerStick: {
+				DisplayName: 指挥棒
+				Tooltip: ""
+			}
+		}
+
+		NPCs: {
+			AssembleNPC.DisplayName: ""
+			AttackTargetNPC.DisplayName: ""
+			UINPC.DisplayName: ""
+		}
+
+		Projectiles: {
+			ApprenticeStaffT3Proj.DisplayName: ""
+			BlizzardStaffProj.DisplayName: ""
+			BloodRainProj.DisplayName: ""
+			BoomstickProj.DisplayName: ""
+			BubbleGunProj.DisplayName: ""
+			CelebrateProj.DisplayName: ""
+			ChlorophyteShotbowProj.DisplayName: ""
+			ClingerStaffProj.DisplayName: ""
+			ClockworkAssaultRifleProj.DisplayName: ""
+			CrimsonRodProj.DisplayName: ""
+			DaedalusStormbowProj.DisplayName: ""
+			ElectrosphereProj.DisplayName: ""
+			HellwingProj.DisplayName: ""
+			LunarFlareBookProj.DisplayName: ""
+			PrincessWeaponProj.DisplayName: ""
+			QueenLightProj.DisplayName: ""
+			SharpTearProj.DisplayName: ""
+			SparkleGuitarProj.DisplayName: ""
+			MagnetSphereProj.DisplayName: ""
+			MeteorStaffProj.DisplayName: ""
+			NimbusRodProj.DisplayName: ""
+			OnyxBlasterProj.DisplayName: ""
+			PoisonStaffProj.DisplayName: ""
+			BetsyBowProj.DisplayName: ""
+			PewMaticHornProj.DisplayName: ""
+			QuadBarrelShotgunProj.DisplayName: ""
+			RazorpineProj.DisplayName: ""
+			ShotgunProj.DisplayName: ""
+			SkyFractureProj.DisplayName: ""
+			SpiritFlameProj.DisplayName: ""
+			StarfuryProj.DisplayName: ""
+			StarWarthProj.DisplayName: ""
+			TacticalShotgunProj.DisplayName: ""
+			TPLine.DisplayName: ""
+			TsunamiProj.DisplayName: ""
+			VampireKnifeProj.DisplayName: ""
+			VenomStaffProj.DisplayName: ""
+			WarningLine.DisplayName: ""
+			XenopopperProj.DisplayName: ""
+		}
+	}
+}
