@@ -6,6 +6,7 @@ using NPCAttacker.Projectiles;
 using System;
 using Terraria;
 using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace NPCAttacker
 {
@@ -159,6 +160,7 @@ namespace NPCAttacker
         /// <returns></returns>
         public static bool UseWhipWeapon(Item item)
         {
+            if (item.DamageType == DamageClass.SummonMeleeSpeed) return true;
             switch (item.type)
             {
                 case ItemID.BlandWhip:

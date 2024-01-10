@@ -83,7 +83,14 @@ namespace NPCAttacker
             if (!Weapon.IsAir && (Weapon.type == 5129 || Weapon.type == ItemID.RottenEgg))
             {
                 npc.StrikeInstantKill();
-
+            }
+            else if (!WeaponAlt.IsAir && (WeaponAlt.type == 5129 || WeaponAlt.type == ItemID.RottenEgg))
+            {
+                npc.StrikeInstantKill();
+            }
+            else if(!Armor.IsAir && (Armor.type == 5129 || Armor.type == ItemID.RottenEgg))
+            {
+                npc.StrikeInstantKill();
             }
         }
         public override void PostAI(NPC npc)

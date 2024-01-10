@@ -1864,8 +1864,6 @@ namespace NPCAttacker.Override
                         {
                             int num44 = (Npc.type == NPCID.Mechanic) ? Projectile.NewProjectile(Npc.GetSpawnSource_ForProjectile(), Npc.Center.X + Npc.spriteDirection * 16, Npc.Center.Y - 2f, ShootVel.X, ShootVel.Y, ProjType, Damage, knockBack, Main.myPlayer, 0f, Npc.whoAmI, Npc.townNpcVariationIndex) : ((Npc.type != NPCID.SantaClaus) ? Projectile.NewProjectile(Npc.GetSpawnSource_ForProjectile(), Npc.Center.X + Npc.spriteDirection * 16, Npc.Center.Y - 2f, ShootVel.X, ShootVel.Y, ProjType, Damage, knockBack, Main.myPlayer, 0f, 0f, 0f) : Projectile.NewProjectile(Npc.GetSpawnSource_ForProjectile(), Npc.Center.X + Npc.spriteDirection * 16, Npc.Center.Y - 2f, ShootVel.X, ShootVel.Y, ProjType, Damage, knockBack, Main.myPlayer, 0f, Main.rand.Next(5), 0f));
                             Main.projectile[num44].npcProj = true;
-                            Main.projectile[num44].noDropItem = true;
-                            Main.projectile[num44].GetGlobalProjectile<AttackerGProj>().ProjTarget = Target;
 
                             if (Npc.type == NPCID.Golfer)
                             {
@@ -1879,28 +1877,13 @@ namespace NPCAttacker.Override
                                 Item Weapon = ArmedGNPC.GetWeapon(Npc);
                                 int shoot = Weapon.shoot;
                                 Vector2 ShootPos = new(Npc.Center.X + Npc.spriteDirection * 16, Npc.Center.Y - 2f);
-                                if (Weapon.ModItem != null)            //模组武器
-                                {
-                                    CombinedHooks.ModifyShootStats(Main.LocalPlayer, Weapon, ref ShootPos, ref ShootVel, ref shoot, ref Damage, ref knockBack);
-                                    CombinedHooks.Shoot(Main.LocalPlayer, Weapon, null, ShootPos, ShootVel, shoot, Damage, knockBack);
-                                }
-                                else            //原版武器
-                                {
-                                    if (VanillaItemProjFix.TransFormProj(Npc, Weapon.type) != -1)
-                                    {
-                                        shoot = VanillaItemProjFix.TransFormProj(Npc, Weapon.type);
-                                    }
-                                    CombinedHooks.ModifyShootStats(Main.LocalPlayer, Weapon, ref ShootPos, ref ShootVel, ref shoot, ref Damage, ref knockBack);
-                                    if (CombinedHooks.Shoot(Main.LocalPlayer, Weapon, null, ShootPos, ShootVel, shoot, Damage, knockBack))
-                                    {
-                                        Projectile.NewProjectile(null, ShootPos, ShootVel, shoot, Damage, knockBack, Main.myPlayer);
 
-                                    }
-                                }
-
-                                if (Weapon.UseSound != null)
+                                if (ShootSomething(Npc, Weapon, shoot, ShootPos, ShootVel, Damage, knockBack))
                                 {
-                                    SoundEngine.PlaySound(Weapon.UseSound, Npc.Center);
+                                    if (Weapon.UseSound != null)
+                                    {
+                                        SoundEngine.PlaySound(Weapon.UseSound, Npc.Center);
+                                    }
                                 }
                             }
                         }
@@ -1925,28 +1908,12 @@ namespace NPCAttacker.Override
                                 DamageAlt = (int)(DamageAlt * damageMult);
                                 Vector2 ShootVelAlt = Vector2.Normalize(ShootVel) * SpeedAlt;
 
-                                if (AlterWeapon.ModItem != null)            //模组武器
+                                if (ShootSomething(Npc, AlterWeapon, shootAlt, ShootPos, ShootVelAlt, DamageAlt, KnockbackAlt))
                                 {
-                                    CombinedHooks.ModifyShootStats(Main.LocalPlayer, AlterWeapon, ref ShootPos, ref ShootVelAlt, ref shootAlt, ref DamageAlt, ref KnockbackAlt);
-                                    CombinedHooks.Shoot(Main.LocalPlayer, AlterWeapon, null, ShootPos, ShootVelAlt, shootAlt, DamageAlt, KnockbackAlt);
-                                }
-                                else            //原版武器
-                                {
-
-                                    if (VanillaItemProjFix.TransFormProj(Npc, AlterWeapon.type) != -1)
+                                    if (AlterWeapon.UseSound != null)
                                     {
-                                        shootAlt = VanillaItemProjFix.TransFormProj(Npc, AlterWeapon.type);
+                                        SoundEngine.PlaySound(AlterWeapon.UseSound, Npc.Center);
                                     }
-                                    CombinedHooks.ModifyShootStats(Main.LocalPlayer, AlterWeapon, ref ShootPos, ref ShootVelAlt, ref shootAlt, ref DamageAlt, ref KnockbackAlt);
-                                    if (CombinedHooks.Shoot(Main.LocalPlayer, AlterWeapon, null, ShootPos, ShootVelAlt, shootAlt, DamageAlt, KnockbackAlt))
-                                    {
-                                        Projectile.NewProjectile(null, ShootPos, ShootVelAlt, shootAlt, DamageAlt, KnockbackAlt, Main.myPlayer);
-                                    }
-                                }
-
-                                if (AlterWeapon.UseSound != null)
-                                {
-                                    SoundEngine.PlaySound(AlterWeapon.UseSound, Npc.Center);
                                 }
                             }
                         }
@@ -2166,7 +2133,7 @@ namespace NPCAttacker.Override
                     }
                     else if (Npc.type == NPCID.Cyborg)
                     {
-                        ProjType = Terraria.Utils.SelectRandom<int>(Main.rand, new int[]
+                        ProjType = Utils.SelectRandom<int>(Main.rand, new int[]
                         {
                             134,
                             133,
@@ -2244,8 +2211,6 @@ namespace NPCAttacker.Override
                         {
                             int num53 = (Npc.type != NPCID.Painter) ? Projectile.NewProjectile(Npc.GetSpawnSource_ForProjectile(), Npc.Center.X + Npc.spriteDirection * 16, Npc.Center.Y - 2f, ShootVel.X, ShootVel.Y, ProjType, Damage, knockBack, Main.myPlayer, 0f, 0f, 0f) : Projectile.NewProjectile(Npc.GetSpawnSource_ForProjectile(), Npc.Center.X + Npc.spriteDirection * 16, Npc.Center.Y - 2f, ShootVel.X, ShootVel.Y, ProjType, Damage, knockBack, Main.myPlayer, 0f, Main.rand.Next(12) / 6f, 0f);
                             Main.projectile[num53].npcProj = true;
-                            Main.projectile[num53].noDropItem = true;
-                            Main.projectile[num53].GetGlobalProjectile<AttackerGProj>().ProjTarget = Target;
                         }
                         else         //有武器时的发射弹幕
                         {
@@ -2288,29 +2253,17 @@ namespace NPCAttacker.Override
                                 if (shoot > 0)
                                 {
                                     Vector2 ShootPos = new(Npc.Center.X + Npc.spriteDirection * 16, Npc.Center.Y - 2f);
-                                    if (Weapon.ModItem != null)            //模组武器
+
+                                    if (ShootSomething(Npc, Weapon, shoot, ShootPos, ShootVel, Damage, knockBack))
                                     {
-                                        CombinedHooks.ModifyShootStats(Main.LocalPlayer, Weapon, ref ShootPos, ref ShootVel, ref shoot, ref Damage, ref knockBack);
-                                        CombinedHooks.Shoot(Main.LocalPlayer, Weapon, null, ShootPos, ShootVel, shoot, Damage, knockBack);
-                                    }
-                                    else            //原版武器
-                                    {
-                                        if (VanillaItemProjFix.TransFormProj(Npc, Weapon.type) != -1)
+                                        if (Weapon.UseSound != null)
                                         {
-                                            shoot = VanillaItemProjFix.TransFormProj(Npc, Weapon.type);
-                                        }
-                                        CombinedHooks.ModifyShootStats(Main.LocalPlayer, Weapon, ref ShootPos, ref ShootVel, ref shoot, ref Damage, ref knockBack);
-                                        if (CombinedHooks.Shoot(Main.LocalPlayer, Weapon, null, ShootPos, ShootVel, shoot, Damage, knockBack))
-                                        {
-                                            Projectile.NewProjectile(null, ShootPos, ShootVel, shoot, Damage, knockBack, Main.myPlayer);
+                                            SoundEngine.PlaySound(Weapon.UseSound, Npc.Center);
                                         }
                                     }
                                 }
 
-                                if (Weapon.UseSound != null)
-                                {
-                                    SoundEngine.PlaySound(Weapon.UseSound, Npc.Center);
-                                }
+
                             }
                         }
                     }
@@ -2582,27 +2535,13 @@ namespace NPCAttacker.Override
                                 Item Weapon = ArmedGNPC.GetWeapon(Npc);
                                 int shoot = Weapon.shoot;
                                 Vector2 ShootPos = new(Npc.Center.X + Npc.spriteDirection * 16, Npc.Center.Y - 2f);
-                                if (Weapon.ModItem != null)            //模组武器
-                                {
-                                    CombinedHooks.ModifyShootStats(Main.LocalPlayer, Weapon, ref ShootPos, ref ShootVel, ref shoot, ref Damage, ref knockBack);
-                                    CombinedHooks.Shoot(Main.LocalPlayer, Weapon, null, ShootPos, ShootVel, shoot, Damage, knockBack);
-                                }
-                                else            //原版武器
-                                {
-                                    if (VanillaItemProjFix.TransFormProj(Npc, Weapon.type) != -1)
-                                    {
-                                        shoot = VanillaItemProjFix.TransFormProj(Npc, Weapon.type);
-                                    }
-                                    CombinedHooks.ModifyShootStats(Main.LocalPlayer, Weapon, ref ShootPos, ref ShootVel, ref shoot, ref Damage, ref knockBack);
-                                    if (CombinedHooks.Shoot(Main.LocalPlayer, Weapon, null, ShootPos, ShootVel, shoot, Damage, knockBack))
-                                    {
-                                        Projectile.NewProjectile(null, ShootPos, ShootVel, shoot, Damage, knockBack, Main.myPlayer);
-                                    }
-                                }
 
-                                if (Weapon.UseSound != null)
+                                if (ShootSomething(Npc, Weapon, shoot, ShootPos, ShootVel, Damage, knockBack))
                                 {
-                                    SoundEngine.PlaySound(Weapon.UseSound, Npc.Center);
+                                    if (Weapon.UseSound != null)
+                                    {
+                                        SoundEngine.PlaySound(Weapon.UseSound, Npc.Center);
+                                    }
                                 }
                             }
                         }
@@ -2832,24 +2771,7 @@ namespace NPCAttacker.Override
                                             }
                                         }
 
-
-                                        if (Weapon.ModItem != null)            //模组武器
-                                        {
-                                            CombinedHooks.ModifyShootStats(Main.LocalPlayer, Weapon, ref ShootPos, ref ShootVel, ref shoot, ref Damage, ref knockBack);
-                                            CombinedHooks.Shoot(Main.LocalPlayer, Weapon, null, ShootPos, ShootVel, shoot, Damage, knockBack);
-                                        }
-                                        else            //原版武器
-                                        {
-                                            if (VanillaItemProjFix.TransFormProj(Npc, Weapon.type) != -1)
-                                            {
-                                                shoot = VanillaItemProjFix.TransFormProj(Npc, Weapon.type);
-                                            }
-                                            CombinedHooks.ModifyShootStats(Main.LocalPlayer, Weapon, ref ShootPos, ref ShootVel, ref shoot, ref Damage, ref knockBack);
-                                            if (CombinedHooks.Shoot(Main.LocalPlayer, Weapon, null, ShootPos, ShootVel, shoot, Damage, knockBack))
-                                            {
-                                                Projectile.NewProjectile(null, ShootPos, ShootVel, shoot, Damage, knockBack, Main.myPlayer);
-                                            }
-                                        }
+                                        ShootSomething(Npc, Weapon, shoot, ShootPos, ShootVel, Damage, knockBack);
                                     }
                                 }
                             }
@@ -3782,6 +3704,28 @@ namespace NPCAttacker.Override
             {
                 return NPCID.Sets.AttackAverageChance[npc.type] > 0 && Main.rand.NextBool(NPCID.Sets.AttackAverageChance[npc.type] * 2);
             }
+        }
+
+        private static bool ShootSomething(NPC npc, Item weapon, int shoot, Vector2 ShootPos, Vector2 ShootVel, int Damage, float Knockback)
+        {
+            if (weapon.ModItem == null)            //原版武器弹幕修正
+            {
+                int transformType = VanillaItemProjFix.TransFormProj(npc, weapon.type);
+                if (transformType != -1)
+                {
+                    shoot = transformType;
+                }
+            }
+            if (ItemLoader.CanUseItem(weapon, Main.LocalPlayer) && ItemLoader.CanShoot(weapon, Main.LocalPlayer))
+            {
+                ItemLoader.ModifyShootStats(weapon, Main.LocalPlayer, ref ShootPos, ref ShootVel, ref shoot, ref Damage, ref Knockback);
+                if (ItemLoader.Shoot(weapon, Main.LocalPlayer, null, ShootPos, ShootVel, shoot, Damage, Knockback))
+                {
+                    Projectile.NewProjectile(null, ShootPos, ShootVel, shoot, Damage, Knockback, Main.myPlayer);
+                }
+                return true;
+            }
+            return false;
         }
 
     }

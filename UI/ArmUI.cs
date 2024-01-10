@@ -25,11 +25,13 @@ namespace NPCAttacker.UI
             Append(_vanillaItemSlot);
         }
 
-        public bool ValidItem(Item item)
+        public static bool ValidItem(Item item)
         {
             if (item.IsAir) return true;
+            if (item.type == 5129 || item.type == ItemID.RottenEgg) return true;
             if (item.useStyle == ItemUseStyleID.None) return false;
-            if (Main.LocalPlayer.talkNPC == -1) return true;
+            if (Main.LocalPlayer.talkNPC == -1) return false;
+
             NPC npc = Main.npc[Main.LocalPlayer.talkNPC];
             if (NPCID.Sets.AttackType[npc.type] == 0)               //投掷类武器
             {
@@ -55,14 +57,15 @@ namespace NPCAttacker.UI
                     if (WeaponClassify.UseFlailWeapon2(item)) return true;
                 }
                 else
-                {
-                    //可消耗类多堆叠远程和近战武器
-                    if (item.DamageType == DamageClass.Ranged && item.stack >= Math.Min(99, item.maxStack) && item.consumable && item.stack > 1) return true;
-                    if (item.DamageType == DamageClass.Melee && item.stack >= Math.Min(99, item.maxStack) && item.consumable && item.stack > 1) return true;
+                {                    
                     //悠悠球
                     if (ItemID.Sets.Yoyo[item.type]) return true;
+                    if (ItemID.Sets.Spears[item.type]) return false;
+                    //可消耗类多堆叠远程和近战武器
+                    if (item.DamageType == DamageClass.Ranged && item.stack >= Math.Min(99, item.maxStack) && item.consumable && item.stack > 1) return true;
+                    if ((item.DamageType == DamageClass.Melee || item.DamageType == DamageClass.MeleeNoSpeed) && item.stack >= Math.Min(99, item.maxStack) && item.consumable && item.stack > 1) return true;
                     //非矛挥舞无近战判定武器
-                    if (item.DamageType == DamageClass.Melee && !ItemID.Sets.Spears[item.type] && item.useStyle == ItemUseStyleID.Swing && item.noMelee) return true;
+                    if ((item.DamageType == DamageClass.Melee || item.DamageType == DamageClass.MeleeNoSpeed) && (item.useStyle == ItemUseStyleID.Swing || item.useStyle == ItemUseStyleID.Shoot) && item.noUseGraphic) return true;
                 }
                 return false;
             }

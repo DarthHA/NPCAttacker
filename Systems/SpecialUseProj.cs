@@ -21,9 +21,14 @@ namespace NPCAttacker.Systems
                 if (Main.npc[NPCAttacker.SpawnForNPCIndex].active)
                 {
                     NPC owner = Main.npc[NPCAttacker.SpawnForNPCIndex];
-                    projectile.GetGlobalProjectile<AttackerGProj>().ProjTarget = owner.GetGlobalNPC<ArmedGNPC>().NPCTargetForSpecialUse;       //给弹幕一个目标
-
-                    projectile.GetGlobalProjectile<SpecialUseProj>().ChannelTimer = NPCAttacker.SpawnForChannelTime;
+                    if(projectile.TryGetGlobalProjectile(out AttackerGProj modproj1)) 
+                    {
+                        modproj1.ProjTarget = owner.GetGlobalNPC<ArmedGNPC>().NPCTargetForSpecialUse;       //给弹幕一个目标
+                    }
+                    if (projectile.TryGetGlobalProjectile(out SpecialUseProj modproj2))
+                    {
+                        modproj2.ChannelTimer = NPCAttacker.SpawnForChannelTime;           //预设蓄力时间
+                    }
 
                     int CritChance = 0;
                     if (!ArmedGNPC.GetWeapon(owner).IsAir)

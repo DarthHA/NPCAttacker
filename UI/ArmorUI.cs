@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using Terraria;
+using Terraria.ID;
 using Terraria.UI;
 using Terraria.UI.Chat;
 
@@ -27,6 +28,7 @@ namespace NPCAttacker.UI
         public bool ValidItem(Item item)
         {
             if (item.IsAir) return true;
+            if (item.type == 5129 || item.type == ItemID.RottenEgg) return true;
             if (Main.LocalPlayer.talkNPC == -1) return false;
 
             return item.defense > 0;

@@ -16,14 +16,18 @@ namespace NPCAttacker
             {
                 if (proj.active)
                 {
-                    if (proj.GetGlobalProjectile<SpecialUseProj>().NPCProjOwner == npc.whoAmI && proj.GetGlobalProjectile<SpecialUseProj>().ChannelTimer >= 0)
+                    if(proj.TryGetGlobalProjectile(out SpecialUseProj modproj))
                     {
-                        result = true;
-                        if (proj.GetGlobalProjectile<SpecialUseProj>().ChannelTimer > 0)
+                        if (modproj.NPCProjOwner == npc.whoAmI && modproj.ChannelTimer >= 0)
                         {
-                            proj.GetGlobalProjectile<SpecialUseProj>().ChannelTimer = (int)(NPCStats.GetModifiedAttackTime(npc) * (NeedBreakChannel(ArmedGNPC.GetWeapon(npc)) ? 0.75f : 1.5f));
+                            result = true;
+                            if (modproj.ChannelTimer > 0)
+                            {
+                                modproj.ChannelTimer = (int)(NPCStats.GetModifiedAttackTime(npc) * (NeedBreakChannel(ArmedGNPC.GetWeapon(npc)) ? 0.75f : 1.5f));
+                            }
                         }
                     }
+
                 }
             }
             return result;

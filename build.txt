@@ -1,5 +1,5 @@
 displayName = Command NPCs(指挥NPC)
 author = Volknet_Online
-version = 0.9
+version = 0.10
 homepage = https://space.bilibili.com/442236013
 includeSource = true

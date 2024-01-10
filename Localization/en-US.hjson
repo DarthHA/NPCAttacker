@@ -67,7 +67,7 @@ Mods: {
 			FlaskLoaded: Weapon imbued
 			PlzPutFlasks: Place flasks here(>=30)[i:1354]
 			AltWeaponLoaded: This NPC will use alt-weapon randomly
-			PlzPutAltWeapon: Place different alt-weapon here
+			PlzPutAltWeapon: Place different alt-weapon here (Alt-weapon cannot charge)
 			EquipmentLoaded: Dryad will provide more defense to NPCs nearby
 			PlzPutEquipment: Place defensive equipment[i:90] or accessory[i:156] here
 			BuffPotionsLoadedNurse: Nurse's heal will inflict the buff of potions
@@ -75,6 +75,9 @@ Mods: {
 			PlzPutBuffPotions: Place buff potions here(>=30 or max stack)[i:2349]
 			ArmorLoaded: This NPC will resist more damage
 			PlzPutArmor: Place defensive equipment[i:90] or accessory[i:156] here
+			CanUseNormal: This weapon is suitable for {0}
+			CanUsePotion: These potions are suitable for {0}
+			CanUseKill: This item is suitable for {0}...?
 		}
 
 		Configs: {
