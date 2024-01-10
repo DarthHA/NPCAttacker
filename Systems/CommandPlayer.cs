@@ -9,7 +9,7 @@ using Terraria.GameInput;
 using Terraria.ID;
 using Terraria.ModLoader;
 
-namespace NPCAttacker
+namespace NPCAttacker.Systems
 {
     public class CommandPlayer : ModPlayer
     {

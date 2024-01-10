@@ -6,6 +6,7 @@ namespace NPCAttacker.Projectiles
 {
     public class PoisonStaffProj : BaseAtkProj
     {
+        public override int ItemType => ItemID.PoisonStaff;
         public override void AttackEffect()
         {
             int num139 = 3;

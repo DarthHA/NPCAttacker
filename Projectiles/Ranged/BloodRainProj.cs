@@ -6,6 +6,7 @@ namespace NPCAttacker.Projectiles
 {
     public class BloodRainProj : BaseAtkProj
     {
+        public override int ItemType => ItemID.BloodRainBow;
         public override void AttackEffect()
         {
 

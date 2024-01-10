@@ -6,6 +6,7 @@ namespace NPCAttacker.Projectiles
 {
     public class OnyxBlasterProj : BaseAtkProj
     {
+        public override int ItemType => ItemID.OnyxBlaster;
         public override void AttackEffect()
         {
             int ammo = VanillaItemProjFix.AmmoType;

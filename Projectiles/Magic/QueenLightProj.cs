@@ -7,6 +7,7 @@ namespace NPCAttacker.Projectiles.Magic
 {
     public class QueenLightProj : BaseAtkProj
     {
+        public override int ItemType => ItemID.FairyQueenMagicItem;
         public override void AttackEffect()
         {
             if (Main.rand.Next(4) < 3) return;

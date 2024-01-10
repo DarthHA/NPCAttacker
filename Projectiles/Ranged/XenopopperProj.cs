@@ -5,6 +5,7 @@ namespace NPCAttacker.Projectiles
 {
     public class XenopopperProj : BaseAtkProj
     {
+        public override int ItemType => ItemID.Xenopopper;
         public override void AttackEffect()
         {
 

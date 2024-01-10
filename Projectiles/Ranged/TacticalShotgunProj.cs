@@ -1,9 +1,11 @@
 ﻿using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.ID;
 namespace NPCAttacker.Projectiles
 {
     public class TacticalShotgunProj : BaseAtkProj
     {
+        public override int ItemType => ItemID.TacticalShotgun;
         public override void AttackEffect()
         {
             int ammo = VanillaItemProjFix.AmmoType;

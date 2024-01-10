@@ -5,6 +5,7 @@ namespace NPCAttacker.Projectiles
 {
     public class RazorpineProj : BaseAtkProj
     {
+        public override int ItemType => ItemID.Razorpine;
         public override void AttackEffect()
         {
             int num106 = 2 + Main.rand.Next(3);

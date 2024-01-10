@@ -240,6 +240,7 @@ namespace NPCAttacker
             if (!ArmedGNPC.GetWeapon(npc).IsAir && npc.type != NPCID.Nurse && npc.type != NPCID.Dryad)
             {
                 result = ArmedGNPC.GetWeapon(npc).useTime;
+
                 if (NPCID.Sets.AttackType[npc.type] == 3) //挥舞武器使用时间大于原有的NPC攻击时间时会炸，只能这样了
                 {
                     if (result > NPCID.Sets.AttackTime[npc.type]) result = NPCID.Sets.AttackTime[npc.type];
@@ -251,6 +252,8 @@ namespace NPCAttacker
             }
             return result;
         }
+
+   
 
         public static void ModifySpeed(NPC npc, ref float Speed, ref float Acc)
         {

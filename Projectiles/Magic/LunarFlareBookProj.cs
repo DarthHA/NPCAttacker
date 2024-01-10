@@ -6,6 +6,7 @@ namespace NPCAttacker.Projectiles
 {
     public class LunarFlareBookProj : BaseAtkProj
     {
+        public override int ItemType => ItemID.LunarFlareBook;
         public override void AttackEffect()
         {
             if (HasValidTarget())

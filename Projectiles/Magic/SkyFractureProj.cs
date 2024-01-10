@@ -5,6 +5,7 @@ namespace NPCAttacker.Projectiles
 {
     public class SkyFractureProj : BaseAtkProj
     {
+        public override int ItemType => ItemID.SkyFracture;
         public override void AttackEffect()
         {
             if (HasValidTarget())

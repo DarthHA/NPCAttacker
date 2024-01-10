@@ -6,6 +6,8 @@ namespace NPCAttacker.Projectiles
 {
     public class ApprenticeStaffT3Proj : BaseAtkProj
     {
+        public override int ItemType => ItemID.ApprenticeStaffT3;
+
         public override void AttackEffect()
         {
             Vector2 value5 = Vector2.Normalize(Projectile.velocity) * 40f;

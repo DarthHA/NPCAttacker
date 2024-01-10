@@ -53,7 +53,7 @@ Mods: {
 			RangerWeapon: This NPC can be equipped with ranged weapon[i:533],but you need to prepare enough ammos for it
 			DryadWeapon: This NPC can be equipped with enough mana potion(>= 30) to enhance effects[i:189]
 			MagicWeapon: This NPC can be equipped with magic weapon[i:1931], but you need to prepare mana potions for it
-			MeleeWeapon: This NPC can be equipped with broadsword-like melee weapon[i:426]
+			MeleeWeapon: This NPC can be equipped with broadsword-like melee weapon[i:426] or whip[i:4672]
 			NurseWeaponDescription: The healing amount of this NPC increases
 			DryadWeaponDescription: This NPC will provide extra attack and movement speed, defense, and life regen to NPCs nearby
 			SlotsNotAvailable: Not Available
@@ -176,45 +176,55 @@ Mods: {
 		}
 
 		Projectiles: {
-			ApprenticeStaffT3Proj.DisplayName: Apprentice Staff T3 Proj
-			BlizzardStaffProj.DisplayName: Blizzard Staff Proj
-			BloodRainProj.DisplayName: Blood Rain Proj
-			BoomstickProj.DisplayName: Boomstick Proj
-			BubbleGunProj.DisplayName: Bubble Gun Proj
-			CelebrateProj.DisplayName: Celebrate Proj
-			ChlorophyteShotbowProj.DisplayName: Chlorophyte Shotbow Proj
-			ClingerStaffProj.DisplayName: Clinger Staff Proj
-			ClockworkAssaultRifleProj.DisplayName: Clockwork Assault Rifle Proj
-			CrimsonRodProj.DisplayName: Crimson Rod Proj
-			DaedalusStormbowProj.DisplayName: Daedalus Stormbow Proj
-			ElectrosphereProj.DisplayName: Electrosphere Proj
-			HellwingProj.DisplayName: Hellwing Proj
-			LunarFlareBookProj.DisplayName: Lunar Flare Book Proj
-			PrincessWeaponProj.DisplayName: Princess Weapon Proj
-			QueenLightProj.DisplayName: Queen Light Proj
-			SharpTearProj.DisplayName: Sharp Tear Proj
-			SparkleGuitarProj.DisplayName: Sparkle Guitar Proj
-			MagnetSphereProj.DisplayName: Magnet Sphere Proj
-			MeteorStaffProj.DisplayName: Meteor Staff Proj
-			NimbusRodProj.DisplayName: Nimbus Rod Proj
-			OnyxBlasterProj.DisplayName: Onyx Blaster Proj
-			PoisonStaffProj.DisplayName: Poison Staff Proj
-			BetsyBowProj.DisplayName: Betsy Bow Proj
-			PewMaticHornProj.DisplayName: Pew Matic Horn Proj
-			QuadBarrelShotgunProj.DisplayName: Quad Barrel Shotgun Proj
-			RazorpineProj.DisplayName: Razorpine Proj
-			ShotgunProj.DisplayName: Shotgun Proj
-			SkyFractureProj.DisplayName: Sky Fracture Proj
-			SpiritFlameProj.DisplayName: Spirit Flame Proj
-			StarfuryProj.DisplayName: Starfury Proj
-			StarWarthProj.DisplayName: Star Warth Proj
-			TacticalShotgunProj.DisplayName: Tactical Shotgun Proj
-			TPLine.DisplayName: T P Line
-			TsunamiProj.DisplayName: Tsunami Proj
-			VampireKnifeProj.DisplayName: Vampire Knife Proj
-			VenomStaffProj.DisplayName: Venom Staff Proj
-			WarningLine.DisplayName: Warning Line
-			XenopopperProj.DisplayName: Xenopopper Proj
+			ApprenticeStaffT3Proj.DisplayName: ""
+			BlizzardStaffProj.DisplayName: ""
+			BloodRainProj.DisplayName: ""
+			BoomstickProj.DisplayName: ""
+			BubbleGunProj.DisplayName: ""
+			CelebrateProj.DisplayName: ""
+			ChlorophyteShotbowProj.DisplayName: ""
+			ClingerStaffProj.DisplayName: ""
+			ClockworkAssaultRifleProj.DisplayName: ""
+			CrimsonRodProj.DisplayName: ""
+			DaedalusStormbowProj.DisplayName: ""
+			ElectrosphereProj.DisplayName: ""
+			HellwingProj.DisplayName: ""
+			LunarFlareBookProj.DisplayName: ""
+			PrincessWeaponProj.DisplayName: ""
+			QueenLightProj.DisplayName: ""
+			SharpTearProj.DisplayName: ""
+			SparkleGuitarProj.DisplayName: ""
+			MagnetSphereProj.DisplayName: ""
+			MeteorStaffProj.DisplayName: ""
+			NimbusRodProj.DisplayName: ""
+			OnyxBlasterProj.DisplayName: ""
+			PoisonStaffProj.DisplayName: ""
+			BetsyBowProj.DisplayName: ""
+			PewMaticHornProj.DisplayName: ""
+			QuadBarrelShotgunProj.DisplayName: ""
+			RazorpineProj.DisplayName: ""
+			ShotgunProj.DisplayName: ""
+			SkyFractureProj.DisplayName: ""
+			SpiritFlameProj.DisplayName: ""
+			StarfuryProj.DisplayName: ""
+			StarWarthProj.DisplayName: ""
+			TacticalShotgunProj.DisplayName: ""
+			TPLine.DisplayName: ""
+			TsunamiProj.DisplayName: ""
+			VampireKnifeProj.DisplayName: ""
+			VenomStaffProj.DisplayName: ""
+			WarningLine.DisplayName: ""
+			XenopopperProj.DisplayName: ""
+			GrassSwordProj.DisplayName: ""
+			LightBaneProj.DisplayName: ""
+			NightEdgeProj.DisplayName: ""
+			TrueNightEdgeProj.DisplayName: ""
+			TrueEXSwordProj.DisplayName: ""
+			TerraBladeProj.DisplayName: ""
+			EXSwordProj.DisplayName: ""
+			ZenithProj.DisplayName: ""
+			PumpkinSwordProj.DisplayName: ""
+			BlueFireProj.DisplayName: ""
 		}
 	}
 }

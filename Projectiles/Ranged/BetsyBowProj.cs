@@ -5,8 +5,10 @@ using Terraria.ID;
 
 namespace NPCAttacker.Projectiles.Ranged
 {
+
     public class BetsyBowProj : BaseAtkProj
     {
+        public override int ItemType => ItemID.DD2BetsyBow;
         public override void AttackEffect()
         {
             Vector2 vector52 = Projectile.velocity;

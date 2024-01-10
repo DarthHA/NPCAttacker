@@ -1,4 +1,5 @@
 ﻿using NPCAttacker.Projectiles.Magic;
+using NPCAttacker.Projectiles.Melee;
 using NPCAttacker.Projectiles.Ranged;
 using System.Collections.Generic;
 using Terraria;
@@ -9,11 +10,21 @@ namespace NPCAttacker.Projectiles
 {
     public static class VanillaItemProjFix
     {
-        public static Dictionary<int, int> ItemToProj = new Dictionary<int, int>();
+        public static Dictionary<int, int> ItemToProj = new();
 
         public static int AmmoType = 0;
         public static void Load()
         {
+
+            ItemToProj.Add(ItemID.Zenith, ModContent.ProjectileType<ZenithProj>());
+            ItemToProj.Add(ItemID.TerraBlade, ModContent.ProjectileType<TerraBladeProj>());
+            ItemToProj.Add(ItemID.TrueExcalibur, ModContent.ProjectileType<TrueEXSwordProj>());
+            ItemToProj.Add(ItemID.TrueNightsEdge, ModContent.ProjectileType<TrueNightEdgeProj>());
+            ItemToProj.Add(ItemID.Excalibur, ModContent.ProjectileType<EXSwordProj>());
+            ItemToProj.Add(ItemID.NightsEdge, ModContent.ProjectileType<NightEdgeProj>());
+            ItemToProj.Add(ItemID.LightsBane, ModContent.ProjectileType<LightBaneProj>());
+            ItemToProj.Add(190, ModContent.ProjectileType<GrassSwordProj>());
+            ItemToProj.Add(1826, ModContent.ProjectileType<PumpkinSwordProj>());
             ItemToProj.Add(ItemID.Starfury, ModContent.ProjectileType<StarfuryProj>());
             ItemToProj.Add(ItemID.StarWrath, ModContent.ProjectileType<StarWarthProj>());
             ItemToProj.Add(ItemID.VampireKnives, ModContent.ProjectileType<VampireKnifeProj>());
@@ -32,6 +43,9 @@ namespace NPCAttacker.Projectiles
             ItemToProj.Add(ItemID.Tsunami, ModContent.ProjectileType<TsunamiProj>());
             ItemToProj.Add(ItemID.Xenopopper, ModContent.ProjectileType<XenopopperProj>());
             ItemToProj.Add(ItemID.TacticalShotgun, ModContent.ProjectileType<TacticalShotgunProj>());
+            ItemToProj.Add(ItemID.Toxikarp, ProjectileID.ToxicBubble);
+            ItemToProj.Add(ItemID.Harpoon, ProjectileID.Harpoon);
+            ItemToProj.Add(1910, ModContent.ProjectileType<BlueFireProj>());  //精灵熔炉
 
             ItemToProj.Add(ItemID.ApprenticeStaffT3, ModContent.ProjectileType<ApprenticeStaffT3Proj>());
             ItemToProj.Add(ItemID.BlizzardStaff, ModContent.ProjectileType<BlizzardStaffProj>());
@@ -52,6 +66,20 @@ namespace NPCAttacker.Projectiles
             ItemToProj.Add(ItemID.SpiritFlame, ModContent.ProjectileType<SpiritFlameProj>());
             ItemToProj.Add(ItemID.LunarFlareBook, ModContent.ProjectileType<LunarFlareBookProj>());
 
+            /*
+            ItemToProj = new();
+            foreach (Type type in AssemblyManager.GetLoadableTypes(NPCAttacker.Instance.Code))
+            {
+                if (type.IsSubclassOf(typeof(BaseAtkProj)) && !type.IsAbstract && type != typeof(BaseAtkProj))
+                {
+                    BaseAtkProj instance = (BaseAtkProj)FormatterServices.GetUninitializedObject(type);
+                    if (instance.ItemType != 0)
+                    {
+                        ItemToProj.Add(instance.ItemType, instance.Type);
+                    }
+                }
+            }
+            */
 
         }
 
@@ -222,7 +250,6 @@ namespace NPCAttacker.Projectiles
                     break;
             }
         }
-
 
 
         public static int[] IsUseSpecialProj = ItemID.Sets.Factory.CreateIntSet(0, new int[]

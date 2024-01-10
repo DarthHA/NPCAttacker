@@ -11,6 +11,7 @@ namespace NPCAttacker.Projectiles
     {
         public override bool InstancePerEntity => true;
         public int ProjTarget = -1;
+        public int FlaskBuffID = -1;
 
         public override bool PreAI(Projectile projectile)
         {
@@ -99,9 +100,9 @@ namespace NPCAttacker.Projectiles
                 return false;
             }
 
-            if (projectile.npcProj)
+            if (NPCUtils.BuffNPC())
             {
-                if (projectile.maxPenetrate != 1)
+                if (projectile.npcProj)
                 {
                     if (!projectile.usesIDStaticNPCImmunity)
                     {
@@ -109,7 +110,11 @@ namespace NPCAttacker.Projectiles
                         projectile.idStaticNPCHitCooldown = 10;
                     }
                 }
+            }
 
+            /*
+            if (projectile.npcProj)
+            {                
                 if (projectile.type == ProjectileID.BloodCloudRaining || projectile.type == ProjectileID.RainCloudRaining)
                 {
 
@@ -172,7 +177,7 @@ namespace NPCAttacker.Projectiles
                     return false;
                 }
 
-                if (projectile.type == ProjectileID.ClingerStaff)
+                else if (projectile.type == ProjectileID.ClingerStaff)
                 {
                     projectile.position.Y = projectile.ai[0];
                     projectile.height = (int)projectile.ai[1];
@@ -205,7 +210,7 @@ namespace NPCAttacker.Projectiles
                     return false;
                 }
 
-                if (projectile.type == ProjectileID.MagnetSphereBall)
+                else if (projectile.type == ProjectileID.MagnetSphereBall)
                 {
                     if (projectile.ai[0] == 0f)
                     {
@@ -286,7 +291,9 @@ namespace NPCAttacker.Projectiles
                     }
                     return false;
                 }
+                
             }
+            */
             return true;
         }
 
@@ -317,6 +324,7 @@ namespace NPCAttacker.Projectiles
                     }
                 }
             }
+
         }
 
         public override void ModifyHitNPC(Projectile projectile, NPC target, ref NPC.HitModifiers modifiers)
@@ -328,6 +336,11 @@ namespace NPCAttacker.Projectiles
                     if (Main.rand.Next(100) < projectile.CritChance)
                     {
                         modifiers.SetCrit();
+                    }
+
+                    if (FlaskBuffID != 0)
+                    {
+                        NPCUtils.FlaskToDebuff(target, FlaskBuffID);
                     }
                 }
             }

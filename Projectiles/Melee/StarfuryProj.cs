@@ -6,6 +6,7 @@ namespace NPCAttacker.Projectiles
 {
     public class StarfuryProj : BaseAtkProj
     {
+        public override int ItemType => ItemID.Starfury;
         public override void AttackEffect()
         {
             Vector2 Pos = GetTargetPos();

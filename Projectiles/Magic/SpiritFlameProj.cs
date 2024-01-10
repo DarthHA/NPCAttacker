@@ -5,6 +5,7 @@ namespace NPCAttacker.Projectiles
 {
     public class SpiritFlameProj : BaseAtkProj
     {
+        public override int ItemType => ItemID.SpiritFlame;
         public override void AttackEffect()
         {
             if (HasValidTarget())

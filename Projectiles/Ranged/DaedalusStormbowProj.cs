@@ -1,10 +1,12 @@
 ﻿using Microsoft.Xna.Framework;
 using System;
 using Terraria;
+using Terraria.ID;
 namespace NPCAttacker.Projectiles
 {
     public class DaedalusStormbowProj : BaseAtkProj
     {
+        public override int ItemType => ItemID.DaedalusStormbow;
         public override void AttackEffect()
         {
             if (HasValidTarget())

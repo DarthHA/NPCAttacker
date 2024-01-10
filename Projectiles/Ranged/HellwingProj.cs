@@ -5,6 +5,7 @@ namespace NPCAttacker.Projectiles
 {
     public class HellwingProj : BaseAtkProj
     {
+        public override int ItemType => ItemID.HellwingBow;
         public override void AttackEffect()
         {
             Vector2 vector9 = Projectile.velocity;

@@ -53,7 +53,7 @@ Mods: {
 			RangerWeapon: 该NPC可以装备远程武器[i:533],但你得准备足够多的弹药
 			DryadWeapon: 该NPC可以装备足够多的魔力药水来增强效果(>= 30)[i:189]
 			MagicWeapon: 该NPC可以装备魔法武器[i:1931],但你得准备魔力药水
-			MeleeWeapon: 该NPC可以装备阔剑型的近战武器[i:426]
+			MeleeWeapon: 该NPC可以装备阔剑型的近战武器[i:426]或者鞭子[i:4672]
 			NurseWeaponDescription: 该NPC的治疗量增加了
 			DryadWeaponDescription: 该NPC将会为周围NPC提供额外的攻速，移速，防御力，以及生命恢复
 			SlotsNotAvailable: 不可用
@@ -68,8 +68,8 @@ Mods: {
 			PlzPutFlasks: 在这里放置药剂（>=30）[i:1354]
 			AltWeaponLoaded: 该NPC将会随机使用副武器
 			PlzPutAltWeapon: 在这里放置不同的副武器
-			// EquipmentLoaded: Dryad will provide more defense to NPCs nearby
-			// PlzPutEquipment: Place defensive equipment[i:90] or accessory[i:156] here
+			EquipmentLoaded: 树妖将会为周围的的NPC提供更多防御
+			PlzPutEquipment: 请在这里放置防御性装备[i:90]或饰品[i:156]
 			BuffPotionsLoadedNurse: 护士的治疗会造成药水的增益效果
 			BuffPotionsLoadedDryad: 树妖的护佑会提供药水的增益效果
 			PlzPutBuffPotions: 在这里放置增益药水（>=30或满堆叠）[i:2349]
@@ -215,6 +215,16 @@ Mods: {
 			VenomStaffProj.DisplayName: ""
 			WarningLine.DisplayName: ""
 			XenopopperProj.DisplayName: ""
+			GrassSwordProj.DisplayName: ""
+			LightBaneProj.DisplayName: ""
+			NightEdgeProj.DisplayName: ""
+			TrueNightEdgeProj.DisplayName: ""
+			TrueEXSwordProj.DisplayName: ""
+			TerraBladeProj.DisplayName: ""
+			EXSwordProj.DisplayName: ""
+			ZenithProj.DisplayName: ""
+			PumpkinSwordProj.DisplayName: ""
+			BlueFireProj.DisplayName: ""
 		}
 	}
 }

@@ -388,8 +388,8 @@ namespace NPCAttacker.Override
                 hitbox.Y += 20;
                 hitbox.Height -= 20;
                 float num5 = Main.rand.NextFloatDirection();
-                Lighting.AddLight(Npc.Center, Main.hslToRgb((float)Main.timeForVisualEffects / 360f % 1f, 0.6f, 0.65f, byte.MaxValue).ToVector3() * Utils.Remap(Npc.ai[1], 30f, 90f, 0f, 0.7f, true));
-                if (Main.rand.NextFloat() > Utils.Remap(Npc.ai[1], 30f, 60f, 1f, 0.5f, true))
+                Lighting.AddLight(Npc.Center, Main.hslToRgb((float)Main.timeForVisualEffects / 360f % 1f, 0.6f, 0.65f, byte.MaxValue).ToVector3() * Terraria.Utils.Remap(Npc.ai[1], 30f, 90f, 0f, 0.7f, true));
+                if (Main.rand.NextFloat() > Terraria.Utils.Remap(Npc.ai[1], 30f, 60f, 1f, 0.5f, true))
                 {
                     Dust.NewDustPerfect(Main.rand.NextVector2FromRectangle(hitbox) + Main.rand.NextVector2Circular(8f, 0f) + new Vector2(0f, 4f), 309, new Vector2?(new Vector2(0f, -2f).RotatedBy((double)(num5 * 6.2831855f * 0.11f), default)), 0, default, 1.7f - Math.Abs(num5) * 1.3f);
                 }
@@ -613,12 +613,7 @@ namespace NPCAttacker.Override
                 bool IsPet = NPCID.Sets.IsTownPet[Npc.type];
                 bool IsWaterAnimal = IsTurtle || IsFrog;
                 bool IsWaterAnimal2 = IsTurtle || IsFrog;
-                float DangerDetectRange = 200f;
-
-                if (NPCID.Sets.DangerDetectRange[Npc.type] != -1)        //猎人药水
-                {
-                    DangerDetectRange = NPCID.Sets.DangerDetectRange[Npc.type];
-                }
+                float DangerDetectRange = DangerDetectRange = NPCUtils.GetDangerDetectRange(Npc);//猎人药水
 
                 bool HasTarget = false;
                 bool HasTarget2 = false;
@@ -1822,8 +1817,8 @@ namespace NPCAttacker.Override
                     }
                     NPCLoader.TownNPCAttackStrength(Npc, ref Damage, ref knockBack);
                     NPCLoader.TownNPCAttackCooldown(Npc, ref AttackCooldown, ref RandomAttackCooldown);
-                    NPCLoader.TownNPCAttackProj(Npc, ref ProjType, ref attackDelay);
                     NPCLoader.TownNPCAttackProjSpeed(Npc, ref ShootSpeed, ref gravityCorrection, ref randomOffset);
+                    NPCLoader.TownNPCAttackProj(Npc, ref ProjType, ref attackDelay);
                     if (Main.expertMode)
                     {
                         Damage = (int)(Damage * Main.GameModeInfo.TownNPCDamageMultiplier);
@@ -1848,76 +1843,112 @@ namespace NPCAttacker.Override
                             ShootVel = new(Npc.spriteDirection, -1f);
                         }
                         ShootVel *= ShootSpeed;
-                        ShootVel += Utils.RandomVector2(Main.rand, 0f - randomOffset, randomOffset);
-                        int num44 = (Npc.type == NPCID.Mechanic) ? Projectile.NewProjectile(Npc.GetSpawnSource_ForProjectile(), Npc.Center.X + Npc.spriteDirection * 16, Npc.Center.Y - 2f, ShootVel.X, ShootVel.Y, ProjType, Damage, knockBack, Main.myPlayer, 0f, Npc.whoAmI, Npc.townNpcVariationIndex) : ((Npc.type != NPCID.SantaClaus) ? Projectile.NewProjectile(Npc.GetSpawnSource_ForProjectile(), Npc.Center.X + Npc.spriteDirection * 16, Npc.Center.Y - 2f, ShootVel.X, ShootVel.Y, ProjType, Damage, knockBack, Main.myPlayer, 0f, 0f, 0f) : Projectile.NewProjectile(Npc.GetSpawnSource_ForProjectile(), Npc.Center.X + Npc.spriteDirection * 16, Npc.Center.Y - 2f, ShootVel.X, ShootVel.Y, ProjType, Damage, knockBack, Main.myPlayer, 0f, Main.rand.Next(5), 0f));
-                        Main.projectile[num44].npcProj = true;
-                        Main.projectile[num44].noDropItem = true;
-                        Main.projectile[num44].GetGlobalProjectile<AttackerGProj>().ProjTarget = Target;
 
-
-                        if (!ArmedGNPC.GetWeapon(Npc).IsAir && Npc.type != NPCID.Nurse)
+                        if (Npc.GetGlobalNPC<ArmedGNPC>().NPCTargetForSpecialUse != -1)                //如果有目标就使用目标的索敌方向
                         {
-                            int CritChance = ArmedGNPC.GetWeapon(Npc).crit;
-                            NPCStats.ModifyCritChance(Npc, ref CritChance);
-
-                            Main.projectile[num44].CritChance += CritChance;
-
-                            if (ArmedGNPC.GetWeapon(Npc).UseSound != null)
+                            int target = Npc.GetGlobalNPC<ArmedGNPC>().NPCTargetForSpecialUse;
+                            if (Main.npc[target].active)
                             {
-                                SoundEngine.PlaySound(ArmedGNPC.GetWeapon(Npc).UseSound, Npc.Center);
+                                ShootVel = Vector2.Normalize(Main.npc[target].Center - Npc.Center) * ShootSpeed;
                             }
                         }
 
-                        if (Npc.type == NPCID.Golfer && ArmedGNPC.GetWeapon(Npc).IsAir)
-                        {
-                            Main.projectile[num44].timeLeft = 480;
-                        }
+                        ShootVel += Terraria.Utils.RandomVector2(Main.rand, 0f - randomOffset, randomOffset);
 
-                        if (Main.rand.NextBool(5))
+                        if (ArmedGNPC.GetWeapon(Npc).IsAir || Npc.type == NPCID.Nurse)         //无武器时的发射弹幕, 注意护士的武器不生效
                         {
-                            if (!ArmedGNPC.GetAltWeapon(Npc).IsAir && Npc.type != NPCID.Nurse)          //投手副武器
+                            int num44 = (Npc.type == NPCID.Mechanic) ? Projectile.NewProjectile(Npc.GetSpawnSource_ForProjectile(), Npc.Center.X + Npc.spriteDirection * 16, Npc.Center.Y - 2f, ShootVel.X, ShootVel.Y, ProjType, Damage, knockBack, Main.myPlayer, 0f, Npc.whoAmI, Npc.townNpcVariationIndex) : ((Npc.type != NPCID.SantaClaus) ? Projectile.NewProjectile(Npc.GetSpawnSource_ForProjectile(), Npc.Center.X + Npc.spriteDirection * 16, Npc.Center.Y - 2f, ShootVel.X, ShootVel.Y, ProjType, Damage, knockBack, Main.myPlayer, 0f, 0f, 0f) : Projectile.NewProjectile(Npc.GetSpawnSource_ForProjectile(), Npc.Center.X + Npc.spriteDirection * 16, Npc.Center.Y - 2f, ShootVel.X, ShootVel.Y, ProjType, Damage, knockBack, Main.myPlayer, 0f, Main.rand.Next(5), 0f));
+                            Main.projectile[num44].npcProj = true;
+                            Main.projectile[num44].noDropItem = true;
+                            Main.projectile[num44].GetGlobalProjectile<AttackerGProj>().ProjTarget = Target;
+
+                            if (Npc.type == NPCID.Golfer)
                             {
-                                Item AltWeapon = ArmedGNPC.GetAltWeapon(Npc);
-                                int shoot = AltWeapon.shoot;
-                                int DamageAlt = AltWeapon.damage;
-                                float KnockBackAlt = AltWeapon.knockBack;
-                                Vector2 SpeedAlt = Vector2.Normalize(ShootVel) * AltWeapon.shootSpeed;
-                                Vector2 PosAlt = new(Npc.Center.X + Npc.spriteDirection * 16, Npc.Center.Y - 2f);
-
-                                if (AltWeapon.ModItem != null)
+                                Main.projectile[num44].timeLeft = 480;
+                            }
+                        }
+                        else         //有武器时的发射弹幕
+                        {
+                            if (!ChannelHelper.CheckAndContinueChannelProj(Npc))
+                            {
+                                Item Weapon = ArmedGNPC.GetWeapon(Npc);
+                                int shoot = Weapon.shoot;
+                                Vector2 ShootPos = new(Npc.Center.X + Npc.spriteDirection * 16, Npc.Center.Y - 2f);
+                                if (Weapon.ModItem != null)            //模组武器
                                 {
-                                    AltWeapon.ModItem.ModifyShootStats(Main.LocalPlayer, ref PosAlt, ref SpeedAlt, ref shoot, ref DamageAlt, ref KnockBackAlt);
-                                    if (AltWeapon.ModItem.Shoot(Main.LocalPlayer, null, PosAlt, SpeedAlt, shoot, DamageAlt, KnockBackAlt))
+                                    CombinedHooks.ModifyShootStats(Main.LocalPlayer, Weapon, ref ShootPos, ref ShootVel, ref shoot, ref Damage, ref knockBack);
+                                    CombinedHooks.Shoot(Main.LocalPlayer, Weapon, null, ShootPos, ShootVel, shoot, Damage, knockBack);
+                                }
+                                else            //原版武器
+                                {
+                                    if (VanillaItemProjFix.TransFormProj(Npc, Weapon.type) != -1)
                                     {
-                                        ProjType = shoot;
+                                        shoot = VanillaItemProjFix.TransFormProj(Npc, Weapon.type);
                                     }
-                                    else
+                                    CombinedHooks.ModifyShootStats(Main.LocalPlayer, Weapon, ref ShootPos, ref ShootVel, ref shoot, ref Damage, ref knockBack);
+                                    if (CombinedHooks.Shoot(Main.LocalPlayer, Weapon, null, ShootPos, ShootVel, shoot, Damage, knockBack))
                                     {
-                                        ProjType = 0;
+                                        Projectile.NewProjectile(null, ShootPos, ShootVel, shoot, Damage, knockBack, Main.myPlayer);
+
                                     }
                                 }
-                                else
-                                {
-                                    ProjType = shoot;
 
-                                    if (VanillaItemProjFix.TransFormProj(Npc, AltWeapon.type) != -1)
-                                    {
-                                        ProjType = VanillaItemProjFix.TransFormProj(Npc, AltWeapon.type);
-                                    }
-                                }
-                                if (ProjType != 0)
+                                if (Weapon.UseSound != null)
                                 {
-                                    int protmp = Projectile.NewProjectile(Npc.GetSpawnSource_ForProjectile(), PosAlt, SpeedAlt, ProjType, DamageAlt, KnockBackAlt, Main.myPlayer, 0f, 0f);
-                                    Main.projectile[protmp].npcProj = true;
-                                    Main.projectile[protmp].noDropItem = true;
-                                    Main.projectile[protmp].GetGlobalProjectile<AttackerGProj>().ProjTarget = Target;
+                                    SoundEngine.PlaySound(Weapon.UseSound, Npc.Center);
                                 }
                             }
+                        }
 
+                        if (Main.rand.NextBool(5))              //20%概率发射副武器弹幕
+                        {
+                            if (!ArmedGNPC.GetAltWeapon(Npc).IsAir)
+                            {
+                                if (!ChannelHelper.CheckAndContinueChannelProj(Npc))
+                                {
+                                    Item AlterWeapon = ArmedGNPC.GetAltWeapon(Npc);
+                                    int shootAlt = AlterWeapon.shoot;
+                                    Vector2 ShootPos = new(Npc.Center.X + Npc.spriteDirection * 16, Npc.Center.Y - 2f);
+                                    float SpeedAlt = AlterWeapon.shootSpeed;
+                                    int DamageAlt = AlterWeapon.damage;
+                                    float KnockbackAlt = AlterWeapon.knockBack;
+
+                                    NPCLoader.TownNPCAttackStrength(Npc, ref DamageAlt, ref KnockbackAlt);
+                                    NPCLoader.TownNPCAttackProjSpeed(Npc, ref SpeedAlt, ref gravityCorrection, ref randomOffset);
+                                    if (Main.expertMode)
+                                    {
+                                        DamageAlt = (int)(DamageAlt * Main.GameModeInfo.TownNPCDamageMultiplier);
+                                    }
+                                    DamageAlt = (int)(DamageAlt * damageMult);
+                                    Vector2 ShootVelAlt = Vector2.Normalize(ShootVel) * SpeedAlt;
+
+                                    if (AlterWeapon.ModItem != null)            //模组武器
+                                    {
+                                        CombinedHooks.ModifyShootStats(Main.LocalPlayer, AlterWeapon, ref ShootPos, ref ShootVelAlt, ref shootAlt, ref DamageAlt, ref KnockbackAlt);
+                                        CombinedHooks.Shoot(Main.LocalPlayer, AlterWeapon, null, ShootPos, ShootVelAlt, shootAlt, DamageAlt, KnockbackAlt);
+                                    }
+                                    else            //原版武器
+                                    {
+
+                                        if (VanillaItemProjFix.TransFormProj(Npc, AlterWeapon.type) != -1)
+                                        {
+                                            shootAlt = VanillaItemProjFix.TransFormProj(Npc, AlterWeapon.type);
+                                        }
+                                        CombinedHooks.ModifyShootStats(Main.LocalPlayer, AlterWeapon, ref ShootPos, ref ShootVelAlt, ref shootAlt, ref DamageAlt, ref KnockbackAlt);
+                                        if (CombinedHooks.Shoot(Main.LocalPlayer, AlterWeapon, null, ShootPos, ShootVelAlt, shootAlt, DamageAlt, KnockbackAlt))
+                                        {
+                                            Projectile.NewProjectile(null, ShootPos, ShootVelAlt, shootAlt, DamageAlt, KnockbackAlt, Main.myPlayer);
+                                        }
+                                    }
+
+                                    if (AlterWeapon.UseSound != null)
+                                    {
+                                        SoundEngine.PlaySound(AlterWeapon.UseSound, Npc.Center);
+                                    }
+                                }
+                            }
                         }
                     }
-
-
 
                     if (Npc.ai[1] <= 0f)
                     {
@@ -2133,7 +2164,7 @@ namespace NPCAttacker.Override
                     }
                     else if (Npc.type == NPCID.Cyborg)
                     {
-                        ProjType = Utils.SelectRandom<int>(Main.rand, new int[]
+                        ProjType = Terraria.Utils.SelectRandom<int>(Main.rand, new int[]
                         {
                             134,
                             133,
@@ -2193,22 +2224,83 @@ namespace NPCAttacker.Override
                             ShootVel = new(Npc.spriteDirection, 0f);
                         }
                         ShootVel *= ShootSpeed;
-                        ShootVel += Utils.RandomVector2(Main.rand, 0f - randomOffset, randomOffset);
-                        int num53 = (Npc.type != NPCID.Painter) ? Projectile.NewProjectile(Npc.GetSpawnSource_ForProjectile(), Npc.Center.X + Npc.spriteDirection * 16, Npc.Center.Y - 2f, ShootVel.X, ShootVel.Y, ProjType, Damage, knockBack, Main.myPlayer, 0f, 0f, 0f) : Projectile.NewProjectile(Npc.GetSpawnSource_ForProjectile(), Npc.Center.X + Npc.spriteDirection * 16, Npc.Center.Y - 2f, ShootVel.X, ShootVel.Y, ProjType, Damage, knockBack, Main.myPlayer, 0f, Main.rand.Next(12) / 6f, 0f);
-                        Main.projectile[num53].npcProj = true;
-                        Main.projectile[num53].noDropItem = true;
-                        Main.projectile[num53].GetGlobalProjectile<AttackerGProj>().ProjTarget = Target;
 
-                        if (!ArmedGNPC.GetWeapon(Npc).IsAir)
+                        if (Npc.GetGlobalNPC<ArmedGNPC>().NPCTargetForSpecialUse != -1)                //如果有目标就使用目标的索敌方向
                         {
-                            int CritChance = ArmedGNPC.GetWeapon(Npc).crit;
-                            NPCStats.ModifyCritChance(Npc, ref CritChance);
-
-                            Main.projectile[num53].CritChance += CritChance;
-
-                            if (ArmedGNPC.GetWeapon(Npc).UseSound != null)
+                            int target = Npc.GetGlobalNPC<ArmedGNPC>().NPCTargetForSpecialUse;
+                            if (Main.npc[target].active)
                             {
-                                SoundEngine.PlaySound(ArmedGNPC.GetWeapon(Npc).UseSound, Npc.Center);
+                                ShootVel = Vector2.Normalize(Main.npc[target].Center - Npc.Center) * ShootSpeed;
+                            }
+                        }
+
+                        ShootVel += Utils.RandomVector2(Main.rand, 0f - randomOffset, randomOffset);
+
+
+
+                        if (ArmedGNPC.GetWeapon(Npc).IsAir)         //无武器时的发射弹幕
+                        {
+                            int num53 = (Npc.type != NPCID.Painter) ? Projectile.NewProjectile(Npc.GetSpawnSource_ForProjectile(), Npc.Center.X + Npc.spriteDirection * 16, Npc.Center.Y - 2f, ShootVel.X, ShootVel.Y, ProjType, Damage, knockBack, Main.myPlayer, 0f, 0f, 0f) : Projectile.NewProjectile(Npc.GetSpawnSource_ForProjectile(), Npc.Center.X + Npc.spriteDirection * 16, Npc.Center.Y - 2f, ShootVel.X, ShootVel.Y, ProjType, Damage, knockBack, Main.myPlayer, 0f, Main.rand.Next(12) / 6f, 0f);
+                            Main.projectile[num53].npcProj = true;
+                            Main.projectile[num53].noDropItem = true;
+                            Main.projectile[num53].GetGlobalProjectile<AttackerGProj>().ProjTarget = Target;
+                        }
+                        else         //有武器时的发射弹幕
+                        {
+                            if (!ChannelHelper.CheckAndContinueChannelProj(Npc))
+                            {
+                                Item Weapon = ArmedGNPC.GetWeapon(Npc);
+                                int shoot = Weapon.shoot;
+                                if (Weapon.useAmmo > 0 && !Weapon.channel)
+                                {
+                                    if (AmmoFix.PickAmmo(Npc, Weapon) > 0)
+                                    {
+                                        shoot = AmmoFix.PickAmmo(Npc, Weapon);
+                                        ShootVel = Vector2.Normalize(ShootVel) * (ShootVel.Length() + AmmoFix.GetAmmoSpeed(Npc, Weapon));
+
+                                        if (Weapon.ModItem == null)  //原版武器弹药特殊变更
+                                        {
+                                            if (Weapon.useAmmo == AmmoID.Bullet || Weapon.useAmmo == AmmoID.Arrow || Weapon.useAmmo == AmmoID.Dart || Weapon.useAmmo == AmmoID.NailFriendly)
+                                            {
+                                                if (VanillaItemProjFix.IsUseSpecialProj[Weapon.type] != 0)
+                                                {
+                                                    shoot = VanillaItemProjFix.IsUseSpecialProj[Weapon.type];
+                                                }
+                                            }
+                                        }
+                                    }
+                                    else
+                                    {
+                                        shoot = 0;
+                                    }
+                                }
+
+                                if (shoot > 0)
+                                {
+                                    Vector2 ShootPos = new(Npc.Center.X + Npc.spriteDirection * 16, Npc.Center.Y - 2f);
+                                    if (Weapon.ModItem != null)            //模组武器
+                                    {
+                                        CombinedHooks.ModifyShootStats(Main.LocalPlayer, Weapon, ref ShootPos, ref ShootVel, ref shoot, ref Damage, ref knockBack);
+                                        CombinedHooks.Shoot(Main.LocalPlayer, Weapon, null, ShootPos, ShootVel, shoot, Damage, knockBack);
+                                    }
+                                    else            //原版武器
+                                    {
+                                        if (VanillaItemProjFix.TransFormProj(Npc, Weapon.type) != -1)
+                                        {
+                                            shoot = VanillaItemProjFix.TransFormProj(Npc, Weapon.type);
+                                        }
+                                        CombinedHooks.ModifyShootStats(Main.LocalPlayer, Weapon, ref ShootPos, ref ShootVel, ref shoot, ref Damage, ref knockBack);
+                                        if (CombinedHooks.Shoot(Main.LocalPlayer, Weapon, null, ShootPos, ShootVel, shoot, Damage, knockBack))
+                                        {
+                                            Projectile.NewProjectile(null, ShootPos, ShootVel, shoot, Damage, knockBack, Main.myPlayer);
+                                        }
+                                    }
+                                }
+
+                                if (Weapon.UseSound != null)
+                                {
+                                    SoundEngine.PlaySound(Weapon.UseSound, Npc.Center);
+                                }
                             }
                         }
                     }
@@ -2372,12 +2464,27 @@ namespace NPCAttacker.Override
                             ShootVel = new(Npc.spriteDirection, 0f);
                         }
                         ShootVel *= ShootSpeed;
-                        ShootVel += Utils.RandomVector2(Main.rand, 0f - randomOffset, randomOffset);
 
-                        if (ArmedGNPC.GetWeapon(Npc).IsAir)
+                        if (Npc.GetGlobalNPC<ArmedGNPC>().NPCTargetForSpecialUse != -1)                //如果有目标就使用目标的索敌方向
                         {
+                            int target = Npc.GetGlobalNPC<ArmedGNPC>().NPCTargetForSpecialUse;
+                            if (Main.npc[target].active)
+                            {
+                                ShootVel = Vector2.Normalize(Main.npc[target].Center - Npc.Center) * ShootSpeed;
+                            }
+                        }
 
-                            if (Npc.type == NPCID.Wizard)
+                        ShootVel += Terraria.Utils.RandomVector2(Main.rand, 0f - randomOffset, randomOffset);
+
+                        if (ArmedGNPC.GetWeapon(Npc).IsAir || Npc.type == NPCID.Dryad)         //无武器时的发射弹幕,注意护士武器不生效
+                        {
+                            if (Npc.type == NPCID.Dryad)
+                            {
+                                int protmp = Projectile.NewProjectile(Npc.GetSpawnSource_ForProjectile(), Npc.Center.X + Npc.spriteDirection * 16, Npc.Center.Y - 2f, ShootVel.X, ShootVel.Y, ProjType, Damage, knockBack, Main.myPlayer, 0f, Npc.whoAmI);
+                                Main.projectile[protmp].npcProj = true;
+                                Main.projectile[protmp].noDropItem = true;
+                            }
+                            else if (Npc.type == NPCID.Wizard)
                             {
                                 int num65 = Utils.SelectRandom<int>(Main.rand, new int[]
                                 {
@@ -2391,7 +2498,7 @@ namespace NPCAttacker.Override
                                 });
                                 for (int num66 = 0; num66 < num65; num66++)
                                 {
-                                    Vector2 RandomOffset2 = Utils.RandomVector2(Main.rand, -3.4f, 3.4f);
+                                    Vector2 RandomOffset2 = Terraria.Utils.RandomVector2(Main.rand, -3.4f, 3.4f);
                                     int num67 = Projectile.NewProjectile(Npc.GetSpawnSource_ForProjectile(), Npc.Center.X + Npc.spriteDirection * 16, Npc.Center.Y - 2f, ShootVel.X + RandomOffset2.X, ShootVel.Y + RandomOffset2.Y, ProjType, Damage, knockBack, Main.myPlayer, 0f, 0f, Npc.townNpcVariationIndex);
                                     Main.projectile[num67].npcProj = true;
                                     Main.projectile[num67].noDropItem = true;
@@ -2405,12 +2512,12 @@ namespace NPCAttacker.Override
                             {
                                 if (Target != -1)
                                 {
-                                    Vector2 ShootPos = Main.npc[Target].position - Main.npc[Target].Size * 2f + Main.npc[Target].Size * Utils.RandomVector2(Main.rand, 0f, 1f) * 5f;
+                                    Vector2 ShootPos = Main.npc[Target].position - Main.npc[Target].Size * 2f + Main.npc[Target].Size * Terraria.Utils.RandomVector2(Main.rand, 0f, 1f) * 5f;
                                     int ProjAmount = 10;
                                     while (ProjAmount > 0 && WorldGen.SolidTile(Framing.GetTileSafely((int)ShootPos.X / 16, (int)ShootPos.Y / 16)))
                                     {
                                         ProjAmount--;
-                                        ShootPos = Main.npc[Target].position - Main.npc[Target].Size * 2f + Main.npc[Target].Size * Utils.RandomVector2(Main.rand, 0f, 1f) * 5f;
+                                        ShootPos = Main.npc[Target].position - Main.npc[Target].Size * 2f + Main.npc[Target].Size * Terraria.Utils.RandomVector2(Main.rand, 0f, 1f) * 5f;
                                     }
                                     int num69 = Projectile.NewProjectile(Npc.GetSpawnSource_ForProjectile(), ShootPos.X, ShootPos.Y, 0f, 0f, ProjType, Damage, knockBack, Main.myPlayer, 0f, 0f, Npc.townNpcVariationIndex);
                                     Main.projectile[num69].npcProj = true;
@@ -2424,12 +2531,12 @@ namespace NPCAttacker.Override
                             {
                                 if (Target != -1)
                                 {
-                                    Vector2 ShootPos = Main.npc[Target].position + Main.npc[Target].Size * Utils.RandomVector2(Main.rand, 0f, 1f) * 1f;
+                                    Vector2 ShootPos = Main.npc[Target].position + Main.npc[Target].Size * Terraria.Utils.RandomVector2(Main.rand, 0f, 1f) * 1f;
                                     int ProjAmount = 5;
                                     while (ProjAmount > 0 && WorldGen.SolidTile(Framing.GetTileSafely((int)ShootPos.X / 16, (int)ShootPos.Y / 16)))
                                     {
                                         ProjAmount--;
-                                        ShootPos = Main.npc[Target].position + Main.npc[Target].Size * Utils.RandomVector2(Main.rand, 0f, 1f) * 1f;
+                                        ShootPos = Main.npc[Target].position + Main.npc[Target].Size * Terraria.Utils.RandomVector2(Main.rand, 0f, 1f) * 1f;
                                     }
                                     int num71 = Projectile.NewProjectile(Npc.GetSpawnSource_ForProjectile(), ShootPos.X, ShootPos.Y, 0f, 0f, ProjType, Damage, knockBack, Main.myPlayer, 0f, 0f, Npc.townNpcVariationIndex);
                                     Main.projectile[num71].npcProj = true;
@@ -2458,31 +2565,37 @@ namespace NPCAttacker.Override
                                 Main.projectile[num73].CritChance += CritChance;
                             }
                         }
-                        else
+                        else         //有武器时的发射弹幕
                         {
-                            if (Npc.type != NPCID.Dryad)
+                            if (!ChannelHelper.CheckAndContinueChannelProj(Npc))
                             {
-                                int protmp = Projectile.NewProjectile(Npc.GetSpawnSource_ForProjectile(), Npc.Center.X + Npc.spriteDirection * 16, Npc.Center.Y - 2f, ShootVel.X, ShootVel.Y, ProjType, Damage, knockBack, Main.myPlayer, 0f, 0f);
-                                Main.projectile[protmp].npcProj = true;
-                                Main.projectile[protmp].noDropItem = true;
-                                Main.projectile[protmp].GetGlobalProjectile<AttackerGProj>().ProjTarget = Target;
-                                int CritChance = ArmedGNPC.GetWeapon(Npc).crit;
-                                NPCStats.ModifyCritChance(Npc, ref CritChance);
-                                Main.projectile[protmp].CritChance += CritChance;
-
-                                if (ArmedGNPC.GetWeapon(Npc).UseSound != null)
+                                Item Weapon = ArmedGNPC.GetWeapon(Npc);
+                                int shoot = Weapon.shoot;
+                                Vector2 ShootPos = new(Npc.Center.X + Npc.spriteDirection * 16, Npc.Center.Y - 2f);
+                                if (Weapon.ModItem != null)            //模组武器
                                 {
-                                    SoundEngine.PlaySound(ArmedGNPC.GetWeapon(Npc).UseSound, Npc.Center);
+                                    CombinedHooks.ModifyShootStats(Main.LocalPlayer, Weapon, ref ShootPos, ref ShootVel, ref shoot, ref Damage, ref knockBack);
+                                    CombinedHooks.Shoot(Main.LocalPlayer, Weapon, null, ShootPos, ShootVel, shoot, Damage, knockBack);
+                                }
+                                else            //原版武器
+                                {
+                                    if (VanillaItemProjFix.TransFormProj(Npc, Weapon.type) != -1)
+                                    {
+                                        shoot = VanillaItemProjFix.TransFormProj(Npc, Weapon.type);
+                                    }
+                                    CombinedHooks.ModifyShootStats(Main.LocalPlayer, Weapon, ref ShootPos, ref ShootVel, ref shoot, ref Damage, ref knockBack);
+                                    if (CombinedHooks.Shoot(Main.LocalPlayer, Weapon, null, ShootPos, ShootVel, shoot, Damage, knockBack))
+                                    {
+                                        Projectile.NewProjectile(null, ShootPos, ShootVel, shoot, Damage, knockBack, Main.myPlayer);
+                                    }
+                                }
+
+                                if (Weapon.UseSound != null)
+                                {
+                                    SoundEngine.PlaySound(Weapon.UseSound, Npc.Center);
                                 }
                             }
-                            else
-                            {
-                                int protmp = Projectile.NewProjectile(Npc.GetSpawnSource_ForProjectile(), Npc.Center.X + Npc.spriteDirection * 16, Npc.Center.Y - 2f, ShootVel.X, ShootVel.Y, ProjType, Damage, knockBack, Main.myPlayer, 0f, Npc.whoAmI);
-                                Main.projectile[protmp].npcProj = true;
-                                Main.projectile[protmp].noDropItem = true;
-                            }
                         }
-
 
                     }
                     if (auraLightMultiplier > 0f)
@@ -2499,7 +2612,7 @@ namespace NPCAttacker.Override
                         Npc.netUpdate = true;
                     }
                 }
-                else if (Npc.ai[0] == 15f)
+                else if (Npc.ai[0] == 15f)       //近战攻击
                 {
                     int AttackCooldown = 0;
                     int RandomAttackCooldown = 0;
@@ -2582,86 +2695,151 @@ namespace NPCAttacker.Override
                         MeleeHitbox.Y -= itemHeight;
                         Npc.TweakSwingStats(NPCStats.GetModifiedAttackTime(Npc) * 2, (int)Npc.ai[1], Npc.spriteDirection, ref MeleeHitbox);
 
-                        if (!ArmedGNPC.GetWeapon(Npc).IsAir)
+                        int CritChance = 4;
+                        NPCStats.ModifyCritChance(Npc, ref CritChance);
+
+                        if (!ArmedGNPC.GetWeapon(Npc).IsAir)          //装备武器时
                         {
-                            foreach (NPC target in Main.npc)
+                            Item Weapon = ArmedGNPC.GetWeapon(Npc);
+                            if (!Weapon.noMelee)
                             {
-                                if (target.active && target.immune[Npc.whoAmI] == 0 && !target.dontTakeDamage && !target.friendly && MeleeHitbox.Intersects(target.Hitbox) && (target.noTileCollide || Collision.CanHit(Npc.position, Npc.width, Npc.height, target.position, target.width, target.height)))
+                                foreach (NPC target in Main.npc)
                                 {
-                                    int CritChance = ArmedGNPC.GetWeapon(Npc).crit;
-
-                                    NPCStats.ModifyCritChance(Npc, ref CritChance);
-
-                                    bool crit = Main.rand.Next(100) <= CritChance;
-
-                                    NPC.HitModifiers modifiers = target.GetIncomingStrikeModifiers(DamageClass.Melee, Npc.spriteDirection, false);
-
-                                    if (ArmedGNPC.GetWeapon(Npc).ModItem != null)
+                                    if (target.active && target.immune[Npc.whoAmI] == 0 && !target.dontTakeDamage && !target.friendly && MeleeHitbox.Intersects(target.Hitbox) && (target.noTileCollide || Collision.CanHit(Npc.position, Npc.width, Npc.height, target.position, target.width, target.height)))
                                     {
-                                        ArmedGNPC.GetWeapon(Npc).ModItem.ModifyHitNPC(Main.LocalPlayer, target, ref modifiers);
-                                    }
-                                    NPC.HitInfo strike = modifiers.ToHitInfo(Damage, crit, knockBack, true, Main.LocalPlayer.luck);
-                                    int DmgDone = target.StrikeNPC(strike, false, true);
-                                    //target.StrikeNPCNoInteraction(Damage, knockBack, Npc.spriteDirection, crit, false, false);
-                                    if (Main.netMode != NetmodeID.SinglePlayer)
-                                    {
-                                        NetMessage.SendData(MessageID.DamageNPC, -1, -1, null, itemHeight, Damage, knockBack, Npc.spriteDirection, 0, 0, 0);
-                                    }
-                                    target.netUpdate = true;
-                                    target.immune[Npc.whoAmI] = (int)Npc.ai[1] + 2;
+                                        CritChance += ArmedGNPC.GetWeapon(Npc).crit;
 
-                                    if (ArmedGNPC.GetWeapon(Npc).ModItem != null)
-                                    {
-                                        ArmedGNPC.GetWeapon(Npc).ModItem.OnHitNPC(Main.LocalPlayer, target, strike, DmgDone);
-                                    }
-                                    else
-                                    {
-                                        switch (ArmedGNPC.GetWeapon(Npc).type)
+                                        bool crit = Main.rand.Next(100) <= CritChance;
+
+                                        NPC.HitModifiers modifiers = target.GetIncomingStrikeModifiers(Weapon.DamageType, Npc.spriteDirection, false);
+
+                                        if (Weapon.ModItem != null)
                                         {
-                                            //给近战命中武器加钩子
-                                            case ItemID.TheHorsemansBlade:
-                                                MeleeWeaponFix.PumpkinSword(target.whoAmI, Damage, knockBack);
-                                                break;
-                                            case ItemID.BeeKeeper:
-                                                MeleeWeaponFix.BeeKeeperHit(target, MeleeHitbox, Damage);
-                                                break;
-                                            case ItemID.Bladetongue:
-                                                MeleeWeaponFix.Bladetongue(Npc, MeleeHitbox, Damage, knockBack);
-                                                break;
-                                            case ItemID.TentacleSpike:
-                                                MeleeWeaponFix.TentacleSpike_TrySpiking(Npc, target, Damage, knockBack);
-                                                break;
-                                            case ItemID.BatBat:
-                                                if (Npc.life < Npc.lifeMax)
-                                                {
-                                                    Npc.life++;
-                                                    Npc.HealEffect(1);
-                                                }
-                                                break;
-                                            case ItemID.BladeofGrass:
-                                                if (Main.rand.NextBool(4))
-                                                {
-                                                    target.AddBuff(BuffID.Poisoned, 7 * 60);
-                                                }
-                                                break;
-                                            case 121:   //熔岩剑
-                                                if (Main.rand.NextBool(2))
-                                                {
-                                                    target.AddBuff(BuffID.OnFire, 3 * 60);
-                                                }
-                                                break;
-                                            case ItemID.DD2SquireDemonSword:
-                                                if (Main.rand.NextBool(4))
-                                                {
-                                                    target.AddBuff(BuffID.OnFire3, 5 * 60);
-                                                }
-                                                break;
+                                            CombinedHooks.ModifyPlayerHitNPCWithItem(Main.LocalPlayer, Weapon, target, ref modifiers);
+                                        }
+                                        NPC.HitInfo strike = modifiers.ToHitInfo(Damage, crit, knockBack, true, Main.LocalPlayer.luck);
+                                        int DmgDone = target.StrikeNPC(strike, false, true);
+                                        //target.StrikeNPCNoInteraction(Damage, knockBack, Npc.spriteDirection, crit, false, false);
+                                        target.immune[Npc.whoAmI] = (int)Npc.ai[1] + 2;
+
+                                        if (Weapon.ModItem != null)
+                                        {
+                                            Weapon.ModItem.OnHitNPC(Main.LocalPlayer, target, strike, DmgDone);
+                                        }
+                                        else       //原版武器命中特效
+                                        {
+                                            switch (Weapon.type)
+                                            {
+                                                case ItemID.TheHorsemansBlade:
+                                                    MeleeWeaponFix.PumpkinSword(target.whoAmI, Damage, knockBack);
+                                                    break;
+                                                case ItemID.BeeKeeper:
+                                                    MeleeWeaponFix.BeeKeeperHit(target, MeleeHitbox, Damage);
+                                                    break;
+                                                case ItemID.Bladetongue:
+                                                    MeleeWeaponFix.Bladetongue(Npc, MeleeHitbox, Damage, knockBack);
+                                                    break;
+                                                case ItemID.TentacleSpike:
+                                                    MeleeWeaponFix.TentacleSpike_TrySpiking(Npc, target, Damage, knockBack);
+                                                    break;
+                                                case ItemID.BatBat:
+                                                    if (Npc.life < Npc.lifeMax)
+                                                    {
+                                                        Npc.life++;
+                                                        Npc.HealEffect(1);
+                                                    }
+                                                    break;
+                                                case ItemID.BladeofGrass:
+                                                    if (Main.rand.NextBool(4))
+                                                    {
+                                                        target.AddBuff(BuffID.Poisoned, 7 * 60);
+                                                    }
+                                                    break;
+                                                case 121:   //熔岩剑
+                                                    if (Main.rand.NextBool(2))
+                                                    {
+                                                        target.AddBuff(BuffID.OnFire, 3 * 60);
+                                                    }
+                                                    MeleeWeaponFix.Volcano_TrySpawningVolcano(target, (int)(Damage * 0.75f), knockBack);
+                                                    break;
+                                                case ItemID.DD2SquireDemonSword:
+                                                    if (Main.rand.NextBool(4))
+                                                    {
+                                                        target.AddBuff(BuffID.OnFire3, 5 * 60);
+                                                    }
+                                                    break;
+                                                case 795:    //血腥屠刀
+                                                    MeleeWeaponFix.BloodButcherer_TryButchering(Npc, target, Damage, knockBack);
+                                                    break;
+                                                case 155:  //村正
+                                                    MeleeWeaponFix.SpawnMuramasaCut(Npc, target, Damage);
+                                                    break;
+                                            }
+                                        }
+
+                                        if (!ArmedGNPC.GetAltWeapon(Npc).IsAir)
+                                        {
+                                            NPCUtils.FlaskToDebuff(target, ArmedGNPC.GetAltWeapon(Npc).buffType);
                                         }
                                     }
+                                }
+                            }
 
-                                    if (!ArmedGNPC.GetAltWeapon(Npc).IsAir)
+                            if (!Npc.GetGlobalNPC<ArmedGNPC>().MeleeAttacked)
+                            {
+                                Npc.GetGlobalNPC<ArmedGNPC>().MeleeAttacked = true;
+                                if (!ChannelHelper.CheckAndContinueChannelProj(Npc))
+                                {
+                                    if (Weapon.UseSound != null)
                                     {
-                                        NPCUtils.FlaskToDebuff(target, ArmedGNPC.GetAltWeapon(Npc).buffType);
+                                        SoundEngine.PlaySound(Weapon.UseSound, Npc.Center);
+                                    }
+                                    if (Weapon.shoot > ProjectileID.None)
+                                    {
+                                        int shoot = Weapon.shoot;
+                                        Vector2 ShootPos = new(Npc.Center.X + Npc.spriteDirection * 16, Npc.Center.Y - 2f);
+                                        float ShootSpeed = Weapon.shootSpeed;
+
+                                        int Target = -1;
+                                        if (ShootDir == 1 && Npc.spriteDirection == 1)
+                                        {
+                                            Target = TargetRight;
+                                        }
+                                        if (ShootDir == -1 && Npc.spriteDirection == -1)
+                                        {
+                                            Target = TargetLeft;
+                                        }
+                                        Npc.GetGlobalNPC<ArmedGNPC>().NPCTargetForSpecialUse = Target;
+
+                                        Vector2 ShootVel = new Vector2(Npc.spriteDirection, 0) * ShootSpeed;
+
+                                        if (Npc.GetGlobalNPC<ArmedGNPC>().NPCTargetForSpecialUse != -1)                //如果有目标就使用目标的索敌方向
+                                        {
+                                            int target = Npc.GetGlobalNPC<ArmedGNPC>().NPCTargetForSpecialUse;
+                                            if (Main.npc[target].active)
+                                            {
+                                                ShootVel = Vector2.Normalize(Main.npc[target].Center - Npc.Center) * ShootSpeed;
+                                            }
+                                        }
+
+
+                                        if (Weapon.ModItem != null)            //模组武器
+                                        {
+                                            CombinedHooks.ModifyShootStats(Main.LocalPlayer, Weapon, ref ShootPos, ref ShootVel, ref shoot, ref Damage, ref knockBack);
+                                            CombinedHooks.Shoot(Main.LocalPlayer, Weapon, null, ShootPos, ShootVel, shoot, Damage, knockBack);
+                                        }
+                                        else            //原版武器
+                                        {
+                                            if (VanillaItemProjFix.TransFormProj(Npc, Weapon.type) != -1)
+                                            {
+                                                shoot = VanillaItemProjFix.TransFormProj(Npc, Weapon.type);
+                                            }
+                                            CombinedHooks.ModifyShootStats(Main.LocalPlayer, Weapon, ref ShootPos, ref ShootVel, ref shoot, ref Damage, ref knockBack);
+                                            if (CombinedHooks.Shoot(Main.LocalPlayer, Weapon, null, ShootPos, ShootVel, shoot, Damage, knockBack))
+                                            {
+                                                Projectile.NewProjectile(null, ShootPos, ShootVel, shoot, Damage, knockBack, Main.myPlayer);
+                                            }
+                                        }
                                     }
                                 }
                             }
@@ -2672,13 +2850,7 @@ namespace NPCAttacker.Override
                             {
                                 if (target.active && target.immune[Main.myPlayer] == 0 && !target.dontTakeDamage && !target.friendly && target.damage > 0 && MeleeHitbox.Intersects(target.Hitbox) && (target.noTileCollide || Collision.CanHit(Npc.position, Npc.width, Npc.height, target.position, target.width, target.height)))
                                 {
-                                    int CritChance = 4;
-                                    if (Npc.HasBuff(115))           //暴怒药水
-                                    {
-                                        CritChance += 10;
-                                    }
                                     bool crit = Main.rand.Next(100) <= CritChance;
-
                                     target.SimpleStrikeNPC(Damage, Npc.spriteDirection, crit, knockBack, null, false, 0, true);
                                     if (Main.netMode != NetmodeID.SinglePlayer)
                                     {
@@ -3058,7 +3230,7 @@ namespace NPCAttacker.Override
                         }
                     }
                 }
-                else if (ActNoDanger && Npc.ai[0] == 1f && Npc.velocity.Y == 0f && Main.rand.NextBool(600) && Utils.PlotTileLine(Npc.Top, Npc.Bottom, Npc.width, new Utils.TileActionAttempt(DelegateMethods.SearchAvoidedByNPCs)))
+                else if (ActNoDanger && Npc.ai[0] == 1f && Npc.velocity.Y == 0f && Main.rand.NextBool(600) && Terraria.Utils.PlotTileLine(Npc.Top, Npc.Bottom, Npc.width, new Terraria.Utils.TileActionAttempt(DelegateMethods.SearchAvoidedByNPCs)))
                 {
                     Point point2 = (Npc.Center + new Vector2(Npc.direction * 10, 0f)).ToTileCoordinates();
                     bool ThisTileCanGo = WorldGen.InWorld(point2.X, point2.Y, 1);
@@ -3172,7 +3344,7 @@ namespace NPCAttacker.Override
                     if (AttackTarget != -1)
                     {
                         Vector2 vector8 = Npc.DirectionTo(Main.npc[AttackTarget].Center);
-                        //if (vector8.Y <= 0.5f && vector8.Y >= -0.5f)         解除远程NPC角度限制
+                        if ((vector8.Y <= 0.5f && vector8.Y >= -0.5f) || NPCUtils.BuffNPC())         //解除远程NPC角度限制
                         {
                             Npc.localAI[2] = Npc.ai[0];
                             Npc.ai[0] = 12f;
@@ -3281,7 +3453,7 @@ namespace NPCAttacker.Override
                 }
                 if (Npc.type == 683 || Npc.type == 687)
                 {
-                    float num129 = Utils.WrappedLerp(0.75f, 1f, (float)Main.timeForVisualEffects % 120f / 120f);
+                    float num129 = Terraria.Utils.WrappedLerp(0.75f, 1f, (float)Main.timeForVisualEffects % 120f / 120f);
                     Lighting.AddLight(Npc.Center, 0.25f * num129, 0.25f * num129, 0.1f * num129);
                 }
                 return;
@@ -3488,7 +3660,7 @@ namespace NPCAttacker.Override
             bool flag = myTileX >= homeFloorX - 35 && myTileX <= homeFloorX + 35;
             if (Npc.townNPC && Npc.ai[1] < 30f)
             {
-                keepwalking = !Utils.PlotTileLine(Npc.Top, Npc.Bottom, Npc.width, new Utils.TileActionAttempt(DelegateMethods.SearchAvoidedByNPCs));
+                keepwalking = !Terraria.Utils.PlotTileLine(Npc.Top, Npc.Bottom, Npc.width, new Terraria.Utils.TileActionAttempt(DelegateMethods.SearchAvoidedByNPCs));
                 if (!keepwalking)
                 {
                     Rectangle hitbox = Npc.Hitbox;

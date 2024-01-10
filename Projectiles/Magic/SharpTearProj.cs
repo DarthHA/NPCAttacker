@@ -9,6 +9,7 @@ namespace NPCAttacker.Projectiles.Magic
 {
     public class SharpTearProj : BaseAtkProj
     {
+        public override int ItemType => ItemID.SharpTears;
         public override void AttackEffect()
         {
             Vector2 mouseWorld2 = Main.MouseWorld;

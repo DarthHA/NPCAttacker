@@ -6,7 +6,7 @@ namespace NPCAttacker.Override
 {
     public static class CollisionOverride
     {
-        public static void Collision_MoveSlopesAndStairFall(Terraria.On_NPC.orig_Collision_MoveSlopesAndStairFall orig, NPC Npc, bool fall)
+        public static void Collision_MoveSlopesAndStairFall(On_NPC.orig_Collision_MoveSlopesAndStairFall orig, NPC Npc, bool fall)
         {
             if (!Npc.IsTownNPC())
             {

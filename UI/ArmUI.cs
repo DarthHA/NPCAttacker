@@ -9,7 +9,7 @@ using Terraria.UI.Chat;
 
 namespace NPCAttacker.UI
 {
-    // This class represents the UIState for our ExamplePerson Awesomeify chat function. It is similar to the Goblin Tinkerer's Reforge function, except it only gives Awesome and ReallyAwesome prefixes. 
+
     public class ArmUI : UIState
     {
         private static VanillaItemSlotWrapper _vanillaItemSlot;
@@ -22,13 +22,13 @@ namespace NPCAttacker.UI
                 Top = { Pixels = 270 },
                 ValidItemFunc = new Func<Item, bool>(ValidItem)
             };
-            // Here we limit the items that can be placed in the slot. We are fine with placing an empty item in or a non-empty item that can be prefixed. Calling Prefix(-3) is the way to know if the item in question can take a prefix or not.
             Append(_vanillaItemSlot);
         }
 
         public bool ValidItem(Item item)
         {
             if (item.IsAir) return true;
+            return true;
             if (item.accessory || item.channel) return false;
             if (Main.LocalPlayer.talkNPC == -1) return true;
             NPC npc = Main.npc[Main.LocalPlayer.talkNPC];
@@ -38,22 +38,24 @@ namespace NPCAttacker.UI
                 {
                     return (item.healLife > 0) && item.stack >= Math.Min(30, item.maxStack);
                 }
+                if (!ArmedGNPC.GetAltWeapon(npc).IsAir)
+                {
+                    if (item.type == ArmedGNPC.GetAltWeapon(npc).type)
+                    {
+                        return false;
+                    }
+                }
                 if (item.ModItem == null)
                 {
-                    if (!ArmedGNPC.GetAltWeapon(npc).IsAir)
-                    {
-                        if (item.type == ArmedGNPC.GetAltWeapon(npc).type)
-                        {
-                            return false;
-                        }
-                    }
                     return (item.DamageType == DamageClass.Ranged && item.stack >= Math.Min(99, item.maxStack) && item.consumable) || MeleeWeaponFix.UseMeleeThrowWeapon(item);
                 }
                 else    //模组非悠悠球非矛非蓄力非阔剑武器
                 {
+                    if (item.shoot <= ProjectileID.None) return false;
+
                     if (item.DamageType == DamageClass.Ranged && item.stack >= Math.Min(99, item.maxStack) && item.consumable) return true;
                     else if (item.DamageType == DamageClass.Melee && item.stack >= Math.Min(99, item.maxStack) && item.consumable) return true;
-                    else if (!ItemID.Sets.Spears[item.type] && !ItemID.Sets.Yoyo[item.type] && item.DamageType == DamageClass.Melee && item.useStyle == ItemUseStyleID.Swing) return true;
+                    else if (!ItemID.Sets.Spears[item.type] && !ItemID.Sets.Yoyo[item.type] && item.DamageType == DamageClass.Melee && item.useStyle == ItemUseStyleID.Swing && item.noMelee) return true;
                     else return false;
                 }
             }
@@ -81,7 +83,7 @@ namespace NPCAttacker.UI
             else if (NPCID.Sets.AttackType[npc.type] == 3)
             {
                 //return item.DamageType == DamageClass.Melee && !item.noMelee && !item.noUseGraphic;
-                return item.DamageType == DamageClass.Melee && !item.noUseGraphic && item.useStyle == ItemUseStyleID.Swing;
+                return (item.DamageType == DamageClass.Melee && !item.noUseGraphic && item.useStyle == ItemUseStyleID.Swing) || item.DamageType == DamageClass.SummonMeleeSpeed;
             }
             else
             {
@@ -93,8 +95,7 @@ namespace NPCAttacker.UI
 
         }
 
-        // Update is called on a UIState while it is the active state of the UserInterface.
-        // We use Update to handle automatically closing our UI when the player is no longer talking to our Example Person NPC.
+
         public override void Update(GameTime gameTime)
         {
             base.Update(gameTime);

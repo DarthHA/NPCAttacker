@@ -95,6 +95,58 @@ namespace NPCAttacker
             }
         }
 
+        public static void BloodButcherer_TryButchering(NPC Attacker, NPC target, float damage, float knockBack)
+        {
+            if (target.CanBeChasedBy())
+            {
+                Vector2 v = target.Center - Attacker.Center;
+                v = v.SafeNormalize(Vector2.Zero);
+                Vector2 vector = target.Hitbox.ClosestPointInRect(Attacker.Center) + v;
+                Vector2 spinningpoint = (target.Center - vector) * 0.8f;
+                spinningpoint = spinningpoint.RotatedBy(Main.rand.NextFloatDirection() * (float)Math.PI * 0.25f);
+                int num = Projectile.NewProjectile(null, vector.X, vector.Y, spinningpoint.X, spinningpoint.Y, 975, (int)damage, knockBack, Main.myPlayer, 1f, target.whoAmI);
+                Main.projectile[num].StatusNPC(target.whoAmI);
+                //Projectile.KillOldestJavelin(num, 975, target.whoAmI, _bloodButchererMax5);
+                //_spawnBloodButcherer = false;
+            }
+        }
+
+        public static void Volcano_TrySpawningVolcano(NPC target, float damage, float knockBack)
+        {
+            if (target.HittableForOnHitRewards())
+            {
+                Vector2 center = target.Center;
+                int num = 2;
+                Projectile.NewProjectile(null, center.X, center.Y, 0f, -1f, 978, (int)damage, knockBack, Main.myPlayer, 0f, num);
+            }
+        }
+
+        public static void SpawnMuramasaCut(NPC Attacker, NPC target, float damage)
+        {
+            Rectangle hitbox = target.Hitbox;
+            hitbox.Inflate(30, 16);
+            hitbox.Y -= 8;
+            Vector2 vector3 = Main.rand.NextVector2FromRectangle(hitbox);
+            Vector2 vector4 = hitbox.Center.ToVector2();
+            Vector2 spinningpoint = (vector4 - vector3).SafeNormalize(new Vector2(Attacker.direction, 1)) * 8f;
+            Main.rand.NextFloat();
+            float num6 = (Main.rand.Next(2) * 2 - 1) * ((float)Math.PI / 5f + (float)Math.PI * 4f / 5f * Main.rand.NextFloat());
+            num6 *= 0.5f;
+            spinningpoint = spinningpoint.RotatedBy(0.7853981852531433);
+            int num7 = 3;
+            int num8 = 10 * num7;
+            int num9 = 5;
+            int num10 = num9 * num7;
+            vector3 = vector4;
+            for (int k = 0; k < num10; k++)
+            {
+                vector3 -= spinningpoint;
+                spinningpoint = spinningpoint.RotatedBy((0f - num6) / num8);
+            }
+            vector3 += target.velocity * num9;
+            Projectile.NewProjectile(null, vector3, spinningpoint, 977, (int)(damage * 0.5f), 0f, Main.myPlayer, num6);
+        }
+
         public static bool UseMeleeThrowWeapon(Item item)
         {
             switch (item.type)
@@ -117,6 +169,37 @@ namespace NPCAttacker
                 case ItemID.ScourgeoftheCorruptor:
                 case ItemID.Bananarang:
                 case ItemID.LightDisc:
+                case ItemID.Zenith:
+                case 5298:           //三尖回旋镖
+                //链枷
+                case 1325:
+                case 2424:
+                case 3012:
+                case 1314:
+                case 1297:
+                case 2611:
+                    return true;
+            }
+            return false;
+        }
+    }
+
+    public static class WhipFix
+    {
+        public static bool UseWhipWeapon(Item item)
+        {
+            switch (item.type)
+            {
+                case ItemID.BlandWhip:
+                case ItemID.BoneWhip:
+                case ItemID.CoolWhip:
+                case ItemID.FireWhip:
+                case ItemID.IvyWhip:
+                case ItemID.MaceWhip:
+                case ItemID.RainbowWhip:
+                case ItemID.ScytheWhip:
+                case ItemID.SwordWhip:
+                case ItemID.ThornWhip:
                     return true;
             }
             return false;
@@ -185,6 +268,7 @@ namespace NPCAttacker
 
         public static int PickAmmo(NPC npc, Item sItem)
         {
+            if (sItem.IsAir) return 0;
             int shoot;
             if (sItem.useAmmo == AmmoID.None) return 0;
             Item item = FindAmmo(npc);
@@ -249,6 +333,11 @@ namespace NPCAttacker
             }
 
             VanillaItemProjFix.TransFormProjRocket(sItem.type, item.type, ref shoot);
+
+            if (item.shoot == ProjectileID.None)
+            {
+                shoot = sItem.shoot;
+            }
 
             return shoot;
 

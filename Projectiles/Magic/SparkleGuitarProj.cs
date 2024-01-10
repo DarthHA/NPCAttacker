@@ -5,8 +5,10 @@ using Terraria.ID;
 
 namespace NPCAttacker.Projectiles.Magic
 {
+
     public class SparkleGuitarProj : BaseAtkProj
     {
+        public override int ItemType => ItemID.SparkleGuitar;
         public override void AttackEffect()
         {
             Vector2 vector36 = GetTargetPos();

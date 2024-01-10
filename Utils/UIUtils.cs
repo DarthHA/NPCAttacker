@@ -43,7 +43,7 @@ namespace NPCAttacker
                             {
                                 if (npc.GetGlobalNPC<ArmedGNPC>().Selected)
                                 {
-                                    npc.GetGlobalNPC<ArmedGNPC>().actMode = ArmedGNPC.ActMode.Attack;
+                                    npc.GetGlobalNPC<ArmedGNPC>().actMode = ActMode.Attack;
                                     npc.GetGlobalNPC<ArmedGNPC>().ActTargetNPC = attackSource;
                                     int protmp = Projectile.NewProjectile(null, npc.Center, Vector2.Zero, ModContent.ProjectileType<WarningLine>(), 0, 0, Main.myPlayer, 1, npc.whoAmI);
                                     (Main.projectile[protmp].ModProjectile as WarningLine).EndTarget = attackSource;
@@ -223,7 +223,6 @@ namespace NPCAttacker
             if (king)
             {
                 TileX -= (TileFrameX - 1440) / 18;
-
             }
             else
             {
@@ -241,54 +240,5 @@ namespace NPCAttacker
             return new Vector2((TileX + 1) * 16f, (TileY + 1.5f) * 16f);
         }
 
-
-
-        public static string GetTextWith(string str, object arg)
-        {
-            string text = Language.GetTextValueWith($"Mods.ImproveGame.{str}", arg);
-            return ConvertLeftRight(text);
-        }
-
-        public static string ConvertLeftRight(string text)
-        {
-            // 支持输入<left>和<right>，就和ItemTooltip一样（原版只有Tooltip支持）
-            if (text.Contains("<right>"))
-            {
-                InputMode inputMode = InputMode.XBoxGamepad;
-                if (PlayerInput.UsingGamepad)
-                    inputMode = InputMode.XBoxGamepadUI;
-
-                if (inputMode == InputMode.XBoxGamepadUI)
-                {
-                    KeyConfiguration keyConfiguration = PlayerInput.CurrentProfile.InputModes[inputMode];
-                    string input = PlayerInput.BuildCommand("", true, keyConfiguration.KeyStatus["MouseRight"]);
-                    input = input.Replace(": ", "");
-                    text = text.Replace("<right>", input);
-                }
-                else
-                {
-                    text = text.Replace("<right>", Language.GetTextValue("Controls.RightClick"));
-                }
-            }
-            if (text.Contains("<left>"))
-            {
-                InputMode inputMode2 = InputMode.XBoxGamepad;
-                if (PlayerInput.UsingGamepad)
-                    inputMode2 = InputMode.XBoxGamepadUI;
-
-                if (inputMode2 == InputMode.XBoxGamepadUI)
-                {
-                    KeyConfiguration keyConfiguration2 = PlayerInput.CurrentProfile.InputModes[inputMode2];
-                    string input = PlayerInput.BuildCommand("", true, keyConfiguration2.KeyStatus["MouseLeft"]);
-                    input = input.Replace(": ", "");
-                    text = text.Replace("<left>", input);
-                }
-                else
-                {
-                    text = text.Replace("<left>", Language.GetTextValue("Controls.LeftClick"));
-                }
-            }
-            return text;
-        }
     }
 }

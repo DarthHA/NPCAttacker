@@ -5,6 +5,7 @@ namespace NPCAttacker.Projectiles
 {
     public class VampireKnifeProj : BaseAtkProj
     {
+        public override int ItemType => ItemID.VampireKnives;
         public override void AttackEffect()
         {
             int num106 = 4;

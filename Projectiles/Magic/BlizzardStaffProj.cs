@@ -6,6 +6,7 @@ namespace NPCAttacker.Projectiles
 {
     public class BlizzardStaffProj : BaseAtkProj
     {
+        public override int ItemType => ItemID.BlizzardStaff;
         public override void AttackEffect()
         {
             if (HasValidTarget())

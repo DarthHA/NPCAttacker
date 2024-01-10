@@ -5,6 +5,7 @@ namespace NPCAttacker.Projectiles
 {
     public class ClingerStaffProj : BaseAtkProj
     {
+        public override int ItemType => ItemID.ClingerStaff;
         public override void AttackEffect()
         {
             if (HasValidTarget())

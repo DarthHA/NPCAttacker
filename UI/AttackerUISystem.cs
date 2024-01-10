@@ -1,13 +1,12 @@
 using Microsoft.Xna.Framework;
 using NPCAttacker.Items;
 using NPCAttacker.NPCs;
-using NPCAttacker.UI;
 using System.Collections.Generic;
 using Terraria;
 using Terraria.ModLoader;
 using Terraria.UI;
 
-namespace NPCAttacker
+namespace NPCAttacker.UI
 {
     public class AttackerUISystem : ModSystem
     {

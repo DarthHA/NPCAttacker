@@ -7,6 +7,7 @@ namespace NPCAttacker.Projectiles
     {
         public override string Texture => "NPCAttacker/icon";
 
+        public virtual int ItemType => 0;
 
         public override void SetStaticDefaults()
         {

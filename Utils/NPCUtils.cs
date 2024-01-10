@@ -42,12 +42,6 @@ namespace NPCAttacker
         }
 
 
-
-
-
-
-
-
         public static float GetDangerDetectRange(NPC npc)
         {
             float result = NPCID.Sets.DangerDetectRange[npc.type];
@@ -218,14 +212,14 @@ namespace NPCAttacker
             {
                 num2 += Main.NPCAddHeight(npc);
                 Vector2 Pos = new(npc.Center.X + 20, npc.position.Y + npc.height + num2 + npc.gfxOffY);
-                Utils.DrawBorderString(Main.spriteBatch, team.ToString(), Pos - Main.screenPosition, color, scale);
+                Terraria.Utils.DrawBorderString(Main.spriteBatch, team.ToString(), Pos - Main.screenPosition, color, scale);
             }
             else if (Main.HealthBarDrawSettings == 2)
             {
 
                 num2 -= Main.NPCAddHeight(npc) / 2f;
                 Vector2 Pos = new(npc.Center.X + 20, npc.position.Y + num2 + npc.gfxOffY);
-                Utils.DrawBorderString(Main.spriteBatch, team.ToString(), Pos - Main.screenPosition, color, scale);
+                Terraria.Utils.DrawBorderString(Main.spriteBatch, team.ToString(), Pos - Main.screenPosition, color, scale);
             }
         }
 

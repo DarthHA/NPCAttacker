@@ -7,9 +7,12 @@ namespace NPCAttacker
 {
     public class StrikeOverride
     {
-
-        public static int StrikeNPCHook(On_NPC.orig_StrikeNPC_HitInfo_bool_bool orig, NPC Npc, NPC.HitInfo hit, bool fromNet, bool noPlayerInteraction)
+        public static int StrikeNPCHook(On_NPC.orig_StrikeNPC_HitInfo_bool_bool orig, NPC Npc, NPC.HitInfo hit, bool fromNet = false, bool noPlayerInteraction = false)
         {
+            if (!Npc.IsTownNPC())
+            {
+                return orig.Invoke(Npc, hit, fromNet, noPlayerInteraction);
+            }
             bool flag = Main.netMode == NetmodeID.SinglePlayer;
             flag &= !noPlayerInteraction;
             if (!Npc.active || Npc.life <= 0)
@@ -47,37 +50,31 @@ namespace NPCAttacker
                     Npc.PlayerInteraction(Main.myPlayer);
                 }
                 Npc.justHit = true;
-                if ((Npc.type == NPCID.CultistDevote || Npc.type == NPCID.CultistArcherBlue) && Main.netMode != NetmodeID.MultiplayerClient)
-                {
-                    int num2 = (int)(0f - Npc.ai[3] - 1f);
-                    if (num2 > -1 && Main.npc[num2].localAI[0] == 0f)
-                    {
-                        Main.npc[num2].localAI[0] = 1f;
-                    }
-                }
-
 
                 if (!NPCUtils.BuffNPC())
                 {
-                    if (Npc.aiStyle == 7 && (Npc.ai[0] == 3f || Npc.ai[0] == 4f || Npc.ai[0] == 16f || Npc.ai[0] == 17f))
+                    if (Npc.townNPC)
                     {
-                        NPC nPC = Main.npc[(int)Npc.ai[2]];
-                        if (nPC.active)
+                        if (Npc.aiStyle == 7 && (Npc.ai[0] == 3f || Npc.ai[0] == 4f || Npc.ai[0] == 16f || Npc.ai[0] == 17f))
                         {
-                            nPC.ai[0] = 1f;
-                            nPC.ai[1] = 300 + Main.rand.Next(300);
-                            nPC.ai[2] = 0f;
-                            nPC.localAI[3] = 0f;
-                            nPC.direction = hitDirection;
-                            nPC.netUpdate = true;
+                            NPC nPC = Main.npc[(int)Npc.ai[2]];
+                            if (nPC.active)
+                            {
+                                nPC.ai[0] = 1f;
+                                nPC.ai[1] = 300 + Main.rand.Next(300);
+                                nPC.ai[2] = 0f;
+                                nPC.localAI[3] = 0f;
+                                nPC.direction = hitDirection;
+                                nPC.netUpdate = true;
+                            }
                         }
+                        Npc.ai[0] = 1f;
+                        Npc.ai[1] = 300 + Main.rand.Next(300);
+                        Npc.ai[2] = 0f;
+                        Npc.localAI[3] = 0f;
+                        Npc.direction = hitDirection;
+                        Npc.netUpdate = true;
                     }
-                    Npc.ai[0] = 1f;
-                    Npc.ai[1] = 300 + Main.rand.Next(300);
-                    Npc.ai[2] = 0f;
-                    Npc.localAI[3] = 0f;
-                    Npc.direction = hitDirection;
-                    Npc.netUpdate = true;
                 }
 
                 if (Npc.IsTownNPC())
@@ -105,63 +102,6 @@ namespace NPCAttacker
                     }
                 }
 
-
-                if (Npc.aiStyle == 8 && Main.netMode != NetmodeID.MultiplayerClient)
-                {
-                    if (Npc.type == NPCID.RuneWizard)
-                    {
-                        Npc.ai[0] = 450f;
-                    }
-                    else if (Npc.type == NPCID.Necromancer || Npc.type == NPCID.NecromancerArmored)
-                    {
-                        if (Main.rand.NextBool(2))
-                        {
-                            Npc.ai[0] = 390f;
-                            Npc.netUpdate = true;
-                        }
-                    }
-                    else if (Npc.type == NPCID.DesertDjinn)
-                    {
-                        if (!Main.rand.NextBool(3))
-                        {
-                            Npc.ai[0] = 181f;
-                            Npc.netUpdate = true;
-                        }
-                    }
-                    else
-                    {
-                        Npc.ai[0] = 400f;
-                    }
-                    Npc.TargetClosest(true);
-                }
-                if (Npc.aiStyle == 97 && Main.netMode != NetmodeID.MultiplayerClient)
-                {
-                    Npc.localAI[1] = 1f;
-                    Npc.TargetClosest(true);
-                }
-                if (Npc.type == NPCID.DetonatingBubble)
-                {
-                    num = 0.0;
-                    Npc.ai[0] = 1f;
-                    Npc.ai[1] = 4f;
-                    Npc.dontTakeDamage = true;
-                }
-                if (Npc.type == NPCID.SantaNK1 && Npc.life >= Npc.lifeMax * 0.5 && Npc.life - num < Npc.lifeMax * 0.5)
-                {
-                    Gore.NewGore(null, Npc.position, Npc.velocity, 517, 1f);
-                }
-                if (Npc.type == NPCID.SpikedIceSlime)
-                {
-                    Npc.localAI[0] = 60f;
-                }
-                if (Npc.type == NPCID.SlimeSpiked)
-                {
-                    Npc.localAI[0] = 60f;
-                }
-                if (Npc.type == NPCID.SnowFlinx)
-                {
-                    Npc.localAI[0] = 1f;
-                }
                 if (!Npc.immortal)
                 {
                     if (Npc.realLife >= 0)
@@ -241,7 +181,7 @@ namespace NPCAttacker
                                 Npc.velocity.X = num3;
                             }
                         }
-                        if (Npc.type == NPCID.SnowFlinx)
+                        if (Npc.type == 185)
                         {
                             num3 *= 1.5f;
                         }
@@ -268,20 +208,9 @@ namespace NPCAttacker
                         Npc.velocity.X = num3 * hitDirection * Npc.knockBackResist;
                     }
                 }
-                if ((Npc.type == NPCID.WallofFlesh || Npc.type == NPCID.WallofFleshEye) && Npc.life <= 0)
-                {
-                    for (int i = 0; i < 200; i++)
-                    {
-                        if (Main.npc[i].active && (Main.npc[i].type == NPCID.WallofFlesh || Main.npc[i].type == NPCID.WallofFleshEye))
-                        {
-                            Main.npc[i].HitEffect(hitDirection, num, new bool?(hit.InstantKill));
-                        }
-                    }
-                }
-                else
-                {
-                    Npc.HitEffect(hit);
-                }
+
+                Npc.HitEffect(hit);
+
                 if (Npc.HitSound != null)
                 {
                     SoundEngine.PlaySound(Npc.HitSound, new Vector2?(Npc.position));

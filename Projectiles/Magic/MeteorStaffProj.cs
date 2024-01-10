@@ -6,6 +6,7 @@ namespace NPCAttacker.Projectiles
 {
     public class MeteorStaffProj : BaseAtkProj
     {
+        public override int ItemType => ItemID.MeteorStaff;
         public override void AttackEffect()
         {
             if (HasValidTarget())

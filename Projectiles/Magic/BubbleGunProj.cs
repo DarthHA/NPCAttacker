@@ -5,6 +5,7 @@ namespace NPCAttacker.Projectiles
 {
     public class BubbleGunProj : BaseAtkProj
     {
+        public override int ItemType => ItemID.BubbleGun;
         public override void AttackEffect()
         {
             for (int num179 = 0; num179 < 3; num179++)

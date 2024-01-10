@@ -6,6 +6,7 @@ namespace NPCAttacker.Projectiles.Magic
 {
     public class PrincessWeaponProj : BaseAtkProj
     {
+        public override int ItemType => ItemID.PrincessWeapon;
         public override void AttackEffect()
         {
             //Vector2 farthestSpawnPositionOnLine = Main.LocalPlayer.GetFarthestSpawnPositionOnLine(GetTargetPos(), Projectile.velocity.X, Projectile.velocity.Y);

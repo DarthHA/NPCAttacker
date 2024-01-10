@@ -29,8 +29,8 @@ namespace NPCAttacker.UI
         public bool ValidItem(Item item)
         {
             if (item.IsAir) return true;
-            if (item.channel) return false;
             if (Main.LocalPlayer.talkNPC == -1) return false;
+            if (item.channel || item.accessory) return false;
             NPC npc = Main.npc[Main.LocalPlayer.talkNPC];
             if (NPCID.Sets.AttackType[npc.type] == 1)
             {
@@ -85,9 +85,11 @@ namespace NPCAttacker.UI
                 }
                 else    //模组非悠悠球非矛非蓄力非阔剑武器
                 {
+                    if (item.shoot <= ProjectileID.None) return false;
+
                     if (item.DamageType == DamageClass.Ranged && item.stack >= Math.Min(99, item.maxStack) && item.consumable) return true;
                     else if (item.DamageType == DamageClass.Melee && item.stack >= Math.Min(99, item.maxStack) && item.consumable) return true;
-                    else if (!ItemID.Sets.Spears[item.type] && !ItemID.Sets.Yoyo[item.type] && item.DamageType == DamageClass.Melee && item.noMelee && item.noUseGraphic) return true;
+                    else if (!ItemID.Sets.Spears[item.type] && !ItemID.Sets.Yoyo[item.type] && item.DamageType == DamageClass.Melee && item.useStyle == ItemUseStyleID.Swing && item.noMelee) return true;
                     else return false;
                 }
             }

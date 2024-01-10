@@ -1,10 +1,12 @@
 ﻿using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.ID;
 
 namespace NPCAttacker.Projectiles.Ranged
 {
     public class QuadBarrelShotgunProj : BaseAtkProj
     {
+        public override int ItemType => ItemID.QuadBarrelShotgun;
         public override void AttackEffect()
         {
             int ammo = VanillaItemProjFix.AmmoType;

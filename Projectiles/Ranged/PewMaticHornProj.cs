@@ -7,6 +7,7 @@ namespace NPCAttacker.Projectiles.Ranged
 
     public class PewMaticHornProj : BaseAtkProj
     {
+        public override int ItemType => ItemID.PewMaticHorn;
         public override void AttackEffect()
         {
             float speedX4 = Main.rand.Next(-15, 16) * 0.075f;
