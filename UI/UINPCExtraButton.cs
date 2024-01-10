@@ -61,9 +61,9 @@ namespace NPCAttacker.UI
         {
             SoundEngine.PlaySound(SoundID.MenuOpen);
             Main.playerInventory = true;
-            // remove the chat window...
+
             Main.npcChatText = "";
-            // and start an instance of our UIState.
+
             ArmUI.OpenUI();
             ArmorUI.OpenUI();
             if (Main.LocalPlayer.talkNPC != -1)
@@ -73,7 +73,6 @@ namespace NPCAttacker.UI
                     ArmAltUI.OpenUI();
                 }
             }
-            // Note that even though we remove the chat window, Main.LocalPlayer.talkNPC will still be set correctly and we are still technically chatting with the npc.
         }
 
 
@@ -114,7 +113,7 @@ namespace NPCAttacker.UI
         public Vector2 Get5ButtonPos(string focusText1, string focusText3)
         {
             DynamicSpriteFont font = Terraria.GameContent.FontAssets.MouseText.Value;
-            Terraria.Utils.WordwrapString(Main.npcChatText, font, 460, 10, out int numLines);
+            Utils.WordwrapString(Main.npcChatText, font, 460, 10, out int numLines);
             numLines++;
 
             float PosY = 130 + numLines * 30;

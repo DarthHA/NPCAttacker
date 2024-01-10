@@ -114,7 +114,7 @@ namespace NPCAttacker.Projectiles
 
             //排除原版某些弹幕的独一性
             if (projectile.npcProj)
-            {                
+            {
                 if (projectile.type == ProjectileID.BloodCloudRaining || projectile.type == ProjectileID.RainCloudRaining)
                 {
 
@@ -291,9 +291,9 @@ namespace NPCAttacker.Projectiles
                     }
                     return false;
                 }
-                
+
             }
-            
+
             return true;
         }
 

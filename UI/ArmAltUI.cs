@@ -104,8 +104,7 @@ namespace NPCAttacker.UI
 
         }
 
-        // Update is called on a UIState while it is the active state of the UserInterface.
-        // We use Update to handle automatically closing our UI when the player is no longer talking to our Example Person NPC.
+
         public override void Update(GameTime gameTime)
         {
             base.Update(gameTime);
@@ -124,7 +123,6 @@ namespace NPCAttacker.UI
         {
             base.DrawSelf(spriteBatch);
 
-            // This will hide the crafting menu similar to the reforge menu. For best results this UI is placed before "Vanilla: Inventory" to prevent 1 frame of the craft menu showing.
             Main.hidePlayerCraftingMenu = true;
 
             const int slotX = 50;

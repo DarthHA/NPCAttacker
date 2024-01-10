@@ -18,7 +18,6 @@ namespace NPCAttacker.Items
 
         public override void SetDefaults()
         {
-            Item.damage = 0;
             Item.noMelee = true;
             Item.width = 36;
             Item.height = 38;
@@ -31,6 +30,8 @@ namespace NPCAttacker.Items
             Item.rare = ItemRarityID.Expert;
             Item.UseSound = SoundID.Item1;
             Item.channel = true;
+            Item.noMelee = true;
+            Item.noUseGraphic = true;
         }
 
         public override bool AltFunctionUse(Player player)

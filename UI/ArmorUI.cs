@@ -7,7 +7,7 @@ using Terraria.UI.Chat;
 
 namespace NPCAttacker.UI
 {
-    // This class represents the UIState for our ExamplePerson Awesomeify chat function. It is similar to the Goblin Tinkerer's Reforge function, except it only gives Awesome and ReallyAwesome prefixes. 
+
     public class ArmorUI : UIState
     {
         private static VanillaItemSlotWrapper _vanillaItemSlot;
@@ -20,7 +20,7 @@ namespace NPCAttacker.UI
                 Top = { Pixels = 530 },
                 ValidItemFunc = new Func<Item, bool>(ValidItem)
             };
-            // Here we limit the items that can be placed in the slot. We are fine with placing an empty item in or a non-empty item that can be prefixed. Calling Prefix(-3) is the way to know if the item in question can take a prefix or not.
+
             Append(_vanillaItemSlot);
         }
 
@@ -37,8 +37,7 @@ namespace NPCAttacker.UI
 
         }
 
-        // Update is called on a UIState while it is the active state of the UserInterface.
-        // We use Update to handle automatically closing our UI when the player is no longer talking to our Example Person NPC.
+
         public override void Update(GameTime gameTime)
         {
             base.Update(gameTime);
@@ -57,7 +56,7 @@ namespace NPCAttacker.UI
         {
             base.DrawSelf(spriteBatch);
 
-            // This will hide the crafting menu similar to the reforge menu. For best results this UI is placed before "Vanilla: Inventory" to prevent 1 frame of the craft menu showing.
+
             Main.hidePlayerCraftingMenu = true;
 
             const int slotX = 50;

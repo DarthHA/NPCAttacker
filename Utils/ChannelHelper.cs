@@ -1,5 +1,4 @@
 ﻿using NPCAttacker.Systems;
-using System.Net.Http.Headers;
 using Terraria;
 using Terraria.ID;
 
@@ -11,16 +10,19 @@ namespace NPCAttacker
         {
             if (!npc.IsTownNPC()) return false;
             if (ArmedGNPC.GetWeapon(npc).IsAir || !ArmedGNPC.GetWeapon(npc).channel) return false;
-            if (npc.GetGlobalNPC<ArmedGNPC>().actMode != ArmedGNPC.ActMode.Attack && !npc.GetGlobalNPC<ArmedGNPC>().AlertMode) return true; //保护机制，防止快速使用蓄力弹幕卡死
+            //if (npc.GetGlobalNPC<ArmedGNPC>().actMode != ArmedGNPC.ActMode.Attack && !npc.GetGlobalNPC<ArmedGNPC>().AlertMode) return true; //保护机制，防止快速使用蓄力弹幕卡死
             bool result = false;
             foreach (Projectile proj in Main.projectile)
             {
                 if (proj.active)
                 {
-                    if (proj.GetGlobalProjectile<SpecialUseProj>().NPCProjOwner == npc.whoAmI && proj.GetGlobalProjectile<SpecialUseProj>().ChannelTimer > 0)
+                    if (proj.GetGlobalProjectile<SpecialUseProj>().NPCProjOwner == npc.whoAmI && proj.GetGlobalProjectile<SpecialUseProj>().ChannelTimer >= 0)
                     {
-                        proj.GetGlobalProjectile<SpecialUseProj>().ChannelTimer = (int)(NPCStats.GetModifiedAttackTime(npc) * (NeedBreakChannel(ArmedGNPC.GetWeapon(npc)) ? 0.75f : 1.5f));
                         result = true;
+                        if (proj.GetGlobalProjectile<SpecialUseProj>().ChannelTimer > 0)
+                        {
+                            proj.GetGlobalProjectile<SpecialUseProj>().ChannelTimer = (int)(NPCStats.GetModifiedAttackTime(npc) * (NeedBreakChannel(ArmedGNPC.GetWeapon(npc)) ? 0.75f : 1.5f));
+                        }
                     }
                 }
             }

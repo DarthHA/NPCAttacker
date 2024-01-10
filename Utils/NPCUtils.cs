@@ -21,7 +21,6 @@ namespace NPCAttacker
                 && npc.type != NPCID.OldMan
                 && npc.type != NPCID.SkeletonMerchant
                 && !NPCID.Sets.IsTownSlime[npc.type];
-            //return npc.townNPC && !NPCID.Sets.TownCritter[npc.type] && npc.type != NPCID.TravellingMerchant && npc.type != NPCID.OldMan && npc.type != NPCID.SkeletonMerchant;
         }
 
 
@@ -34,7 +33,7 @@ namespace NPCAttacker
         {
             Item result = new();
             result.netDefaults(target.netID);
-            result = target.Clone()/* tModPorter Note: Removed. Use Clone, ResetPrefix or Refresh */;
+            result = target.Clone();
             result.favorited = target.favorited;
             result.stack = target.stack;
             result.prefix = target.prefix;

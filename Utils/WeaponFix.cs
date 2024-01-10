@@ -147,7 +147,7 @@ namespace NPCAttacker
             Projectile.NewProjectile(null, vector3, spinningpoint, 977, (int)(damage * 0.5f), 0f, Main.myPlayer, num6);
         }
 
-        
+
     }
 
     public static class WeaponClassify

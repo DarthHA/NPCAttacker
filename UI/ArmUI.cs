@@ -103,9 +103,8 @@ namespace NPCAttacker.UI
                 if (WeaponClassify.UseShortSword(item)) return true;//短剑类
                 if (item.DamageType == DamageClass.MeleeNoSpeed || item.DamageType == DamageClass.Melee)
                 {
-                    if (item.shoot == ProjectileID.None && !item.noMelee && !item.noUseGraphic) return true;  //真近战
+                    if (item.shoot == ProjectileID.None && !item.noMelee && !item.noUseGraphic && item.useStyle == ItemUseStyleID.Swing) return true;  //真近战
                     if (item.shoot > ProjectileID.None && item.useStyle == ItemUseStyleID.Swing) return true;//射弹剑
-                    if (item.shoot > ProjectileID.None && (!item.noMelee || !item.noUseGraphic)) return true;//射弹剑2
                 }
                 return false;
 
@@ -137,7 +136,6 @@ namespace NPCAttacker.UI
         {
             base.DrawSelf(spriteBatch);
 
-            // This will hide the crafting menu similar to the reforge menu. For best results this UI is placed before "Vanilla: Inventory" to prevent 1 frame of the craft menu showing.
             Main.hidePlayerCraftingMenu = true;
 
             const int slotX = 50;

@@ -2,8 +2,10 @@
 using Microsoft.Xna.Framework.Graphics;
 using NPCAttacker.Override;
 using Terraria;
+using Terraria.Chat;
 using Terraria.GameContent;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace NPCAttacker
@@ -81,6 +83,7 @@ namespace NPCAttacker
             if (!Weapon.IsAir && (Weapon.type == 5129 || Weapon.type == ItemID.RottenEgg))
             {
                 npc.StrikeInstantKill();
+
             }
         }
         public override void PostAI(NPC npc)
@@ -91,7 +94,7 @@ namespace NPCAttacker
             }
         }
 
-        public override void DrawTownAttackGun(NPC npc, ref Texture2D item, ref Rectangle itemFrame, ref float scale, ref int horizontalHoldoutOffset)/* tModPorter Note: closeness is now horizontalHoldoutOffset, use 'horizontalHoldoutOffset = Main.DrawPlayerItemPos(1f, itemtype) - originalClosenessValue' to adjust to the change. See docs for how to use hook with an item type. */
+        public override void DrawTownAttackGun(NPC npc, ref Texture2D item, ref Rectangle itemFrame, ref float scale, ref int horizontalHoldoutOffset)
         {
             if (Weapon.IsAir) return;
             Main.instance.LoadItem(Weapon.type);

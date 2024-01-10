@@ -1,8 +1,6 @@
 ﻿
 
 using Microsoft.Xna.Framework;
-using NPCAttacker.Systems;
-using System;
 using Terraria;
 using Terraria.ID;
 

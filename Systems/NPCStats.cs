@@ -253,7 +253,7 @@ namespace NPCAttacker
             return result;
         }
 
-   
+
 
         public static void ModifySpeed(NPC npc, ref float Speed, ref float Acc)
         {

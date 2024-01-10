@@ -1909,47 +1909,44 @@ namespace NPCAttacker.Override
                         {
                             if (!ArmedGNPC.GetAltWeapon(Npc).IsAir)
                             {
-                                if (!ChannelHelper.CheckAndContinueChannelProj(Npc))
+                                Item AlterWeapon = ArmedGNPC.GetAltWeapon(Npc);
+                                int shootAlt = AlterWeapon.shoot;
+                                Vector2 ShootPos = new(Npc.Center.X + Npc.spriteDirection * 16, Npc.Center.Y - 2f);
+                                float SpeedAlt = AlterWeapon.shootSpeed;
+                                int DamageAlt = AlterWeapon.damage;
+                                float KnockbackAlt = AlterWeapon.knockBack;
+
+                                NPCLoader.TownNPCAttackStrength(Npc, ref DamageAlt, ref KnockbackAlt);
+                                NPCLoader.TownNPCAttackProjSpeed(Npc, ref SpeedAlt, ref gravityCorrection, ref randomOffset);
+                                if (Main.expertMode)
                                 {
-                                    Item AlterWeapon = ArmedGNPC.GetAltWeapon(Npc);
-                                    int shootAlt = AlterWeapon.shoot;
-                                    Vector2 ShootPos = new(Npc.Center.X + Npc.spriteDirection * 16, Npc.Center.Y - 2f);
-                                    float SpeedAlt = AlterWeapon.shootSpeed;
-                                    int DamageAlt = AlterWeapon.damage;
-                                    float KnockbackAlt = AlterWeapon.knockBack;
+                                    DamageAlt = (int)(DamageAlt * Main.GameModeInfo.TownNPCDamageMultiplier);
+                                }
+                                DamageAlt = (int)(DamageAlt * damageMult);
+                                Vector2 ShootVelAlt = Vector2.Normalize(ShootVel) * SpeedAlt;
 
-                                    NPCLoader.TownNPCAttackStrength(Npc, ref DamageAlt, ref KnockbackAlt);
-                                    NPCLoader.TownNPCAttackProjSpeed(Npc, ref SpeedAlt, ref gravityCorrection, ref randomOffset);
-                                    if (Main.expertMode)
-                                    {
-                                        DamageAlt = (int)(DamageAlt * Main.GameModeInfo.TownNPCDamageMultiplier);
-                                    }
-                                    DamageAlt = (int)(DamageAlt * damageMult);
-                                    Vector2 ShootVelAlt = Vector2.Normalize(ShootVel) * SpeedAlt;
+                                if (AlterWeapon.ModItem != null)            //模组武器
+                                {
+                                    CombinedHooks.ModifyShootStats(Main.LocalPlayer, AlterWeapon, ref ShootPos, ref ShootVelAlt, ref shootAlt, ref DamageAlt, ref KnockbackAlt);
+                                    CombinedHooks.Shoot(Main.LocalPlayer, AlterWeapon, null, ShootPos, ShootVelAlt, shootAlt, DamageAlt, KnockbackAlt);
+                                }
+                                else            //原版武器
+                                {
 
-                                    if (AlterWeapon.ModItem != null)            //模组武器
+                                    if (VanillaItemProjFix.TransFormProj(Npc, AlterWeapon.type) != -1)
                                     {
-                                        CombinedHooks.ModifyShootStats(Main.LocalPlayer, AlterWeapon, ref ShootPos, ref ShootVelAlt, ref shootAlt, ref DamageAlt, ref KnockbackAlt);
-                                        CombinedHooks.Shoot(Main.LocalPlayer, AlterWeapon, null, ShootPos, ShootVelAlt, shootAlt, DamageAlt, KnockbackAlt);
+                                        shootAlt = VanillaItemProjFix.TransFormProj(Npc, AlterWeapon.type);
                                     }
-                                    else            //原版武器
+                                    CombinedHooks.ModifyShootStats(Main.LocalPlayer, AlterWeapon, ref ShootPos, ref ShootVelAlt, ref shootAlt, ref DamageAlt, ref KnockbackAlt);
+                                    if (CombinedHooks.Shoot(Main.LocalPlayer, AlterWeapon, null, ShootPos, ShootVelAlt, shootAlt, DamageAlt, KnockbackAlt))
                                     {
+                                        Projectile.NewProjectile(null, ShootPos, ShootVelAlt, shootAlt, DamageAlt, KnockbackAlt, Main.myPlayer);
+                                    }
+                                }
 
-                                        if (VanillaItemProjFix.TransFormProj(Npc, AlterWeapon.type) != -1)
-                                        {
-                                            shootAlt = VanillaItemProjFix.TransFormProj(Npc, AlterWeapon.type);
-                                        }
-                                        CombinedHooks.ModifyShootStats(Main.LocalPlayer, AlterWeapon, ref ShootPos, ref ShootVelAlt, ref shootAlt, ref DamageAlt, ref KnockbackAlt);
-                                        if (CombinedHooks.Shoot(Main.LocalPlayer, AlterWeapon, null, ShootPos, ShootVelAlt, shootAlt, DamageAlt, KnockbackAlt))
-                                        {
-                                            Projectile.NewProjectile(null, ShootPos, ShootVelAlt, shootAlt, DamageAlt, KnockbackAlt, Main.myPlayer);
-                                        }
-                                    }
-
-                                    if (AlterWeapon.UseSound != null)
-                                    {
-                                        SoundEngine.PlaySound(AlterWeapon.UseSound, Npc.Center);
-                                    }
+                                if (AlterWeapon.UseSound != null)
+                                {
+                                    SoundEngine.PlaySound(AlterWeapon.UseSound, Npc.Center);
                                 }
                             }
                         }
@@ -2286,7 +2283,7 @@ namespace NPCAttacker.Override
                                         if (AmmoFix.PickAmmo(Npc, Weapon) == 0) shoot = 0;
                                     }
                                 }
-                                
+
 
                                 if (shoot > 0)
                                 {

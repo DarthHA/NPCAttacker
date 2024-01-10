@@ -13,7 +13,6 @@ namespace NPCAttacker.NPCs
         public override void SetStaticDefaults()
         {
             NPCID.Sets.ImmuneToAllBuffs[NPC.type] = true;
-
         }
 
         public override void SetDefaults()

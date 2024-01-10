@@ -8,7 +8,7 @@ using Terraria.UI;
 
 namespace NPCAttacker.UI
 {
-    public class AttackerUISystem : ModSystem
+    public class AttackerUIManager : ModSystem
     {
 
         public UINPCExtraButton _UINPCExtraButton;

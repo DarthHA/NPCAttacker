@@ -159,15 +159,14 @@ namespace NPCAttacker.NPCs
 
         }
 
-        public class ThornHitEffect : GlobalNPC
+
+        public override void OnHitNPC(NPC npc, NPC target, NPC.HitInfo hit)
         {
-            public override void OnHitNPC(NPC npc, NPC target, NPC.HitInfo hit)
+            if (target.HasBuff(BuffID.Thorns) && target.IsTownNPC())
             {
-                if (target.HasBuff(BuffID.Thorns) && target.IsTownNPC())
-                {
-                    npc.SimpleStrikeNPC(hit.Damage, -Math.Sign(target.Center.X - npc.Center.X), false, hit.Knockback);
-                }
+                npc.SimpleStrikeNPC(hit.Damage, -Math.Sign(target.Center.X - npc.Center.X), false, hit.Knockback);
             }
         }
+
     }
 }

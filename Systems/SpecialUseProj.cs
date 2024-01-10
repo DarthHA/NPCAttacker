@@ -1,7 +1,6 @@
 ﻿using NPCAttacker.Projectiles;
 using Terraria;
 using Terraria.DataStructures;
-using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace NPCAttacker.Systems

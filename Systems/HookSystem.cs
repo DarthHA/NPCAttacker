@@ -17,9 +17,9 @@ namespace NPCAttacker.Systems
             On_Main.DrawThickCursor += CurserOverride.DrawThickCursorHook;
             On_NPC.Collision_MoveSlopesAndStairFall += CollisionOverride.Collision_MoveSlopesAndStairFall;
 
-            On_Projectile.Update += On_Projectile_Update;
-            On_NPC.UpdateNPC_Inner += On_NPC_UpdateNPC_Inner;
-            On_Main.DrawProj += On_Main_DrawProj;
+            On_Projectile.Update += ProjectileUpdateHook;
+            On_NPC.UpdateNPC_Inner += UpdateNPCHook;
+            On_Main.DrawProj += DrawProjHook;
 
             On_Player.ChooseAmmo += UseNPCAmmo;
             On_Player.CheckMana_int_bool_bool += PreventManaCost1;
@@ -35,9 +35,9 @@ namespace NPCAttacker.Systems
             On_Main.DrawThickCursor -= CurserOverride.DrawThickCursorHook;
             On_NPC.Collision_MoveSlopesAndStairFall -= CollisionOverride.Collision_MoveSlopesAndStairFall;
 
-            On_Projectile.Update -= On_Projectile_Update;
-            On_Main.DrawProj -= On_Main_DrawProj;
-            On_NPC.UpdateNPC_Inner -= On_NPC_UpdateNPC_Inner;
+            On_Projectile.Update -= ProjectileUpdateHook;
+            On_Main.DrawProj -= DrawProjHook;
+            On_NPC.UpdateNPC_Inner -= UpdateNPCHook;
 
             On_Player.ChooseAmmo -= UseNPCAmmo;
             On_Player.CheckMana_int_bool_bool -= PreventManaCost1;
@@ -83,7 +83,7 @@ namespace NPCAttacker.Systems
             return orig.Invoke(self, weapon);
         }
 
-        private void On_NPC_UpdateNPC_Inner(On_NPC.orig_UpdateNPC_Inner orig, NPC self, int i)
+        private void UpdateNPCHook(On_NPC.orig_UpdateNPC_Inner orig, NPC self, int i)
         {
             if (!self.active)
             {
@@ -105,7 +105,7 @@ namespace NPCAttacker.Systems
         }
 
 
-        internal void On_Main_DrawProj(On_Main.orig_DrawProj orig, Main self, int i)
+        internal void DrawProjHook(On_Main.orig_DrawProj orig, Main self, int i)
         {
             Projectile proj = Main.projectile[i];
             if (!proj.active)
@@ -154,7 +154,7 @@ namespace NPCAttacker.Systems
             orig.Invoke(self, i);
         }
 
-        internal static void On_Projectile_Update(On_Projectile.orig_Update orig, Projectile self, int i)
+        internal static void ProjectileUpdateHook(On_Projectile.orig_Update orig, Projectile self, int i)
         {
             if (!self.active)
             {
