@@ -47,13 +47,13 @@ Mods: {
 			Arm: Arm
 			RemoveWeapon: Remove this weapon here to disarm this NPC
 			PlaceAWeapon: Place a weapon here to arm this NPC
-			ComplexNote: Note: It may be difficult for NPCs to use some special weapon[i:3541][i:3858]
+			ComplexNote: Note: The effect of complex weapons in other mods cannot be guaranteed.
 			NurseWeapon: This NPC can be equipped with enough healing potion(>= 30) to enhance effects[i:188]
-			ThrowerWeapon: This NPC can be equipped with throwing melee weapon[i:284] or enough comsumable ranged weapons(>= 99 or max stack)[i:42]
+			ThrowerWeapon: This NPC can be equipped with throwing melee weapon[i:284][i:5011][i:3262] or enough comsumable ranged weapons(>= 99 or max stack)[i:42]
 			RangerWeapon: This NPC can be equipped with ranged weapon[i:533],but you need to prepare enough ammos for it
 			DryadWeapon: This NPC can be equipped with enough mana potion(>= 30) to enhance effects[i:189]
 			MagicWeapon: This NPC can be equipped with magic weapon[i:1931], but you need to prepare mana potions for it
-			MeleeWeapon: This NPC can be equipped with broadsword-like melee weapon[i:426] or whip[i:4672]
+			MeleeWeapon: This NPC can be equipped with melee weapon[i:426][i:280] or whip[i:4672]
 			NurseWeaponDescription: The healing amount of this NPC increases
 			DryadWeaponDescription: This NPC will provide extra attack and movement speed, defense, and life regen to NPCs nearby
 			SlotsNotAvailable: Not Available
@@ -225,6 +225,8 @@ Mods: {
 			ZenithProj.DisplayName: ""
 			PumpkinSwordProj.DisplayName: ""
 			BlueFireProj.DisplayName: ""
+			PiranhaGunProj.DisplayName: ""
+			TwilightBowProj.DisplayName: ""
 		}
 	}
 }

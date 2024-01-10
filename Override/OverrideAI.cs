@@ -719,7 +719,7 @@ namespace NPCAttacker.Override
                         {
                             if (NPCID.Sets.PrettySafe[Npc.type] != -1 && NPCID.Sets.PrettySafe[Npc.type] < NearestDist)
                             {
-                                if (Npc.GetGlobalNPC<ArmedGNPC>().actMode == ArmedGNPC.ActMode.Attack)
+                                if (Npc.GetGlobalNPC<ArmedGNPC>().actMode == ArmedGNPC.ActMode.Attack || Npc.GetGlobalNPC<ArmedGNPC>().AlertMode)  //在攻击和警戒状态下会持续攻击
                                 {
                                     HasTarget = true;
                                     HasTarget2 = true;
@@ -767,7 +767,7 @@ namespace NPCAttacker.Override
                             }
                             else if (Npc.ai[0] == 1f)
                             {
-                                if (Npc.GetGlobalNPC<ArmedGNPC>().actMode == ArmedGNPC.ActMode.Attack)
+                                if (Npc.GetGlobalNPC<ArmedGNPC>().actMode == ArmedGNPC.ActMode.Attack || Npc.GetGlobalNPC<ArmedGNPC>().AlertMode)
                                 {
                                     if (Npc.direction != ShootDir)
                                     {
@@ -986,6 +986,11 @@ namespace NPCAttacker.Override
                             Npc.direction *= -1;
                             Npc.netUpdate = true;
                         }
+                    }
+
+                    if (Npc.GetGlobalNPC<ArmedGNPC>().AlertMode)           //一个补丁
+                    {
+                        Npc.velocity.X = 0f;
                     }
                 }
                 else if (Npc.ai[0] == 1f)
@@ -1853,7 +1858,7 @@ namespace NPCAttacker.Override
                             }
                         }
 
-                        ShootVel += Terraria.Utils.RandomVector2(Main.rand, 0f - randomOffset, randomOffset);
+                        ShootVel += Utils.RandomVector2(Main.rand, 0f - randomOffset, randomOffset);
 
                         if (ArmedGNPC.GetWeapon(Npc).IsAir || Npc.type == NPCID.Nurse)         //无武器时的发射弹幕, 注意护士的武器不生效
                         {
@@ -2251,29 +2256,37 @@ namespace NPCAttacker.Override
                             {
                                 Item Weapon = ArmedGNPC.GetWeapon(Npc);
                                 int shoot = Weapon.shoot;
-                                if (Weapon.useAmmo > 0 && !Weapon.channel)
+                                if (Weapon.useAmmo > 0)
                                 {
-                                    if (AmmoFix.PickAmmo(Npc, Weapon) > 0)
+                                    if (!Weapon.channel)             //非蓄力武器
                                     {
-                                        shoot = AmmoFix.PickAmmo(Npc, Weapon);
-                                        ShootVel = Vector2.Normalize(ShootVel) * (ShootVel.Length() + AmmoFix.GetAmmoSpeed(Npc, Weapon));
-
-                                        if (Weapon.ModItem == null)  //原版武器弹药特殊变更
+                                        if (AmmoFix.PickAmmo(Npc, Weapon) > 0)
                                         {
-                                            if (Weapon.useAmmo == AmmoID.Bullet || Weapon.useAmmo == AmmoID.Arrow || Weapon.useAmmo == AmmoID.Dart || Weapon.useAmmo == AmmoID.NailFriendly)
+                                            shoot = AmmoFix.PickAmmo(Npc, Weapon);
+                                            ShootVel = Vector2.Normalize(ShootVel) * (ShootVel.Length() + AmmoFix.GetAmmoSpeed(Npc, Weapon));
+
+                                            if (Weapon.ModItem == null)  //原版武器弹药特殊变更
                                             {
-                                                if (VanillaItemProjFix.IsUseSpecialProj[Weapon.type] != 0)
+                                                if (Weapon.useAmmo == AmmoID.Bullet || Weapon.useAmmo == AmmoID.Arrow || Weapon.useAmmo == AmmoID.Dart || Weapon.useAmmo == AmmoID.NailFriendly)
                                                 {
-                                                    shoot = VanillaItemProjFix.IsUseSpecialProj[Weapon.type];
+                                                    if (VanillaItemProjFix.IsUseSpecialProj[Weapon.type] != 0)
+                                                    {
+                                                        shoot = VanillaItemProjFix.IsUseSpecialProj[Weapon.type];
+                                                    }
                                                 }
                                             }
                                         }
+                                        else
+                                        {
+                                            shoot = 0;
+                                        }
                                     }
-                                    else
+                                    else           //蓄力武器
                                     {
-                                        shoot = 0;
+                                        if (AmmoFix.PickAmmo(Npc, Weapon) == 0) shoot = 0;
                                     }
                                 }
+                                
 
                                 if (shoot > 0)
                                 {
@@ -2731,16 +2744,16 @@ namespace NPCAttacker.Override
                                             switch (Weapon.type)
                                             {
                                                 case ItemID.TheHorsemansBlade:
-                                                    MeleeWeaponFix.PumpkinSword(target.whoAmI, Damage, knockBack);
+                                                    OnHitEffectFix.PumpkinSword(target.whoAmI, Damage, knockBack);
                                                     break;
                                                 case ItemID.BeeKeeper:
-                                                    MeleeWeaponFix.BeeKeeperHit(target, MeleeHitbox, Damage);
+                                                    OnHitEffectFix.BeeKeeperHit(target, MeleeHitbox, Damage);
                                                     break;
                                                 case ItemID.Bladetongue:
-                                                    MeleeWeaponFix.Bladetongue(Npc, MeleeHitbox, Damage, knockBack);
+                                                    OnHitEffectFix.Bladetongue(Npc, MeleeHitbox, Damage, knockBack);
                                                     break;
                                                 case ItemID.TentacleSpike:
-                                                    MeleeWeaponFix.TentacleSpike_TrySpiking(Npc, target, Damage, knockBack);
+                                                    OnHitEffectFix.TentacleSpike_TrySpiking(Npc, target, Damage, knockBack);
                                                     break;
                                                 case ItemID.BatBat:
                                                     if (Npc.life < Npc.lifeMax)
@@ -2760,7 +2773,7 @@ namespace NPCAttacker.Override
                                                     {
                                                         target.AddBuff(BuffID.OnFire, 3 * 60);
                                                     }
-                                                    MeleeWeaponFix.Volcano_TrySpawningVolcano(target, (int)(Damage * 0.75f), knockBack);
+                                                    OnHitEffectFix.Volcano_TrySpawningVolcano(target, (int)(Damage * 0.75f), knockBack);
                                                     break;
                                                 case ItemID.DD2SquireDemonSword:
                                                     if (Main.rand.NextBool(4))
@@ -2769,10 +2782,10 @@ namespace NPCAttacker.Override
                                                     }
                                                     break;
                                                 case 795:    //血腥屠刀
-                                                    MeleeWeaponFix.BloodButcherer_TryButchering(Npc, target, Damage, knockBack);
+                                                    OnHitEffectFix.BloodButcherer_TryButchering(Npc, target, Damage, knockBack);
                                                     break;
                                                 case 155:  //村正
-                                                    MeleeWeaponFix.SpawnMuramasaCut(Npc, target, Damage);
+                                                    OnHitEffectFix.SpawnMuramasaCut(Npc, target, Damage);
                                                     break;
                                             }
                                         }
@@ -3032,7 +3045,7 @@ namespace NPCAttacker.Override
                     return;
                 }
 
-                bool ActNoDanger = Npc.ai[0] < Stop && !HasTarget && !Npc.wet && !Npc.GetGlobalNPC<ArmedGNPC>().AlertMode;
+                bool NoDangerSoCanTalk = Npc.ai[0] < Stop && !HasTarget && !Npc.wet && !Npc.GetGlobalNPC<ArmedGNPC>().AlertMode && Npc.GetGlobalNPC<ArmedGNPC>().actMode == ArmedGNPC.ActMode.Default;
                 bool ReadyToFight = (Npc.ai[0] < 2f || Npc.ai[0] == 8f) && (HasTarget || HasTarget2);
                 if (Npc.localAI[1] > 0f)
                 {
@@ -3059,7 +3072,7 @@ namespace NPCAttacker.Override
                         }
                     }
                 }
-                if (Npc.CanTalk && ActNoDanger && Npc.ai[0] == 0f && Npc.velocity.Y == 0f && Main.rand.NextBool(300))          //npc之间互相谈话
+                if (Npc.CanTalk && NoDangerSoCanTalk && Npc.ai[0] == 0f && Npc.velocity.Y == 0f && Main.rand.NextBool(300))          //npc之间互相谈话
                 {
                     int TalkTime = 420;
                     TalkTime = (!Main.rand.NextBool(2)) ? (TalkTime * Main.rand.Next(1, 3)) : (TalkTime * Main.rand.Next(1, 4));
@@ -3071,22 +3084,25 @@ namespace NPCAttacker.Override
                         bool CannotTalk = (nPC4.ai[0] == 1f && nPC4.closeDoor) || (nPC4.ai[0] == 1f && nPC4.ai[1] > 200f) || nPC4.ai[0] > 1f || nPC4.wet;
                         if (nPC4 != Npc && nPC4.active && nPC4.CanBeTalkedTo && !CannotTalk && nPC4.Distance(Npc.Center) < TalkRange && nPC4.Distance(Npc.Center) > TalkMinRange && Collision.CanHit(Npc.Center, 0, 0, nPC4.Center, 0, 0))
                         {
-                            int num94 = (Npc.position.X < nPC4.position.X).ToDirectionInt();
-                            Npc.ai[0] = 3f;
-                            Npc.ai[1] = TalkTime;
-                            Npc.ai[2] = NPCToTalk;
-                            Npc.direction = num94;
-                            Npc.netUpdate = true;
-                            nPC4.ai[0] = 4f;
-                            nPC4.ai[1] = TalkTime;
-                            nPC4.ai[2] = Npc.whoAmI;
-                            nPC4.direction = -num94;
-                            nPC4.netUpdate = true;
-                            break;
+                            if (!nPC4.GetGlobalNPC<ArmedGNPC>().AlertMode && nPC4.GetGlobalNPC<ArmedGNPC>().actMode == ArmedGNPC.ActMode.Default)
+                            {
+                                int num94 = (Npc.position.X < nPC4.position.X).ToDirectionInt();
+                                Npc.ai[0] = 3f;
+                                Npc.ai[1] = TalkTime;
+                                Npc.ai[2] = NPCToTalk;
+                                Npc.direction = num94;
+                                Npc.netUpdate = true;
+                                nPC4.ai[0] = 4f;
+                                nPC4.ai[1] = TalkTime;
+                                nPC4.ai[2] = Npc.whoAmI;
+                                nPC4.direction = -num94;
+                                nPC4.netUpdate = true;
+                                break;
+                            }
                         }
                     }
                 }
-                else if (Npc.CanTalk && ActNoDanger && Npc.ai[0] == 0f && Npc.velocity.Y == 0f && Main.rand.NextBool(1800))          //npc之间互相谈话
+                else if (Npc.CanTalk && NoDangerSoCanTalk && Npc.ai[0] == 0f && Npc.velocity.Y == 0f && Main.rand.NextBool(1800))          //npc之间互相谈话
                 {
                     int TalkTime = 420;
                     TalkTime = (!Main.rand.NextBool(2)) ? (TalkTime * Main.rand.Next(1, 3)) : (TalkTime * Main.rand.Next(1, 4));
@@ -3098,26 +3114,29 @@ namespace NPCAttacker.Override
                         bool CannotTalk = (nPC5.ai[0] == 1f && nPC5.closeDoor) || (nPC5.ai[0] == 1f && nPC5.ai[1] > 200f) || nPC5.ai[0] > 1f || nPC5.wet;
                         if (nPC5 != Npc && nPC5.active && nPC5.CanBeTalkedTo && !NPCID.Sets.IsTownPet[nPC5.type] && !CannotTalk && nPC5.Distance(Npc.Center) < TalkRange && nPC5.Distance(Npc.Center) > TalkMinRange && Collision.CanHit(Npc.Center, 0, 0, nPC5.Center, 0, 0))
                         {
-                            int num99 = (Npc.position.X < nPC5.position.X).ToDirectionInt();
-                            Npc.ai[0] = 16f;
-                            Npc.ai[1] = TalkTime;
-                            Npc.ai[2] = NPCToTalk;
-                            Npc.localAI[2] = Main.rand.Next(4);
-                            Npc.localAI[3] = Main.rand.Next(3 - (int)Npc.localAI[2]);
-                            Npc.direction = num99;
-                            Npc.netUpdate = true;
-                            nPC5.ai[0] = 17f;
-                            nPC5.ai[1] = TalkTime;
-                            nPC5.ai[2] = Npc.whoAmI;
-                            nPC5.localAI[2] = 0f;
-                            nPC5.localAI[3] = 0f;
-                            nPC5.direction = -num99;
-                            nPC5.netUpdate = true;
-                            break;
+                            if (!nPC5.GetGlobalNPC<ArmedGNPC>().AlertMode && nPC5.GetGlobalNPC<ArmedGNPC>().actMode == ArmedGNPC.ActMode.Default)
+                            {
+                                int num99 = (Npc.position.X < nPC5.position.X).ToDirectionInt();
+                                Npc.ai[0] = 16f;
+                                Npc.ai[1] = TalkTime;
+                                Npc.ai[2] = NPCToTalk;
+                                Npc.localAI[2] = Main.rand.Next(4);
+                                Npc.localAI[3] = Main.rand.Next(3 - (int)Npc.localAI[2]);
+                                Npc.direction = num99;
+                                Npc.netUpdate = true;
+                                nPC5.ai[0] = 17f;
+                                nPC5.ai[1] = TalkTime;
+                                nPC5.ai[2] = Npc.whoAmI;
+                                nPC5.localAI[2] = 0f;
+                                nPC5.localAI[3] = 0f;
+                                nPC5.direction = -num99;
+                                nPC5.netUpdate = true;
+                                break;
+                            }
                         }
                     }
                 }
-                else if (!NPCID.Sets.IsTownPet[Npc.type] && ActNoDanger && Npc.ai[0] == 0f && Npc.velocity.Y == 0f && Main.rand.NextBool(1200) && (Npc.type == NPCID.PartyGirl || (BirthdayParty.PartyIsUp && NPCID.Sets.AttackType[Npc.type] == NPCID.Sets.AttackType[NPCID.PartyGirl])))
+                else if (!NPCID.Sets.IsTownPet[Npc.type] && NoDangerSoCanTalk && Npc.ai[0] == 0f && Npc.velocity.Y == 0f && Main.rand.NextBool(1200) && (Npc.type == NPCID.PartyGirl || (BirthdayParty.PartyIsUp && NPCID.Sets.AttackType[Npc.type] == NPCID.Sets.AttackType[NPCID.PartyGirl])))
                 {
                     int num100 = 300;
                     int num101 = 150;
@@ -3136,7 +3155,7 @@ namespace NPCAttacker.Override
                         }
                     }
                 }
-                else if (ActNoDanger && Npc.ai[0] == 0f && Npc.velocity.Y == 0f && Main.rand.NextBool(600) && Npc.type == NPCID.DD2Bartender)
+                else if (NoDangerSoCanTalk && Npc.ai[0] == 0f && Npc.velocity.Y == 0f && Main.rand.NextBool(600) && Npc.type == NPCID.DD2Bartender)
                 {
                     int num104 = 300;
                     int num105 = 150;
@@ -3155,19 +3174,19 @@ namespace NPCAttacker.Override
                         }
                     }
                 }
-                else if (!NPCID.Sets.IsTownPet[Npc.type] && ActNoDanger && Npc.ai[0] == 0f && Npc.velocity.Y == 0f && Main.rand.NextBool(1800))
+                else if (!NPCID.Sets.IsTownPet[Npc.type] && NoDangerSoCanTalk && Npc.ai[0] == 0f && Npc.velocity.Y == 0f && Main.rand.NextBool(1800))
                 {
                     Npc.ai[0] = 2f;
                     Npc.ai[1] = 45 * Main.rand.Next(1, 2);
                     Npc.netUpdate = true;
                 }
-                else if (ActNoDanger && Npc.ai[0] == 0f && Npc.velocity.Y == 0f && Main.rand.NextBool(600) && Npc.type == NPCID.Pirate && !HasTarget2)
+                else if (NoDangerSoCanTalk && Npc.ai[0] == 0f && Npc.velocity.Y == 0f && Main.rand.NextBool(600) && Npc.type == NPCID.Pirate && !HasTarget2)
                 {
                     Npc.ai[0] = 11f;
                     Npc.ai[1] = 30 * Main.rand.Next(1, 4);
                     Npc.netUpdate = true;
                 }
-                else if (ActNoDanger && Npc.ai[0] == 0f && Npc.velocity.Y == 0f && Main.rand.NextBool(1200))
+                else if (NoDangerSoCanTalk && Npc.ai[0] == 0f && Npc.velocity.Y == 0f && Main.rand.NextBool(1200))
                 {
                     int TalkTime = 220;
                     int TalkRange = 150;
@@ -3186,7 +3205,7 @@ namespace NPCAttacker.Override
                         }
                     }
                 }
-                else if (ActNoDanger && Npc.ai[0] == 1f && Npc.velocity.Y == 0f && SitDownChance > 0 && Main.rand.NextBool(SitDownChance))
+                else if (NoDangerSoCanTalk && Npc.ai[0] == 1f && Npc.velocity.Y == 0f && SitDownChance > 0 && Main.rand.NextBool(SitDownChance))
                 {
                     Point point = (Npc.Bottom + Vector2.UnitY * -2f).ToTileCoordinates();
                     bool CanSitDown = WorldGen.InWorld(point.X, point.Y, 1);
@@ -3230,7 +3249,7 @@ namespace NPCAttacker.Override
                         }
                     }
                 }
-                else if (ActNoDanger && Npc.ai[0] == 1f && Npc.velocity.Y == 0f && Main.rand.NextBool(600) && Terraria.Utils.PlotTileLine(Npc.Top, Npc.Bottom, Npc.width, new Terraria.Utils.TileActionAttempt(DelegateMethods.SearchAvoidedByNPCs)))
+                else if (NoDangerSoCanTalk && Npc.ai[0] == 1f && Npc.velocity.Y == 0f && Main.rand.NextBool(600) && Terraria.Utils.PlotTileLine(Npc.Top, Npc.Bottom, Npc.width, new Terraria.Utils.TileActionAttempt(DelegateMethods.SearchAvoidedByNPCs)))
                 {
                     Point point2 = (Npc.Center + new Vector2(Npc.direction * 10, 0f)).ToTileCoordinates();
                     bool ThisTileCanGo = WorldGen.InWorld(point2.X, point2.Y, 1);
@@ -3453,7 +3472,7 @@ namespace NPCAttacker.Override
                 }
                 if (Npc.type == 683 || Npc.type == 687)
                 {
-                    float num129 = Terraria.Utils.WrappedLerp(0.75f, 1f, (float)Main.timeForVisualEffects % 120f / 120f);
+                    float num129 = Utils.WrappedLerp(0.75f, 1f, (float)Main.timeForVisualEffects % 120f / 120f);
                     Lighting.AddLight(Npc.Center, 0.25f * num129, 0.25f * num129, 0.1f * num129);
                 }
                 return;

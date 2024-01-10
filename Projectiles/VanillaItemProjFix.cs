@@ -46,6 +46,8 @@ namespace NPCAttacker.Projectiles
             ItemToProj.Add(ItemID.Toxikarp, ProjectileID.ToxicBubble);
             ItemToProj.Add(ItemID.Harpoon, ProjectileID.Harpoon);
             ItemToProj.Add(1910, ModContent.ProjectileType<BlueFireProj>());  //精灵熔炉
+            ItemToProj.Add(ItemID.PiranhaGun, ModContent.ProjectileType<PiranhaGunProj>());
+            ItemToProj.Add(4953, ModContent.ProjectileType<TwilightBowProj>());        //日暮
 
             ItemToProj.Add(ItemID.ApprenticeStaffT3, ModContent.ProjectileType<ApprenticeStaffT3Proj>());
             ItemToProj.Add(ItemID.BlizzardStaff, ModContent.ProjectileType<BlizzardStaffProj>());

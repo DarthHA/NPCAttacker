@@ -42,6 +42,9 @@ namespace NPCAttacker
         /// </summary>
         public bool Selected = false;
 
+        /// <summary>
+        /// 警戒模式
+        /// </summary>
         public bool AlertMode = false;
 
         public int Team = 0;
@@ -78,6 +81,13 @@ namespace NPCAttacker
             if (!Weapon.IsAir && (Weapon.type == 5129 || Weapon.type == ItemID.RottenEgg))
             {
                 npc.StrikeInstantKill();
+            }
+        }
+        public override void PostAI(NPC npc)
+        {
+            if (AlertMode)
+            {
+                npc.velocity.X = 0;
             }
         }
 

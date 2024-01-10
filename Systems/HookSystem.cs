@@ -96,7 +96,7 @@ namespace NPCAttacker.Systems
 
                 if (!ArmedGNPC.GetWeapon(self).IsAir && ArmedGNPC.GetWeapon(self).channel)
                 {
-                    NPCAttacker.SpawnForChannelTime = (int)(NPCStats.GetModifiedAttackTime(self) * 1.5f);
+                    NPCAttacker.SpawnForChannelTime = (int)(NPCStats.GetModifiedAttackTime(self) * (ChannelHelper.NeedBreakChannel(ArmedGNPC.GetWeapon(self)) ? 0.75f : 1.5f));
                 }
             }
             orig.Invoke(self, i);
@@ -192,8 +192,7 @@ namespace NPCAttacker.Systems
                     Main.LocalPlayer.itemAnimation = itemtime;
                     Main.LocalPlayer.itemAnimationMax = itemtimeM;
                     Main.LocalPlayer.inventory[Main.LocalPlayer.selectedItem] = ArmedGNPC.GetWeapon(Main.npc[result.NPCProjOwner]);
-                    Main.LocalPlayer.statMana = 99999;
-                    Main.LocalPlayer.statManaMax2 = 99999;
+
                     NPCAttacker.SpawnForNPCIndex = result.NPCProjOwner;
 
                     orig.Invoke(self, i);

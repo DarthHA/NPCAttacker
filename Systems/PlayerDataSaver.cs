@@ -7,10 +7,6 @@ namespace NPCAttacker.Systems
     public class PlayerDataSaver
     {
         public bool HasValue = false;
-        public int Life;
-        public int LifeMax;
-        public int Mana;
-        public int ManaMax;
         public int itemTime;
         public int itemTimeMax;
         public int itemAnimation;
@@ -30,26 +26,25 @@ namespace NPCAttacker.Systems
 
         public void CloneFrom(Player player)
         {
-            HasValue = true;
-            Life = player.statLife;
-            LifeMax = player.statLifeMax2;
-            Mana = player.statMana;
-            ManaMax = player.statManaMax2;
-            itemTime = player.itemTime;
-            itemTimeMax = player.itemTimeMax;
-            itemAnimation = player.itemAnimation;
-            itemAnimationMax = player.itemAnimationMax;
-            reuseDelay = player.reuseDelay;
-            Position = player.position;
-            OldPosition = player.oldPosition;
-            Velocity = player.velocity;
-            OldVelocity = player.oldVelocity;
-            HeldItem = player.HeldItem;
-            MouseWorld = Main.MouseWorld;
-            heldProj = player.heldProj;
-            channel = player.channel;
-            ControlUseItem = player.controlUseItem;
-            direction = player.direction;
+            if (!HasValue)
+            {
+                HasValue = true;
+                itemTime = player.itemTime;
+                itemTimeMax = player.itemTimeMax;
+                itemAnimation = player.itemAnimation;
+                itemAnimationMax = player.itemAnimationMax;
+                reuseDelay = player.reuseDelay;
+                Position = player.position;
+                OldPosition = player.oldPosition;
+                Velocity = player.velocity;
+                OldVelocity = player.oldVelocity;
+                HeldItem = player.HeldItem;
+                MouseWorld = Main.MouseWorld;
+                heldProj = player.heldProj;
+                channel = player.channel;
+                ControlUseItem = player.controlUseItem;
+                direction = player.direction;
+            }
         }
 
         public void CloneTo(Player player)
@@ -57,10 +52,6 @@ namespace NPCAttacker.Systems
             if (HasValue)
             {
                 HasValue = false;
-                player.statLife = Life;
-                player.statLifeMax2 = LifeMax;
-                player.statMana = Mana;
-                player.statManaMax2 = ManaMax;
                 player.itemTime = itemTime;
                 player.itemTimeMax = itemTimeMax;
                 player.itemAnimation = itemAnimation;
@@ -85,10 +76,6 @@ namespace NPCAttacker.Systems
             if (HasValue)
             {
                 other.HasValue = HasValue;
-                other.Life = Life;
-                other.LifeMax = LifeMax;
-                other.Mana = Mana;
-                other.ManaMax = ManaMax;
                 other.itemTime = itemTime;
                 other.itemTimeMax = itemTimeMax;
                 other.itemAnimation = itemAnimation;

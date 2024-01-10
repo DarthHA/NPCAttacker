@@ -28,67 +28,90 @@ namespace NPCAttacker.UI
         public bool ValidItem(Item item)
         {
             if (item.IsAir) return true;
-            return true;
-            if (item.accessory || item.channel) return false;
+            if (item.useStyle == ItemUseStyleID.None) return false;
             if (Main.LocalPlayer.talkNPC == -1) return true;
             NPC npc = Main.npc[Main.LocalPlayer.talkNPC];
-            if (NPCID.Sets.AttackType[npc.type] == 0)
+            if (NPCID.Sets.AttackType[npc.type] == 0)               //投掷类武器
             {
                 if (npc.type == NPCID.Nurse)
                 {
                     return (item.healLife > 0) && item.stack >= Math.Min(30, item.maxStack);
                 }
-                if (!ArmedGNPC.GetAltWeapon(npc).IsAir)
+                if (item.shoot <= ProjectileID.None || item.damage == 0) return false;
+
+                if (!ArmedGNPC.GetAltWeapon(npc).IsAir)             //不能重复装备武器
                 {
                     if (item.type == ArmedGNPC.GetAltWeapon(npc).type)
                     {
                         return false;
                     }
                 }
-                if (item.ModItem == null)
+                if (item.ModItem == null)          //原版武器
                 {
-                    return (item.DamageType == DamageClass.Ranged && item.stack >= Math.Min(99, item.maxStack) && item.consumable) || MeleeWeaponFix.UseMeleeThrowWeapon(item);
-                }
-                else    //模组非悠悠球非矛非蓄力非阔剑武器
-                {
-                    if (item.shoot <= ProjectileID.None) return false;
-
-                    if (item.DamageType == DamageClass.Ranged && item.stack >= Math.Min(99, item.maxStack) && item.consumable) return true;
-                    else if (item.DamageType == DamageClass.Melee && item.stack >= Math.Min(99, item.maxStack) && item.consumable) return true;
-                    else if (!ItemID.Sets.Spears[item.type] && !ItemID.Sets.Yoyo[item.type] && item.DamageType == DamageClass.Melee && item.useStyle == ItemUseStyleID.Swing && item.noMelee) return true;
-                    else return false;
-                }
-            }
-            else if (NPCID.Sets.AttackType[npc.type] == 1)
-            {
-                if (item.ammo != AmmoID.None || item.maxStack > 1 || item.DamageType != DamageClass.Ranged) return false;
-                if (item.type == ItemID.Clentaminator) return false;
-                if (ArmedGNPC.GetAltWeapon(npc).IsAir)
-                {
-                    return true;
+                    //可消耗类多堆叠远程武器
+                    if (item.DamageType == DamageClass.Ranged && item.stack >= Math.Min(99, item.maxStack) && item.consumable && item.stack > 1) return true;
+                    if (WeaponClassify.UseMeleeThrowWeapon(item)) return true;
+                    if (WeaponClassify.UseFlailWeapon(item)) return true;
+                    if (WeaponClassify.UseFlailWeapon2(item)) return true;
                 }
                 else
                 {
-                    return ArmedGNPC.GetAltWeapon(npc).ammo == item.useAmmo;
+                    //可消耗类多堆叠远程和近战武器
+                    if (item.DamageType == DamageClass.Ranged && item.stack >= Math.Min(99, item.maxStack) && item.consumable && item.stack > 1) return true;
+                    if (item.DamageType == DamageClass.Melee && item.stack >= Math.Min(99, item.maxStack) && item.consumable && item.stack > 1) return true;
+                    //悠悠球
+                    if (ItemID.Sets.Yoyo[item.type]) return true;
+                    //非矛挥舞无近战判定武器
+                    if (item.DamageType == DamageClass.Melee && !ItemID.Sets.Spears[item.type] && item.useStyle == ItemUseStyleID.Swing && item.noMelee) return true;
                 }
+                return false;
             }
-            else if (NPCID.Sets.AttackType[npc.type] == 2)
+            else if (NPCID.Sets.AttackType[npc.type] == 1)                //远程武器
+            {
+                if (item.useAmmo == AmmoID.Coin) return true;        //钱币枪豁免
+                if (item.type == ItemID.Clentaminator) return false;
+                if (item.shoot <= ProjectileID.None) return false;
+                if (item.DamageType == DamageClass.Ranged && item.maxStack == 1 && !item.consumable)            //不可堆叠不可消耗的远程武器
+                {
+                    if (item.useAmmo == AmmoID.None)             //不需要弹药
+                    {
+                        if (item.damage > 0) return true;            //无弹药需要保证自己有威力
+                    }
+                    else      //需要弹药
+                    {
+                        if (ArmedGNPC.GetAltWeapon(npc).IsAir) return true;           //无弹药装填
+                        else if (ArmedGNPC.GetAltWeapon(npc).ammo == item.useAmmo) return true;       //弹药合理装填
+                    }
+                }
+
+                return false;
+            }
+            else if (NPCID.Sets.AttackType[npc.type] == 2)         //法师武器
             {
                 if (npc.type == NPCID.Dryad)
                 {
                     return (item.healMana > 0) && item.stack >= Math.Min(30, item.maxStack);
                 }
-                return item.DamageType == DamageClass.Magic && item.useAmmo == AmmoID.None;
+                if (item.shoot <= ProjectileID.None || item.damage == 0) return false;
+                return item.DamageType == DamageClass.Magic && item.useAmmo == AmmoID.None && item.type != ItemID.SoulDrain;
             }
-            else if (NPCID.Sets.AttackType[npc.type] == 3)
+            else if (NPCID.Sets.AttackType[npc.type] == 3)              //近战
             {
-                //return item.DamageType == DamageClass.Melee && !item.noMelee && !item.noUseGraphic;
-                return (item.DamageType == DamageClass.Melee && !item.noUseGraphic && item.useStyle == ItemUseStyleID.Swing) || item.DamageType == DamageClass.SummonMeleeSpeed;
-            }
-            else
-            {
+                if (item.damage == 0) return false;
+                if (WeaponClassify.UseSpearWeapon(item)) return true;//矛类
+                if (WeaponClassify.UseWhipWeapon(item)) return true;//鞭类
+                if (WeaponClassify.UseShortSword(item)) return true;//短剑类
+                if (item.DamageType == DamageClass.MeleeNoSpeed || item.DamageType == DamageClass.Melee)
+                {
+                    if (item.shoot == ProjectileID.None && !item.noMelee && !item.noUseGraphic) return true;  //真近战
+                    if (item.shoot > ProjectileID.None && item.useStyle == ItemUseStyleID.Swing) return true;//射弹剑
+                    if (item.shoot > ProjectileID.None && (!item.noMelee || !item.noUseGraphic)) return true;//射弹剑2
+                }
                 return false;
+
             }
+            return false;
+
         }
         public override void OnDeactivate()
         {

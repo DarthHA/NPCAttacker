@@ -10,7 +10,7 @@ using Terraria.ID;
 namespace NPCAttacker
 {
 
-    public static class MeleeWeaponFix
+    public static class OnHitEffectFix
     {
         public static void Bladetongue(NPC npc, Rectangle MeleeHitbox, int dmg, float kb)
         {
@@ -147,8 +147,66 @@ namespace NPCAttacker
             Projectile.NewProjectile(null, vector3, spinningpoint, 977, (int)(damage * 0.5f), 0f, Main.myPlayer, num6);
         }
 
+        
+    }
+
+    public static class WeaponClassify
+    {
+        /// <summary>
+        /// 是否为鞭子
+        /// </summary>
+        /// <param name="item"></param>
+        /// <returns></returns>
+        public static bool UseWhipWeapon(Item item)
+        {
+            switch (item.type)
+            {
+                case ItemID.BlandWhip:
+                case ItemID.BoneWhip:
+                case ItemID.CoolWhip:
+                case ItemID.FireWhip:
+                case ItemID.IvyWhip:
+                case ItemID.MaceWhip:
+                case ItemID.RainbowWhip:
+                case ItemID.ScytheWhip:
+                case ItemID.SwordWhip:
+                case ItemID.ThornWhip:
+                    return true;
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// 是否为链球
+        /// </summary>
+        /// <param name="item"></param>
+        /// <returns></returns>
+        public static bool UseFlailWeapon(Item item)
+        {
+            switch (item.type)
+            {
+                case 5011:
+                case 5012:
+                case ItemID.BallOHurt:
+                case ItemID.TheMeatball:
+                case ItemID.BlueMoon:
+                case 220:
+                case 4272:
+                case ItemID.FlowerPow:
+                case 389:
+                    return true;
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// 是否为近战投掷武器（包括悠悠球）
+        /// </summary>
+        /// <param name="item"></param>
+        /// <returns></returns>
         public static bool UseMeleeThrowWeapon(Item item)
         {
+            if (ItemID.Sets.Yoyo[item.type]) return true;
             switch (item.type)
             {
                 case ItemID.WoodenBoomerang:
@@ -170,41 +228,71 @@ namespace NPCAttacker
                 case ItemID.Bananarang:
                 case ItemID.LightDisc:
                 case ItemID.Zenith:
+                case ItemID.FlyingKnife:
                 case 5298:           //三尖回旋镖
-                //链枷
+                    return true;
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// 是否为链枷
+        /// </summary>
+        /// <param name="item"></param>
+        /// <returns></returns>
+        public static bool UseFlailWeapon2(Item item)
+        {
+            switch (item.type)
+            {
                 case 1325:
                 case 2424:
                 case 3012:
                 case 1314:
                 case 1297:
                 case 2611:
+                case ItemID.SolarEruption:
                     return true;
             }
             return false;
         }
-    }
 
-    public static class WhipFix
-    {
-        public static bool UseWhipWeapon(Item item)
+        /// <summary>
+        /// 是否为长矛（棍子）类
+        /// </summary>
+        /// <param name="item"></param>
+        /// <returns></returns>
+        public static bool UseSpearWeapon(Item item)
         {
             switch (item.type)
             {
-                case ItemID.BlandWhip:
-                case ItemID.BoneWhip:
-                case ItemID.CoolWhip:
-                case ItemID.FireWhip:
-                case ItemID.IvyWhip:
-                case ItemID.MaceWhip:
-                case ItemID.RainbowWhip:
-                case ItemID.ScytheWhip:
-                case ItemID.SwordWhip:
-                case ItemID.ThornWhip:
+                case ItemID.ShadowJoustingLance:
+                case ItemID.JoustingLance:
+                case ItemID.HallowJoustingLance:
+                case ItemID.DarkLance:
+                    return false;
+                case 3835:
+                case 3858:
                     return true;
             }
+
+            if (ItemID.Sets.Spears[item.type]) return true;
             return false;
         }
+
+        /// <summary>
+        /// 是否为短剑类武器
+        /// </summary>
+        /// <param name="item"></param>
+        /// <returns></returns>
+        public static bool UseShortSword(Item item)
+        {
+            if (item.type == ItemID.Arkhalis || item.type == ItemID.Terragrim) return true;
+            return item.useStyle == ItemUseStyleID.Rapier;
+        }
+
     }
+
+
 
     public static class AmmoFix
     {
@@ -236,9 +324,6 @@ namespace NPCAttacker
             if (sItem.useAmmo == AmmoID.None) return true;
             return !FindAmmo(npc).IsAir;
         }
-
-
-
 
         public static int GetAmmoDmg(NPC npc, Item sItem)
         {

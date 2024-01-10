@@ -1,6 +1,7 @@
 ﻿using NPCAttacker.Projectiles;
 using Terraria;
 using Terraria.DataStructures;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace NPCAttacker.Systems
@@ -45,10 +46,6 @@ namespace NPCAttacker.Systems
 
         public override void PostAI(Projectile projectile)
         {
-            if (ChannelTimer >= 0)
-            {
-                Main.NewText(ChannelTimer);
-            }
             if (ChannelTimer > 0) ChannelTimer--;
 
             UpdateNPCOwnerStatus();

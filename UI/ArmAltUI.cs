@@ -9,7 +9,6 @@ using Terraria.UI.Chat;
 
 namespace NPCAttacker.UI
 {
-    // This class represents the UIState for our ExamplePerson Awesomeify chat function. It is similar to the Goblin Tinkerer's Reforge function, except it only gives Awesome and ReallyAwesome prefixes. 
     public class ArmAltUI : UIState
     {
         private static VanillaItemSlotWrapper _vanillaItemSlot;
@@ -22,7 +21,6 @@ namespace NPCAttacker.UI
                 Top = { Pixels = 450 },
                 ValidItemFunc = new Func<Item, bool>(ValidItem)
             };
-            // Here we limit the items that can be placed in the slot. We are fine with placing an empty item in or a non-empty item that can be prefixed. Calling Prefix(-3) is the way to know if the item in question can take a prefix or not.
             Append(_vanillaItemSlot);
         }
 
@@ -30,9 +28,9 @@ namespace NPCAttacker.UI
         {
             if (item.IsAir) return true;
             if (Main.LocalPlayer.talkNPC == -1) return false;
-            if (item.channel || item.accessory) return false;
+            if (item.channel) return false;
             NPC npc = Main.npc[Main.LocalPlayer.talkNPC];
-            if (NPCID.Sets.AttackType[npc.type] == 1)
+            if (NPCID.Sets.AttackType[npc.type] == 1)           //远程只能装备弹药
             {
                 if (!ArmedGNPC.GetWeapon(npc).IsAir)
                 {
@@ -44,53 +42,51 @@ namespace NPCAttacker.UI
                         }
                     }
                 }
+                return false;
             }
-            else if (NPCID.Sets.AttackType[npc.type] == 2 && npc.type != NPCID.Dryad)
+            else if (NPCID.Sets.AttackType[npc.type] == 2 && npc.type != NPCID.Dryad)            //法师只能装备魔瓶
             {
                 if (!ArmedGNPC.GetWeapon(npc).IsAir)
                 {
                     return (item.healMana > 0) && item.stack >= Math.Min(30, item.maxStack);
                 }
             }
-            else if (NPCID.Sets.AttackType[npc.type] == 3)
+            else if (NPCID.Sets.AttackType[npc.type] == 3)              //近战只能装备药剂
             {
                 if (item.buffType > 0 && item.stack >= Math.Min(30, item.maxStack))
                 {
-                    if (BuffID.Sets.IsAFlaskBuff[item.buffType])
-                    {
-                        return true;
-                    }
-                    else
-                    {
-                        return false;
-                    }
+                    return BuffID.Sets.IsAFlaskBuff[item.buffType];
                 }
-                else
-                {
-                    return false;
-                }
+                return false;
             }
-            else if (NPCID.Sets.AttackType[npc.type] == 0 && npc.type != NPCID.Nurse)
+            else if (NPCID.Sets.AttackType[npc.type] == 0 && npc.type != NPCID.Nurse)          //投掷只能装备副武器
             {
-                if (!ArmedGNPC.GetWeapon(npc).IsAir)
+                if (item.shoot <= ProjectileID.None) return false;
+
+                if (!ArmedGNPC.GetWeapon(npc).IsAir)           //不能装备相同武器
                 {
                     if (item.type == ArmedGNPC.GetWeapon(npc).type)
                     {
                         return false;
                     }
                 }
-                if (item.ModItem == null)
+                if (item.ModItem == null)          //原版武器
                 {
-                    return (item.DamageType == DamageClass.Ranged && item.stack >= Math.Min(99, item.maxStack) && item.consumable) || MeleeWeaponFix.UseMeleeThrowWeapon(item);
+                    //可消耗类多堆叠远程武器
+                    if (item.DamageType == DamageClass.Ranged && item.stack >= Math.Min(99, item.maxStack) && item.consumable && item.stack > 1) return true;
+                    if (WeaponClassify.UseMeleeThrowWeapon(item)) return true;
+                    if (WeaponClassify.UseFlailWeapon(item)) return true;
+                    if (WeaponClassify.UseFlailWeapon2(item)) return true;
                 }
-                else    //模组非悠悠球非矛非蓄力非阔剑武器
+                else
                 {
-                    if (item.shoot <= ProjectileID.None) return false;
-
-                    if (item.DamageType == DamageClass.Ranged && item.stack >= Math.Min(99, item.maxStack) && item.consumable) return true;
-                    else if (item.DamageType == DamageClass.Melee && item.stack >= Math.Min(99, item.maxStack) && item.consumable) return true;
-                    else if (!ItemID.Sets.Spears[item.type] && !ItemID.Sets.Yoyo[item.type] && item.DamageType == DamageClass.Melee && item.useStyle == ItemUseStyleID.Swing && item.noMelee) return true;
-                    else return false;
+                    //可消耗类多堆叠远程和近战武器
+                    if (item.DamageType == DamageClass.Ranged && item.stack >= Math.Min(99, item.maxStack) && item.consumable && item.stack > 1) return true;
+                    if (item.DamageType == DamageClass.Melee && item.stack >= Math.Min(99, item.maxStack) && item.consumable && item.stack > 1) return true;
+                    //悠悠球
+                    if (ItemID.Sets.Yoyo[item.type]) return true;
+                    //非矛挥舞无近战判定武器
+                    if (item.DamageType == DamageClass.Melee && !ItemID.Sets.Spears[item.type] && item.useStyle == ItemUseStyleID.Swing && item.noMelee) return true;
                 }
             }
             else if (npc.type == NPCID.Dryad)

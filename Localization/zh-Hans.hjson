@@ -47,13 +47,13 @@ Mods: {
 			Arm: 武装
 			RemoveWeapon: 将该物品移除以解除NPC武装
 			PlaceAWeapon: 放置武器来武装该NPC
-			ComplexNote: 注意：NPC难以使用比较特别的武器[i:3541][i:3858]
+			ComplexNote: 注意：无法保证其他模组的复杂武器使用效果
 			NurseWeapon: 该NPC可以装备足够多的治疗药水来增强效果(>= 30)[i:188]
-			ThrowerWeapon: 该NPC可以装备近战投掷武器[i:284]或者足够多可消耗的远程武器(>= 99或满堆叠)[i:42]
+			ThrowerWeapon: 该NPC可以装备近战投掷武器[i:284][i:5011][i:3262]或者足够多可消耗的远程武器(>= 99或满堆叠)[i:42]
 			RangerWeapon: 该NPC可以装备远程武器[i:533],但你得准备足够多的弹药
 			DryadWeapon: 该NPC可以装备足够多的魔力药水来增强效果(>= 30)[i:189]
 			MagicWeapon: 该NPC可以装备魔法武器[i:1931],但你得准备魔力药水
-			MeleeWeapon: 该NPC可以装备阔剑型的近战武器[i:426]或者鞭子[i:4672]
+			MeleeWeapon: 该NPC可以装备近战武器[i:426][i:280]或者鞭子[i:4672]
 			NurseWeaponDescription: 该NPC的治疗量增加了
 			DryadWeaponDescription: 该NPC将会为周围NPC提供额外的攻速，移速，防御力，以及生命恢复
 			SlotsNotAvailable: 不可用
@@ -225,6 +225,8 @@ Mods: {
 			ZenithProj.DisplayName: ""
 			PumpkinSwordProj.DisplayName: ""
 			BlueFireProj.DisplayName: ""
+			PiranhaGunProj.DisplayName: ""
+			TwilightBowProj.DisplayName: ""
 		}
 	}
 }
