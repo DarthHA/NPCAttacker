@@ -27,7 +27,7 @@ namespace NPCAttacker.Override
             if (Main.player[Main.myPlayer].dead || Main.player[Main.myPlayer].mouseInterface)
             {
                 Main.ClearSmartInteract();
-                Main.TileInteractionLX = (Main.TileInteractionHX = (Main.TileInteractionLY = (Main.TileInteractionHY = -1)));
+                Main.TileInteractionLX = Main.TileInteractionHX = Main.TileInteractionLY = Main.TileInteractionHY = -1;
             }
             bool flag = UILinkPointNavigator.Available && !PlayerInput.InBuildingMode;
             if (!PlayerInput.SettingsForUI.ShowGamepadCursor)

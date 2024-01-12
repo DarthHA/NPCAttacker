@@ -18,12 +18,6 @@ namespace NPCAttacker.UI
         public ArmUI _ArmUI;
         public UserInterface _ArmUserInterface;
 
-        public ArmAltUI _ArmAltUI;
-        public UserInterface _ArmAltUserInterface;
-
-        public ArmorUI _ArmorUI;
-        public UserInterface _ArmorUserInterface;
-
         public override void Load()
         {
             _UINPCExtraButton = new UINPCExtraButton();
@@ -36,15 +30,6 @@ namespace NPCAttacker.UI
             _ArmUserInterface = new UserInterface();
             _ArmUserInterface.SetState(_ArmUI);
 
-            _ArmAltUI = new ArmAltUI();
-            _ArmAltUI.Activate();
-            _ArmAltUserInterface = new UserInterface();
-            _ArmAltUserInterface.SetState(_ArmAltUI);
-
-            _ArmorUI = new ArmorUI();
-            _ArmorUI.Activate();
-            _ArmorUserInterface = new UserInterface();
-            _ArmorUserInterface.SetState(_ArmorUI);
         }
 
 
@@ -55,14 +40,6 @@ namespace NPCAttacker.UI
             if (ArmUI.Visible)
             {
                 _ArmUserInterface?.Update(gameTime);
-            }
-            if (ArmAltUI.Visible)
-            {
-                _ArmAltUserInterface?.Update(gameTime);
-            }
-            if (ArmorUI.Visible)
-            {
-                _ArmorUserInterface?.Update(gameTime);
             }
             if (UINPCExtraButton.Visible)
             {
@@ -79,7 +56,7 @@ namespace NPCAttacker.UI
             {
                 if (Main.npc[player.talkNPC].IsTownNPC())
                 {
-                    if (!ArmUI.Visible && !ArmAltUI.Visible && !ArmorUI.Visible)
+                    if (!ArmUI.Visible)
                     {
                         if (NPCUtils.BuffNPC())
                         {
@@ -97,8 +74,6 @@ namespace NPCAttacker.UI
                     if (!Main.playerInventory)
                     {
                         ArmUI.CloseUI();
-                        ArmAltUI.CloseUI();
-                        ArmorUI.CloseUI();
                     }
                     if (Main.npcChatText == "")
                     {
@@ -108,16 +83,12 @@ namespace NPCAttacker.UI
                 else
                 {
                     ArmUI.CloseUI();
-                    ArmAltUI.CloseUI();
-                    ArmorUI.CloseUI();
                     UINPCExtraButton.Visible = false;
                 }
             }
             else
             {
                 ArmUI.CloseUI();
-                ArmAltUI.CloseUI();
-                ArmorUI.CloseUI();
                 UINPCExtraButton.Visible = false;
             }
 
@@ -237,14 +208,6 @@ namespace NPCAttacker.UI
                         if (ArmUI.Visible)
                         {
                             _ArmUserInterface.Draw(Main.spriteBatch, new GameTime());
-                        }
-                        if (ArmAltUI.Visible)
-                        {
-                            _ArmAltUserInterface.Draw(Main.spriteBatch, new GameTime());
-                        }
-                        if (ArmorUI.Visible)
-                        {
-                            _ArmorUserInterface.Draw(Main.spriteBatch, new GameTime());
                         }
                         return true;
                     },

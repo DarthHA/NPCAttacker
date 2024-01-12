@@ -11,7 +11,7 @@ namespace NPCAttacker.Projectiles
         public override void AttackEffect()
         {
             int dir = Math.Sign(Projectile.velocity.X + (Main.rand.Next(2) * 2 - 1) * 0.01f);
-            NPC owner = Main.npc[Projectile.GetGlobalProjectile<SpecialUseProj>().NPCProjOwner];
+            NPC owner = Main.npc[GetOwner()];
             float num2 = GetTargetPos().X - Projectile.Center.X + (Main.rand.Next(2) * 2 - 1) * 0.01f;
             float num3 = GetTargetPos().Y - Projectile.Center.Y + (Main.rand.Next(2) * 2 - 1) * 0.01f;
 

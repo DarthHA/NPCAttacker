@@ -28,6 +28,7 @@ namespace NPCAttacker.Projectiles
             ItemToProj.Add(ItemID.Starfury, ModContent.ProjectileType<StarfuryProj>());
             ItemToProj.Add(ItemID.StarWrath, ModContent.ProjectileType<StarWarthProj>());
             ItemToProj.Add(ItemID.VampireKnives, ModContent.ProjectileType<VampireKnifeProj>());
+            ItemToProj.Add(3858, ModContent.ProjectileType<DragonRageProj>());           //天龙之怒
 
             ItemToProj.Add(ItemID.DD2BetsyBow, ModContent.ProjectileType<BetsyBowProj>());
             ItemToProj.Add(ItemID.BloodRainBow, ModContent.ProjectileType<BloodRainProj>());
@@ -67,6 +68,7 @@ namespace NPCAttacker.Projectiles
             ItemToProj.Add(ItemID.SparkleGuitar, ModContent.ProjectileType<SparkleGuitarProj>());
             ItemToProj.Add(ItemID.SpiritFlame, ModContent.ProjectileType<SpiritFlameProj>());
             ItemToProj.Add(ItemID.LunarFlareBook, ModContent.ProjectileType<LunarFlareBookProj>());
+            ItemToProj.Add(3852, ModContent.ProjectileType<EndlessBookProj>());      //无限智慧巨著
 
             /*
             ItemToProj = new();

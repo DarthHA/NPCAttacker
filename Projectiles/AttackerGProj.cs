@@ -12,6 +12,7 @@ namespace NPCAttacker.Projectiles
         public override bool InstancePerEntity => true;
         public int ProjTarget = -1;
         public int FlaskBuffID = -1;
+        public int ExtraInfo = 0;
 
         public override bool PreAI(Projectile projectile)
         {

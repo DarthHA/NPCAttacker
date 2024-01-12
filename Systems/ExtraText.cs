@@ -18,7 +18,7 @@ namespace NPCAttacker.Systems
                 {
                     bool Valid = false;
                     NPC npc = Main.npc[Main.LocalPlayer.talkNPC];
-                    if (ArmUI.ValidItem(item)) Valid = true;
+                    if (ArmUI.ValidWeapon(item)) Valid = true;
                     if (Valid)
                     {
                         string description = string.Format(Language.GetTextValue("Mods.NPCAttacker.UI.CanUseNormal"), npc.GivenOrTypeName);
@@ -36,7 +36,7 @@ namespace NPCAttacker.Systems
                     }
                 }
             }
-            if (ArmAltUI.Visible)
+            if (ArmUI.Visible)
             {
                 string description = TranslationToPotion.GetLocalizedExtraText(item);
                 tooltips.Add(new TooltipLine(Mod, "TooltipPotionEffect", description));

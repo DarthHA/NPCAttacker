@@ -49,7 +49,22 @@ namespace NPCAttacker
         /// </summary>
         public bool AlertMode = false;
 
+        /// <summary>
+        /// 队伍
+        /// </summary>
         public int Team = 0;
+
+        /// <summary>
+        /// 左右键攻击模式，0为左键，1为右键，2为左右键交替
+        /// </summary>
+        public int AlterUseType = 0;
+
+        public bool NextUseType = false;
+
+        /// <summary>
+        /// 蓄力武器使用模式，0为持续蓄力，1为蓄力一半发射，2为几乎不蓄力
+        /// </summary>
+        public int ChannelUseType = 0;
 
         public override void SetDefaults(NPC npc)    //投掷型填0，远程型填1，魔法型填2，近战型填3
         {

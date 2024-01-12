@@ -78,6 +78,12 @@ Mods: {
 			CanUseNormal: 该武器很适合{0}
 			CanUsePotion: 该药水很适合{0}
 			CanUseKill: 该物品很适合{0}...?
+			AlterUseType0: 武器操作类型：左键
+			AlterUseType1: 武器操作类型：右键
+			AlterUseType2: 武器操作类型：左右键交替
+			ChannelType0: 武器蓄力类型：持续蓄力
+			ChannelType1: 武器蓄力类型：一半时间蓄力
+			ChannelType2: 武器蓄力类型：几乎不蓄力
 		}
 
 		Configs: {
@@ -230,6 +236,8 @@ Mods: {
 			BlueFireProj.DisplayName: ""
 			PiranhaGunProj.DisplayName: ""
 			TwilightBowProj.DisplayName: ""
+			// DragonRageProj.DisplayName: Dragon Rage Proj
+			// EndlessBookProj.DisplayName: Endless Book Proj
 		}
 	}
 }

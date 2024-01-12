@@ -78,6 +78,12 @@ Mods: {
 			CanUseNormal: This weapon is suitable for {0}
 			CanUsePotion: These potions are suitable for {0}
 			CanUseKill: This item is suitable for {0}...?
+			AlterUseType0: Weapon operate pattern: Left click only
+			AlterUseType1: Weapon operate pattern: Right click only
+			AlterUseType2: Weapon operate pattern: Left and Right alternatively
+			ChannelType0: Weapon charge pattern: Keep charging
+			ChannelType1: Weapon charge pattern: Charge half of the time
+			ChannelType2: Weapon charge pattern: Almost no charge
 		}
 
 		Configs: {
@@ -230,6 +236,8 @@ Mods: {
 			BlueFireProj.DisplayName: ""
 			PiranhaGunProj.DisplayName: ""
 			TwilightBowProj.DisplayName: ""
+			DragonRageProj.DisplayName: Dragon Rage Proj
+			EndlessBookProj.DisplayName: Endless Book Proj
 		}
 	}
 }

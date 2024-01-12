@@ -10,7 +10,6 @@ namespace NPCAttacker.Projectiles
         public override void AttackEffect()
         {
             int dir = Math.Sign(Projectile.velocity.X + (Main.rand.Next(2) * 2 - 1) * 0.01f);
-            NPC owner = Main.npc[Projectile.GetGlobalProjectile<SpecialUseProj>().NPCProjOwner];
             Vector2 vector55 = GetTargetPos();
             if (!HasValidTarget())
             {

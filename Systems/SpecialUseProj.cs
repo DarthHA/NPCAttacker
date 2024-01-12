@@ -23,12 +23,14 @@ namespace NPCAttacker.Systems
                     NPC owner = Main.npc[NPCAttacker.SpawnForNPCIndex];
                     if(projectile.TryGetGlobalProjectile(out AttackerGProj modproj1)) 
                     {
-                        modproj1.ProjTarget = owner.GetGlobalNPC<ArmedGNPC>().NPCTargetForSpecialUse;       //给弹幕一个目标
+                        modproj1.ProjTarget = owner.GetGlobalNPC<ArmedGNPC>().NPCTargetForSpecialUse;       //给弹幕一个目标,和额外数据
+                        modproj1.ExtraInfo = Main.LocalPlayer.altFunctionUse;
                     }
                     if (projectile.TryGetGlobalProjectile(out SpecialUseProj modproj2))
                     {
                         modproj2.ChannelTimer = NPCAttacker.SpawnForChannelTime;           //预设蓄力时间
                     }
+
 
                     int CritChance = 0;
                     if (!ArmedGNPC.GetWeapon(owner).IsAir)
@@ -79,6 +81,17 @@ namespace NPCAttacker.Systems
         public override bool ImmuneTo(PlayerDeathReason damageSource, int cooldownCounter, bool dodgeable)
         {
             return NPCAttacker.FuckingInvincible;
+        }
+
+        public override bool PreKill(double damage, int hitDirection, bool pvp, ref bool playSound, ref bool genDust, ref PlayerDeathReason damageSource)
+        {
+            if (NPCAttacker.FuckingInvincible)
+            {
+                playSound = false;
+                genDust = false;
+                return false;
+            }
+            return true;
         }
     }
 }

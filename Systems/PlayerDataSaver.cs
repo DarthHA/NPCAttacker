@@ -7,6 +7,10 @@ namespace NPCAttacker.Systems
     public class PlayerDataSaver
     {
         public bool HasValue = false;
+        public int Life;
+        public int LifeMax;
+        public int Mana;
+        public int ManaMax;
         public int itemTime;
         public int itemTimeMax;
         public int itemAnimation;
@@ -21,6 +25,8 @@ namespace NPCAttacker.Systems
         public int heldProj;
         public bool channel;
         public bool ControlUseItem;
+        public bool ControlUseTile;
+        public int AlterFunctionUse;
         public int direction;
 
 
@@ -29,6 +35,10 @@ namespace NPCAttacker.Systems
             if (!HasValue)
             {
                 HasValue = true;
+                Life = player.statLife;
+                LifeMax = player.statLifeMax2;
+                Mana = player.statMana;
+                ManaMax = player.statManaMax2;
                 itemTime = player.itemTime;
                 itemTimeMax = player.itemTimeMax;
                 itemAnimation = player.itemAnimation;
@@ -43,6 +53,8 @@ namespace NPCAttacker.Systems
                 heldProj = player.heldProj;
                 channel = player.channel;
                 ControlUseItem = player.controlUseItem;
+                ControlUseTile = player.controlUseTile;
+                AlterFunctionUse = player.altFunctionUse;
                 direction = player.direction;
             }
         }
@@ -52,6 +64,10 @@ namespace NPCAttacker.Systems
             if (HasValue)
             {
                 HasValue = false;
+                player.statLife = Life;
+                player.statLifeMax2 = LifeMax;
+                player.statMana = Mana;
+                player.statManaMax2 = ManaMax;
                 player.itemTime = itemTime;
                 player.itemTimeMax = itemTimeMax;
                 player.itemAnimation = itemAnimation;
@@ -67,32 +83,12 @@ namespace NPCAttacker.Systems
                 player.inventory[player.selectedItem] = HeldItem;
                 player.channel = channel;
                 player.controlUseItem = ControlUseItem;
+                player.controlUseTile = ControlUseTile;
+                player.altFunctionUse = AlterFunctionUse;
                 player.direction = direction;
             }
         }
 
-        public void CloneTo(PlayerDataSaver other)
-        {
-            if (HasValue)
-            {
-                other.HasValue = HasValue;
-                other.itemTime = itemTime;
-                other.itemTimeMax = itemTimeMax;
-                other.itemAnimation = itemAnimation;
-                other.itemAnimationMax = itemAnimationMax;
-                other.reuseDelay = reuseDelay;
-                other.Position = Position;
-                other.OldPosition = OldPosition;
-                other.Velocity = Velocity;
-                other.OldVelocity = OldVelocity;
-                other.MouseWorld = MouseWorld;
-                other.heldProj = heldProj;
-                other.HeldItem = HeldItem;
-                other.channel = channel;
-                other.ControlUseItem = ControlUseItem;
-                other.direction = direction;
-            }
-        }
     }
 
 }

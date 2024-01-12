@@ -12,7 +12,6 @@ namespace NPCAttacker.Projectiles
         {
             int dmg = Projectile.damage;
             int dir = Math.Sign(Projectile.velocity.X + (Main.rand.Next(2) * 2 - 1) * 0.01f);
-            NPC owner = Main.npc[Projectile.GetGlobalProjectile<SpecialUseProj>().NPCProjOwner];
             Vector2 vector54 = new Vector2(dir, 4f).SafeNormalize(Vector2.UnitY).RotatedBy((float)Math.PI * 2f * Main.rand.NextFloatDirection() * 0.05f);
 
             Vector2 SearchCenter = GetTargetPos();

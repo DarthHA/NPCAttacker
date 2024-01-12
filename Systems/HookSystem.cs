@@ -18,7 +18,6 @@ namespace NPCAttacker.Systems
             On_NPC.Collision_MoveSlopesAndStairFall += CollisionOverride.Collision_MoveSlopesAndStairFall;
 
             On_Projectile.Update += ProjectileUpdateHook;
-            On_NPC.UpdateNPC_Inner += UpdateNPCHook;
             On_Main.DrawProj += DrawProjHook;
 
             On_Player.ChooseAmmo += UseNPCAmmo;
@@ -37,7 +36,6 @@ namespace NPCAttacker.Systems
 
             On_Projectile.Update -= ProjectileUpdateHook;
             On_Main.DrawProj -= DrawProjHook;
-            On_NPC.UpdateNPC_Inner -= UpdateNPCHook;
 
             On_Player.ChooseAmmo -= UseNPCAmmo;
             On_Player.CheckMana_int_bool_bool -= PreventManaCost1;
@@ -83,27 +81,6 @@ namespace NPCAttacker.Systems
             return orig.Invoke(self, weapon);
         }
 
-        private void UpdateNPCHook(On_NPC.orig_UpdateNPC_Inner orig, NPC self, int i)
-        {
-            if (!self.active)
-            {
-                orig.Invoke(self, i);
-                return;
-            }
-            if (self.IsTownNPC())
-            {
-                NPCAttacker.SpawnForNPCIndex = self.whoAmI;
-
-                if (!ArmedGNPC.GetWeapon(self).IsAir && ArmedGNPC.GetWeapon(self).channel)
-                {
-                    NPCAttacker.SpawnForChannelTime = (int)(NPCStats.GetModifiedAttackTime(self) * (ChannelHelper.NeedBreakChannel(ArmedGNPC.GetWeapon(self)) ? 0.75f : 1.5f));
-                }
-            }
-            orig.Invoke(self, i);
-            NPCAttacker.SpawnForNPCIndex = -1;
-            NPCAttacker.SpawnForChannelTime = -1;
-        }
-
 
         internal void DrawProjHook(On_Main.orig_DrawProj orig, Main self, int i)
         {
@@ -139,8 +116,9 @@ namespace NPCAttacker.Systems
                         Main.mouseX = (int)(target.Center.X - Main.screenPosition.X);
                         Main.mouseY = (int)(target.Center.Y - Main.screenPosition.Y);
                     }
-                    int itemtime = (int)owner.ai[1];
-                    int itemtimeM = NPCStats.GetModifiedAttackTime(Main.npc[result.NPCProjOwner]);
+                    int itemtime = (int)owner.ai[1] - 1;
+                    int itemtimeM = NPCStats.GetModifiedAttackTime(owner);
+                    if (itemtime > itemtimeM) itemtime = 0;
                     Main.LocalPlayer.itemTime = itemtime;
                     Main.LocalPlayer.itemTimeMax = itemtimeM;
                     Main.LocalPlayer.itemAnimation = itemtime;
@@ -173,25 +151,56 @@ namespace NPCAttacker.Systems
                     Main.LocalPlayer.position = owner.position;
                     Main.LocalPlayer.oldPosition = owner.position - owner.velocity;
                     Main.LocalPlayer.velocity = owner.velocity;
+                    Main.LocalPlayer.oldVelocity = owner.oldVelocity;
                     Main.LocalPlayer.direction = owner.direction;
+                    Main.LocalPlayer.statLife = owner.life;
+                    Main.LocalPlayer.statLifeMax2 = owner.lifeMax;
+                    if (Main.LocalPlayer.statManaMax2 < 200) Main.LocalPlayer.statManaMax2 = 200;
+                    Main.LocalPlayer.statMana = Main.LocalPlayer.statManaMax2;
                     if (result.ChannelTimer > 0)
                     {
                         Main.LocalPlayer.channel = true;
-                        Main.LocalPlayer.controlUseItem = true;
+                        switch (owner.GetGlobalNPC<ArmedGNPC>().AlterUseType)
+                        {
+                            case 0:
+                                Main.LocalPlayer.controlUseItem = true;
+                                Main.LocalPlayer.controlUseTile = false;
+                                Main.LocalPlayer.altFunctionUse = 0;
+                                break;
+                            case 1:
+                                Main.LocalPlayer.controlUseItem = false;
+                                Main.LocalPlayer.controlUseTile = true;
+                                Main.LocalPlayer.altFunctionUse = 2;
+                                break;
+                            case 2:
+                                Main.LocalPlayer.altFunctionUse = owner.GetGlobalNPC<ArmedGNPC>().NextUseType ? 2 : 0;
+                                Main.LocalPlayer.controlUseItem = owner.GetGlobalNPC<ArmedGNPC>().NextUseType;
+                                Main.LocalPlayer.controlUseTile = !owner.GetGlobalNPC<ArmedGNPC>().NextUseType;
+                                break;
+                        }
                     }
+                    else
+                    {
+                        Main.LocalPlayer.channel = false;
+                        Main.LocalPlayer.altFunctionUse = 0;
+                        Main.LocalPlayer.controlUseItem = false;
+                        Main.LocalPlayer.controlUseTile = false;
+                    }
+
                     if (owner.GetGlobalNPC<ArmedGNPC>().NPCTargetForSpecialUse != -1)
                     {
                         NPC target = Main.npc[owner.GetGlobalNPC<ArmedGNPC>().NPCTargetForSpecialUse];
                         Main.mouseX = (int)(target.Center.X - Main.screenPosition.X);
                         Main.mouseY = (int)(target.Center.Y - Main.screenPosition.Y);
                     }
-                    int itemtime = (int)owner.ai[1];
-                    int itemtimeM = NPCStats.GetModifiedAttackTime(Main.npc[result.NPCProjOwner]);
+                    int itemtime = (int)owner.ai[1] - 1;
+                    int itemtimeM = NPCStats.GetModifiedAttackTime(owner);
+                    if (itemtime > itemtimeM) itemtime = 0;
                     Main.LocalPlayer.itemTime = itemtime;
                     Main.LocalPlayer.itemTimeMax = itemtimeM;
                     Main.LocalPlayer.itemAnimation = itemtime;
                     Main.LocalPlayer.itemAnimationMax = itemtimeM;
-                    Main.LocalPlayer.inventory[Main.LocalPlayer.selectedItem] = ArmedGNPC.GetWeapon(Main.npc[result.NPCProjOwner]);
+                    Main.LocalPlayer.inventory[Main.LocalPlayer.selectedItem] = ArmedGNPC.GetWeapon(owner);
 
                     NPCAttacker.SpawnForNPCIndex = result.NPCProjOwner;
 
@@ -202,9 +211,22 @@ namespace NPCAttacker.Systems
                     {
                         self.hide = false;
                     }
+
+                    //消耗生命武器的一个小适配
+                    owner.life = Main.LocalPlayer.statLife;
+                    owner.lifeMax = Main.LocalPlayer.statLifeMax2;
+                    //位移武器的一个适配
+                    owner.position = Main.LocalPlayer.position;
+                    owner.velocity = Main.LocalPlayer.velocity;
+                    owner.oldPosition = Main.LocalPlayer.oldPosition;
+                    owner.oldVelocity = Main.LocalPlayer.oldVelocity;
+                    owner.spriteDirection = Main.LocalPlayer.direction;
+
                     NPCAttacker.SpawnForNPCIndex = -1;
                     NPCAttacker.playerDataSaver.CloneTo(Main.LocalPlayer);
                     NPCAttacker.FuckingInvincible = false;
+
+                    if (owner.life <= 0) owner.checkDead();
                     return;
                 }
             }
@@ -213,8 +235,7 @@ namespace NPCAttacker.Systems
 
         }
 
-
-        public static void AIHook(On_NPC.orig_AI_007_TownEntities orig, NPC self)
+        internal static void AIHook(On_NPC.orig_AI_007_TownEntities orig, NPC self)
         {
             if (self.IsTownNPC())
             {
@@ -224,8 +245,7 @@ namespace NPCAttacker.Systems
             orig.Invoke(self);
         }
 
-
-        public static void DrawNPCChatButtonsHook(On_Main.orig_DrawNPCChatButtons orig, int superColor, Color chatColor, int numLines, string focusText, string focusText3)
+        internal static void DrawNPCChatButtonsHook(On_Main.orig_DrawNPCChatButtons orig, int superColor, Color chatColor, int numLines, string focusText, string focusText3)
         {
             NPCAttacker.FocusText1 = focusText;
             NPCAttacker.FocusText3 = focusText3;

@@ -22,8 +22,7 @@ namespace NPCAttacker.UI
 
             string LocalizedText = NPCAttacker.UITranslation("Arm");
             Vector2 Size = Get5ButtonSize(LocalizedText);
-            Main.instance.LoadItem(ItemID.BlackDye);
-            TextButton = new UIImageButton(Terraria.GameContent.TextureAssets.Item[ItemID.BlackDye]);
+            TextButton = new UIImageButton(Terraria.GameContent.TextureAssets.MagicPixel);
             TextButton.Left.Set(Pos.X, 0f);
             TextButton.Top.Set(Pos.Y, 0f);
             TextButton.Width.Set(Size.X, 0f);
@@ -64,13 +63,11 @@ namespace NPCAttacker.UI
 
             Main.npcChatText = "";
 
-            ArmUI.OpenUI();
-            ArmorUI.OpenUI();
             if (Main.LocalPlayer.talkNPC != -1)
             {
                 if (NPCID.Sets.AttackType[Main.npc[Main.LocalPlayer.talkNPC].type] >= 0 && NPCID.Sets.AttackType[Main.npc[Main.LocalPlayer.talkNPC].type] <= 3)
                 {
-                    ArmAltUI.OpenUI();
+                    ArmUI.OpenUI();
                 }
             }
         }

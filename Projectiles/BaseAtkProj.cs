@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using NPCAttacker.Systems;
 using Terraria;
 using Terraria.ModLoader;
 namespace NPCAttacker.Projectiles
@@ -44,6 +45,11 @@ namespace NPCAttacker.Projectiles
             return Projectile.GetGlobalProjectile<AttackerGProj>().ProjTarget;
         }
 
+        public int GetOwner()
+        {
+            return Projectile.GetGlobalProjectile<SpecialUseProj>().NPCProjOwner;
+        }
+
         public bool HasValidTarget()
         {
             int target = GetTarget();
@@ -72,7 +78,10 @@ namespace NPCAttacker.Projectiles
 
         public override void OnKill(int timeLeft)
         {
-            AttackEffect();
+            if (GetOwner() != -1 && Main.npc[GetOwner()].active)
+            {
+                AttackEffect();
+            }
         }
 
         public override bool PreDraw(ref Color lightColor)

@@ -23,7 +23,7 @@ namespace NPCAttacker
                             result = true;
                             if (modproj.ChannelTimer > 0)
                             {
-                                modproj.ChannelTimer = (int)(NPCStats.GetModifiedAttackTime(npc) * (NeedBreakChannel(ArmedGNPC.GetWeapon(npc)) ? 0.75f : 1.5f));
+                                modproj.ChannelTimer = GetChannelTime(npc);
                             }
                         }
                     }
@@ -41,6 +41,26 @@ namespace NPCAttacker
             }
             return false;
 
+        }
+
+        public static int GetChannelTime(NPC npc)
+        {
+            float modifier = 1;
+            switch (npc.GetGlobalNPC<ArmedGNPC>().ChannelUseType)
+            {
+                case 0:
+                    modifier = 1.5f; 
+                    break;
+                case 1:
+                    modifier = 0.75f; 
+                    break;
+                case 2:
+                    modifier = 0.1f; 
+                    break;
+            }
+            int result = (int)(NPCStats.GetModifiedAttackTime(npc) * modifier);
+            if (result < 2) result = 2;
+            return result;
         }
     }
 }

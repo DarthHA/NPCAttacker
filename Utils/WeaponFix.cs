@@ -272,7 +272,7 @@ namespace NPCAttacker
                 case ItemID.HallowJoustingLance:
                 case ItemID.DarkLance:
                     return false;
-                case 3835:
+                case 3835:          //塔防的两个棍子
                 case 3858:
                     return true;
             }
@@ -318,7 +318,7 @@ namespace NPCAttacker
                 return new Item();
             }
 
-            return npc.GetGlobalNPC<ArmedGNPC>().WeaponAlt;
+            return npc.GetGlobalNPC<ArmedGNPC>().WeaponAlt.Clone();
         }
 
         public static bool HasAmmo(NPC npc, Item sItem)

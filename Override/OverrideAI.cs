@@ -10,6 +10,7 @@ using Terraria.GameContent.Drawing;
 using Terraria.GameContent.Events;
 using Terraria.ID;
 using Terraria.ModLoader;
+using static Humanizer.In;
 
 namespace NPCAttacker.Override
 {
@@ -1872,18 +1873,15 @@ namespace NPCAttacker.Override
                         }
                         else         //有武器时的发射弹幕
                         {
-                            if (!ChannelHelper.CheckAndContinueChannelProj(Npc))
-                            {
-                                Item Weapon = ArmedGNPC.GetWeapon(Npc);
-                                int shoot = Weapon.shoot;
-                                Vector2 ShootPos = new(Npc.Center.X + Npc.spriteDirection * 16, Npc.Center.Y - 2f);
+                            Item Weapon = ArmedGNPC.GetWeapon(Npc);
+                            int shoot = Weapon.shoot;
+                            Vector2 ShootPos = new(Npc.Center.X + Npc.spriteDirection * 16, Npc.Center.Y - 2f);
 
-                                if (ShootSomething(Npc, Weapon, shoot, ShootPos, ShootVel, Damage, knockBack))
+                            if (ShootSomething(Npc, Weapon, shoot, ShootPos, ShootVel, Damage, knockBack))
+                            {
+                                if (Weapon.UseSound != null)
                                 {
-                                    if (Weapon.UseSound != null)
-                                    {
-                                        SoundEngine.PlaySound(Weapon.UseSound, Npc.Center);
-                                    }
+                                    SoundEngine.PlaySound(Weapon.UseSound, Npc.Center);
                                 }
                             }
                         }
@@ -2214,56 +2212,52 @@ namespace NPCAttacker.Override
                         }
                         else         //有武器时的发射弹幕
                         {
-                            if (!ChannelHelper.CheckAndContinueChannelProj(Npc))
-                            {
-                                Item Weapon = ArmedGNPC.GetWeapon(Npc);
-                                int shoot = Weapon.shoot;
-                                if (Weapon.useAmmo > 0)
-                                {
-                                    if (!Weapon.channel)             //非蓄力武器
-                                    {
-                                        if (AmmoFix.PickAmmo(Npc, Weapon) > 0)
-                                        {
-                                            shoot = AmmoFix.PickAmmo(Npc, Weapon);
-                                            ShootVel = Vector2.Normalize(ShootVel) * (ShootVel.Length() + AmmoFix.GetAmmoSpeed(Npc, Weapon));
 
-                                            if (Weapon.ModItem == null)  //原版武器弹药特殊变更
+                            Item Weapon = ArmedGNPC.GetWeapon(Npc);
+                            int shoot = Weapon.shoot;
+                            if (Weapon.useAmmo > 0)
+                            {
+                                if (!Weapon.channel)             //非蓄力武器
+                                {
+                                    if (AmmoFix.PickAmmo(Npc, Weapon) > 0)
+                                    {
+                                        shoot = AmmoFix.PickAmmo(Npc, Weapon);
+                                        ShootVel = Vector2.Normalize(ShootVel) * (ShootVel.Length() + AmmoFix.GetAmmoSpeed(Npc, Weapon));
+
+                                        if (Weapon.ModItem == null)  //原版武器弹药特殊变更
+                                        {
+                                            if (Weapon.useAmmo == AmmoID.Bullet || Weapon.useAmmo == AmmoID.Arrow || Weapon.useAmmo == AmmoID.Dart || Weapon.useAmmo == AmmoID.NailFriendly)
                                             {
-                                                if (Weapon.useAmmo == AmmoID.Bullet || Weapon.useAmmo == AmmoID.Arrow || Weapon.useAmmo == AmmoID.Dart || Weapon.useAmmo == AmmoID.NailFriendly)
+                                                if (VanillaItemProjFix.IsUseSpecialProj[Weapon.type] != 0)
                                                 {
-                                                    if (VanillaItemProjFix.IsUseSpecialProj[Weapon.type] != 0)
-                                                    {
-                                                        shoot = VanillaItemProjFix.IsUseSpecialProj[Weapon.type];
-                                                    }
+                                                    shoot = VanillaItemProjFix.IsUseSpecialProj[Weapon.type];
                                                 }
                                             }
                                         }
-                                        else
-                                        {
-                                            shoot = 0;
-                                        }
                                     }
-                                    else           //蓄力武器
+                                    else
                                     {
-                                        if (AmmoFix.PickAmmo(Npc, Weapon) == 0) shoot = 0;
+                                        shoot = 0;
                                     }
                                 }
-
-
-                                if (shoot > 0)
+                                else           //蓄力武器
                                 {
-                                    Vector2 ShootPos = new(Npc.Center.X + Npc.spriteDirection * 16, Npc.Center.Y - 2f);
+                                    if (AmmoFix.PickAmmo(Npc, Weapon) == 0) shoot = 0;
+                                }
+                            }
 
-                                    if (ShootSomething(Npc, Weapon, shoot, ShootPos, ShootVel, Damage, knockBack))
+
+                            if (shoot > 0)
+                            {
+                                Vector2 ShootPos = new(Npc.Center.X + Npc.spriteDirection * 16, Npc.Center.Y - 2f);
+
+                                if (ShootSomething(Npc, Weapon, shoot, ShootPos, ShootVel, Damage, knockBack))
+                                {
+                                    if (Weapon.UseSound != null)
                                     {
-                                        if (Weapon.UseSound != null)
-                                        {
-                                            SoundEngine.PlaySound(Weapon.UseSound, Npc.Center);
-                                        }
+                                        SoundEngine.PlaySound(Weapon.UseSound, Npc.Center);
                                     }
                                 }
-
-
                             }
                         }
                     }
@@ -2530,18 +2524,15 @@ namespace NPCAttacker.Override
                         }
                         else         //有武器时的发射弹幕
                         {
-                            if (!ChannelHelper.CheckAndContinueChannelProj(Npc))
-                            {
-                                Item Weapon = ArmedGNPC.GetWeapon(Npc);
-                                int shoot = Weapon.shoot;
-                                Vector2 ShootPos = new(Npc.Center.X + Npc.spriteDirection * 16, Npc.Center.Y - 2f);
+                            Item Weapon = ArmedGNPC.GetWeapon(Npc);
+                            int shoot = Weapon.shoot;
+                            Vector2 ShootPos = new(Npc.Center.X + Npc.spriteDirection * 16, Npc.Center.Y - 2f);
 
-                                if (ShootSomething(Npc, Weapon, shoot, ShootPos, ShootVel, Damage, knockBack))
+                            if (ShootSomething(Npc, Weapon, shoot, ShootPos, ShootVel, Damage, knockBack))
+                            {
+                                if (Weapon.UseSound != null)
                                 {
-                                    if (Weapon.UseSound != null)
-                                    {
-                                        SoundEngine.PlaySound(Weapon.UseSound, Npc.Center);
-                                    }
+                                    SoundEngine.PlaySound(Weapon.UseSound, Npc.Center);
                                 }
                             }
                         }
@@ -2737,42 +2728,40 @@ namespace NPCAttacker.Override
                             if (!Npc.GetGlobalNPC<ArmedGNPC>().MeleeAttacked)
                             {
                                 Npc.GetGlobalNPC<ArmedGNPC>().MeleeAttacked = true;
-                                if (!ChannelHelper.CheckAndContinueChannelProj(Npc))
+
+                                if (Weapon.UseSound != null)
                                 {
-                                    if (Weapon.UseSound != null)
+                                    SoundEngine.PlaySound(Weapon.UseSound, Npc.Center);
+                                }
+                                if (Weapon.shoot > ProjectileID.None)
+                                {
+                                    int shoot = Weapon.shoot;
+                                    Vector2 ShootPos = new(Npc.Center.X + Npc.spriteDirection * 16, Npc.Center.Y - 2f);
+                                    float ShootSpeed = Weapon.shootSpeed;
+
+                                    int Target = -1;
+                                    if (ShootDir == 1 && Npc.spriteDirection == 1)
                                     {
-                                        SoundEngine.PlaySound(Weapon.UseSound, Npc.Center);
+                                        Target = TargetRight;
                                     }
-                                    if (Weapon.shoot > ProjectileID.None)
+                                    if (ShootDir == -1 && Npc.spriteDirection == -1)
                                     {
-                                        int shoot = Weapon.shoot;
-                                        Vector2 ShootPos = new(Npc.Center.X + Npc.spriteDirection * 16, Npc.Center.Y - 2f);
-                                        float ShootSpeed = Weapon.shootSpeed;
-
-                                        int Target = -1;
-                                        if (ShootDir == 1 && Npc.spriteDirection == 1)
-                                        {
-                                            Target = TargetRight;
-                                        }
-                                        if (ShootDir == -1 && Npc.spriteDirection == -1)
-                                        {
-                                            Target = TargetLeft;
-                                        }
-                                        Npc.GetGlobalNPC<ArmedGNPC>().NPCTargetForSpecialUse = Target;
-
-                                        Vector2 ShootVel = new Vector2(Npc.spriteDirection, 0) * ShootSpeed;
-
-                                        if (Npc.GetGlobalNPC<ArmedGNPC>().NPCTargetForSpecialUse != -1)                //如果有目标就使用目标的索敌方向
-                                        {
-                                            int target = Npc.GetGlobalNPC<ArmedGNPC>().NPCTargetForSpecialUse;
-                                            if (Main.npc[target].active)
-                                            {
-                                                ShootVel = Vector2.Normalize(Main.npc[target].Center - Npc.Center) * ShootSpeed;
-                                            }
-                                        }
-
-                                        ShootSomething(Npc, Weapon, shoot, ShootPos, ShootVel, Damage, knockBack);
+                                        Target = TargetLeft;
                                     }
+                                    Npc.GetGlobalNPC<ArmedGNPC>().NPCTargetForSpecialUse = Target;
+
+                                    Vector2 ShootVel = new Vector2(Npc.spriteDirection, 0) * ShootSpeed;
+
+                                    if (Npc.GetGlobalNPC<ArmedGNPC>().NPCTargetForSpecialUse != -1)                //如果有目标就使用目标的索敌方向
+                                    {
+                                        int target = Npc.GetGlobalNPC<ArmedGNPC>().NPCTargetForSpecialUse;
+                                        if (Main.npc[target].active)
+                                        {
+                                            ShootVel = Vector2.Normalize(Main.npc[target].Center - Npc.Center) * ShootSpeed;
+                                        }
+                                    }
+
+                                    ShootSomething(Npc, Weapon, shoot, ShootPos, ShootVel, Damage, knockBack);
                                 }
                             }
                         }
@@ -3708,6 +3697,7 @@ namespace NPCAttacker.Override
 
         private static bool ShootSomething(NPC npc, Item weapon, int shoot, Vector2 ShootPos, Vector2 ShootVel, int Damage, float Knockback)
         {
+            bool success = false;
             if (weapon.ModItem == null)            //原版武器弹幕修正
             {
                 int transformType = VanillaItemProjFix.TransFormProj(npc, weapon.type);
@@ -3716,16 +3706,90 @@ namespace NPCAttacker.Override
                     shoot = transformType;
                 }
             }
-            if (ItemLoader.CanUseItem(weapon, Main.LocalPlayer) && ItemLoader.CanShoot(weapon, Main.LocalPlayer))
+
+            if (Main.LocalPlayer.active)
             {
-                ItemLoader.ModifyShootStats(weapon, Main.LocalPlayer, ref ShootPos, ref ShootVel, ref shoot, ref Damage, ref Knockback);
-                if (ItemLoader.Shoot(weapon, Main.LocalPlayer, null, ShootPos, ShootVel, shoot, Damage, Knockback))
+                NPCAttacker.FuckingInvincible = true;
+                NPCAttacker.playerDataSaver.CloneFrom(Main.LocalPlayer);
+                Main.LocalPlayer.position = npc.position;
+                Main.LocalPlayer.oldPosition = npc.position - npc.velocity;
+                Main.LocalPlayer.velocity = npc.velocity;
+                Main.LocalPlayer.oldVelocity = npc.oldVelocity;
+                Main.LocalPlayer.direction = npc.direction;
+                Main.LocalPlayer.statLife = npc.life;
+                Main.LocalPlayer.statLifeMax2 = npc.lifeMax;
+                if (Main.LocalPlayer.statManaMax2 < 200) Main.LocalPlayer.statManaMax2 = 200;
+                Main.LocalPlayer.statMana = Main.LocalPlayer.statManaMax2;
+
+                switch (npc.GetGlobalNPC<ArmedGNPC>().AlterUseType)
                 {
-                    Projectile.NewProjectile(null, ShootPos, ShootVel, shoot, Damage, Knockback, Main.myPlayer);
+                    case 0:
+                        Main.LocalPlayer.controlUseItem = true;
+                        Main.LocalPlayer.controlUseTile = false;
+                        Main.LocalPlayer.altFunctionUse = 0;
+                        break;
+                    case 1:
+                        Main.LocalPlayer.controlUseItem = false;
+                        Main.LocalPlayer.controlUseTile = true;
+                        Main.LocalPlayer.altFunctionUse = 2;
+                        break;
+                    case 2:
+                        Main.LocalPlayer.altFunctionUse = npc.GetGlobalNPC<ArmedGNPC>().NextUseType ? 2 : 0;
+                        Main.LocalPlayer.controlUseItem = npc.GetGlobalNPC<ArmedGNPC>().NextUseType;
+                        Main.LocalPlayer.controlUseTile = !npc.GetGlobalNPC<ArmedGNPC>().NextUseType;
+                        break;
                 }
-                return true;
+
+                if (npc.GetGlobalNPC<ArmedGNPC>().NPCTargetForSpecialUse != -1)
+                {
+                    NPC target = Main.npc[npc.GetGlobalNPC<ArmedGNPC>().NPCTargetForSpecialUse];
+                    if (target.active)
+                    {
+                        Main.mouseX = (int)(target.Center.X - Main.screenPosition.X);
+                        Main.mouseY = (int)(target.Center.Y - Main.screenPosition.Y);
+                    }
+                }
+                Main.LocalPlayer.inventory[Main.LocalPlayer.selectedItem] = ArmedGNPC.GetWeapon(npc);
+
+                NPCAttacker.SpawnForNPCIndex = npc.whoAmI;
+                if (ItemLoader.CanUseItem(weapon, Main.LocalPlayer) && ItemLoader.CanShoot(weapon, Main.LocalPlayer))
+                {
+                    if (!ChannelHelper.CheckAndContinueChannelProj(npc))
+                    {
+                        if (weapon.channel)
+                        {
+                            NPCAttacker.SpawnForChannelTime = ChannelHelper.GetChannelTime(npc);
+                        }
+                        ItemLoader.ModifyShootStats(weapon, Main.LocalPlayer, ref ShootPos, ref ShootVel, ref shoot, ref Damage, ref Knockback);
+                        if (ItemLoader.Shoot(weapon, Main.LocalPlayer, null, ShootPos, ShootVel, shoot, Damage, Knockback))
+                        {
+                            Projectile.NewProjectile(null, ShootPos, ShootVel, shoot, Damage, Knockback, Main.myPlayer);
+                        }
+                        success = true;
+                        npc.GetGlobalNPC<ArmedGNPC>().NextUseType = !npc.GetGlobalNPC<ArmedGNPC>().NextUseType;//蓄力武器蓄力时无法切换左右键
+                    }
+                }
+
+                //消耗生命武器的一个小适配
+                npc.life = Main.LocalPlayer.statLife;
+                npc.lifeMax = Main.LocalPlayer.statLifeMax2;
+                //位移武器的一个小适配
+                npc.position = Main.LocalPlayer.position;
+                npc.velocity = Main.LocalPlayer.velocity;
+                npc.oldPosition = Main.LocalPlayer.oldPosition;
+                npc.oldVelocity = Main.LocalPlayer.oldVelocity;
+                npc.spriteDirection = Main.LocalPlayer.direction;
+
+                NPCAttacker.SpawnForNPCIndex = -1;
+                NPCAttacker.SpawnForChannelTime = -1;
+                NPCAttacker.playerDataSaver.CloneTo(Main.LocalPlayer);
+                NPCAttacker.FuckingInvincible = false;
+
             }
-            return false;
+
+            if (npc.life <= 0) npc.StrikeInstantKill();
+
+            return success;
         }
 
     }

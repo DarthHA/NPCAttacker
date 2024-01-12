@@ -1,18 +1,25 @@
+﻿using Microsoft.Xna.Framework;
+using Steamworks;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Terraria;
+using Terraria.Localization;
 using Terraria.ModLoader;
 using Terraria.ModLoader.IO;
+using static Humanizer.In;
 
 namespace NPCAttacker.Systems
 {
+    /*
     public class WeaponsSave : ModSystem
     {
+        
         public Dictionary<string, Item> WeaponToNPC = new();
         public Dictionary<string, Item> WeaponAltToNPC = new();
         public Dictionary<string, Item> ArmorToNPC = new();
 
-
+        
         public override void LoadWorldData(TagCompound tag)
         {
             var NPCType1 = tag.Get<List<string>>("NPCType1");
@@ -295,6 +302,191 @@ namespace NPCAttacker.Systems
             tag.Add("NPCType3", ArmorToNPC.Keys.ToList());
             tag.Add("NPCArmor", ArmorToNPC.Values.ToList());
         }
+        
+    }
+    */
+
+    public class NPCInfoSaver : TagSerializable
+    {
+        public static readonly Func<TagCompound, NPCInfoSaver> DESERIALIZER = Load;
+
+        public int VanillaNPCType = -1;
+        public string ModName = "";
+        public string ModNPCName = "";
+        public Item Weapon = new();
+        public Item AltWeapon = new();
+        public Item Armor = new();
+        public int Team = 0;
+        public int AlterUseType = 0;
+        public int ChannelUseType = 0;
+
+
+        public NPCInfoSaver(NPC npc)
+        {
+            if (npc.TryGetGlobalNPC(out ArmedGNPC modnpc))
+            {
+                if (npc.ModNPC == null)
+                {
+                    VanillaNPCType = npc.type;
+                }
+                else
+                {
+                    VanillaNPCType = -1;
+                    ModName = npc.ModNPC.Mod.Name;
+                    ModNPCName = npc.ModNPC.Name;
+                }
+                Weapon = modnpc.Weapon.IsAir ? new Item() : modnpc.Weapon;
+                AltWeapon = modnpc.WeaponAlt.IsAir ? new Item() : modnpc.WeaponAlt;
+                Armor = modnpc.Armor.IsAir ? new Item() : modnpc.Armor;
+                AlterUseType = modnpc.AlterUseType;
+                ChannelUseType = modnpc.ChannelUseType;
+            }
+        }
+        public NPCInfoSaver()
+        {
+
+        }
+
+        public TagCompound SerializeData()
+        {
+            return new TagCompound
+            {
+                ["VanillaNPCType"] = VanillaNPCType,
+                ["ModName"] = ModName,
+                ["ModNPCName"] = ModNPCName,
+                ["Weapon"] = Weapon,
+                ["AltWeapon"] = AltWeapon,
+                ["Armor"] = Armor,
+                ["AlterUseType"] = AlterUseType,
+                ["ChannelUseType"] = ChannelUseType,
+            };
+        }
+
+        public static NPCInfoSaver Load(TagCompound tag)
+        {
+            var myData = new NPCInfoSaver
+            {
+                VanillaNPCType = tag.GetInt("VanillaNPCType"),
+                ModName = tag.GetString("ModName"),
+                ModNPCName = tag.GetString("ModNPCName"),
+                Weapon = tag.Get<Item>("Weapon"),
+                AltWeapon = tag.Get<Item>("AltWeapon"),
+                Armor = tag.Get<Item>("Armor"),
+                AlterUseType = tag.GetInt("AlterUseType"),
+                ChannelUseType = tag.GetInt("ChannelUseType"),
+            };
+
+            return myData;
+        }
+    }
+
+    public class WeaponsSave : ModSystem
+    {
+        public static List<NPCInfoSaver> saver = new();
+        public static List<Item> LegacyItemSave = new();
+        public override void LoadWorldData(TagCompound tag)
+        {
+            saver.Clear();
+            saver = tag.Get<List<NPCInfoSaver>>("NPCInfoSave");
+            foreach (NPCInfoSaver saveinfo in saver)
+            {
+                foreach (NPC npc in Main.npc)
+                {
+                    if (!npc.active || !npc.IsTownNPC()) continue;
+                    bool IsThisNPC = false;
+                    if (saveinfo.VanillaNPCType != -1)      //原版NPC
+                    {
+                        if (npc.ModNPC == null && saveinfo.VanillaNPCType == npc.type)
+                            IsThisNPC = true;
+                    }
+                    else      //Mod NPC
+                    {
+                        if (npc.ModNPC != null && npc.ModNPC.Mod.Name == saveinfo.ModName && npc.ModNPC.Name == saveinfo.ModNPCName)
+                        {
+                            IsThisNPC = true;
+                        }
+                    }
+                    if (IsThisNPC)
+                    {
+                        ArmedGNPC modnpc = npc.GetGlobalNPC<ArmedGNPC>();
+                        modnpc.Weapon = NPCUtils.CloneItem(saveinfo.Weapon);
+                        modnpc.WeaponAlt = NPCUtils.CloneItem(saveinfo.AltWeapon);
+                        modnpc.Armor = NPCUtils.CloneItem(saveinfo.Armor);
+                        modnpc.AlterUseType = saveinfo.AlterUseType;
+                        modnpc.ChannelUseType = saveinfo.ChannelUseType;
+                        break;
+                    }
+
+                }
+            }
+
+            #region 旧版本武器数据更新会失效，因此需要这玩意弹出所有武器
+            LegacyItemSave.Clear();
+            if (tag.TryGet("NPCWeapon", out List<Item> NPCWeapon))
+            {
+                foreach (Item item in NPCWeapon)
+                {
+                    if (!item.IsAir) LegacyItemSave.Add(NPCUtils.CloneItem(item));
+                }
+            }
+            if (tag.TryGet("NPCWeaponAlt", out List<Item> NPCWeaponAlt))
+            {
+                foreach (Item item in NPCWeaponAlt)
+                {
+                    if (!item.IsAir) LegacyItemSave.Add(NPCUtils.CloneItem(item));
+                }
+            }
+            if (tag.TryGet("NPCArmor", out List<Item> NPCArmor))
+            {
+                foreach (Item item in NPCArmor)
+                {
+                    if (!item.IsAir) LegacyItemSave.Add(NPCUtils.CloneItem(item));
+                }
+            }
+            #endregion
+        }
+
+        public override void SaveWorldData(TagCompound tag)
+        {
+            saver.Clear();
+            foreach (NPC npc in Main.npc)
+            {
+                if (!npc.active || !npc.IsTownNPC()) continue;
+                NPCInfoSaver unit = new(npc);
+                saver.Add(unit);
+            }
+            tag.Add("NPCInfoSave", saver);
+        }
+
+        public override void Unload()
+        {
+            saver.Clear();
+            saver = null;
+
+            LegacyItemSave.Clear();
+            LegacyItemSave = null;
+        }
 
     }
+
+    #region 旧版本武器数据更新会失效，因此需要这玩意弹出所有武器
+    public class LegacyItemGiver : ModPlayer
+    {
+        public override void OnEnterWorld()
+        {
+            if (WeaponsSave.LegacyItemSave.Count > 0)
+            {
+                foreach (Item item in WeaponsSave.LegacyItemSave)
+                {
+                    Item.NewItem(Player.GetSource_Loot(), Player.Hitbox, NPCUtils.CloneItem(item));
+                }
+                Main.NewText(Language.ActiveCulture.LegacyId == (int)GameCulture.CultureName.Chinese ?
+                    "[指挥NPC Mod] 由于技术更新，旧版本存储的武器将会失效，因此将其归还，请谅解！" :
+                    "[Command NPCs Mod] Due to technological update, the old version of stored weapon will become invalid, so it will be returned. Sorry for That!"
+                    , Color.Cyan);
+                WeaponsSave.LegacyItemSave.Clear();
+            }
+        }
+    }
+    #endregion
 }
