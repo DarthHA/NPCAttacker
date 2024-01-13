@@ -45,7 +45,7 @@ Mods: {
 
 		UI: {
 			Arm: Arm
-			RemoveWeapon: Remove this weapon here to disarm this NPC
+			RemoveWeapon: Remove this weapon to disarm this NPC
 			PlaceAWeapon: Place a weapon here to arm this NPC
 			ComplexNote: Note: The effect of complex weapons in other mods cannot be guaranteed.
 			NurseWeapon: This NPC can be equipped with enough healing potion(>= 30) to enhance effects[i:188]
@@ -236,8 +236,8 @@ Mods: {
 			BlueFireProj.DisplayName: ""
 			PiranhaGunProj.DisplayName: ""
 			TwilightBowProj.DisplayName: ""
-			DragonRageProj.DisplayName: Dragon Rage Proj
-			EndlessBookProj.DisplayName: Endless Book Proj
+			DragonRageProj.DisplayName: ""
+			EndlessBookProj.DisplayName: ""
 		}
 	}
 }

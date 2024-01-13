@@ -32,6 +32,12 @@ namespace NPCAttacker.UI
 
         }
 
+        public override void Unload()
+        {
+            _UINPCExtraButton.Deactivate();
+            _ArmUI.Deactivate();
+
+        }
 
         public override void UpdateUI(GameTime gameTime)
         {

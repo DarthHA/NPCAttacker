@@ -1,9 +1,7 @@
-using NPCAttacker.UI;
 using System.Collections.Generic;
 using Terraria;
 using Terraria.ID;
 using Terraria.Localization;
-using Terraria.ModLoader;
 
 namespace NPCAttacker.Systems
 {

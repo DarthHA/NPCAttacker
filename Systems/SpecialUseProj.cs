@@ -21,7 +21,7 @@ namespace NPCAttacker.Systems
                 if (Main.npc[NPCAttacker.SpawnForNPCIndex].active)
                 {
                     NPC owner = Main.npc[NPCAttacker.SpawnForNPCIndex];
-                    if(projectile.TryGetGlobalProjectile(out AttackerGProj modproj1)) 
+                    if (projectile.TryGetGlobalProjectile(out AttackerGProj modproj1))
                     {
                         modproj1.ProjTarget = owner.GetGlobalNPC<ArmedGNPC>().NPCTargetForSpecialUse;       //给弹幕一个目标,和额外数据
                         modproj1.ExtraInfo = Main.LocalPlayer.altFunctionUse;

@@ -30,7 +30,7 @@ namespace NPCAttacker.Systems
                         {
                             description = string.Format(Language.GetTextValue("Mods.NPCAttacker.UI.CanUseKill"), npc.GivenOrTypeName);
                         }
-                        TooltipLine tooltip = new (Mod, "TooltipCanUse", description);
+                        TooltipLine tooltip = new(Mod, "TooltipCanUse", description);
                         tooltip.OverrideColor = Color.Cyan;
                         tooltips.Add(tooltip);
                     }
@@ -42,6 +42,6 @@ namespace NPCAttacker.Systems
                 tooltips.Add(new TooltipLine(Mod, "TooltipPotionEffect", description));
             }
         }
-        
+
     }
 }

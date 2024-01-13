@@ -1,16 +1,11 @@
 ﻿using Microsoft.Xna.Framework;
 using NPCAttacker.Systems;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Terraria;
-using Terraria.ID;
 
 namespace NPCAttacker.Projectiles.Melee
 {
-    public class DragonRageProj:BaseAtkProj
+    public class DragonRageProj : BaseAtkProj
     {
         public override int ItemType => 3858;
         public override void AttackEffect()

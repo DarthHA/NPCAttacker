@@ -16,7 +16,7 @@ namespace NPCAttacker
             {
                 if (proj.active)
                 {
-                    if(proj.TryGetGlobalProjectile(out SpecialUseProj modproj))
+                    if (proj.TryGetGlobalProjectile(out SpecialUseProj modproj))
                     {
                         if (modproj.NPCProjOwner == npc.whoAmI && modproj.ChannelTimer >= 0)
                         {
@@ -49,13 +49,13 @@ namespace NPCAttacker
             switch (npc.GetGlobalNPC<ArmedGNPC>().ChannelUseType)
             {
                 case 0:
-                    modifier = 1.5f; 
+                    modifier = 1.5f;
                     break;
                 case 1:
-                    modifier = 0.75f; 
+                    modifier = 0.75f;
                     break;
                 case 2:
-                    modifier = 0.1f; 
+                    modifier = 0.1f;
                     break;
             }
             int result = (int)(NPCStats.GetModifiedAttackTime(npc) * modifier);

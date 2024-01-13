@@ -1,8 +1,9 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Terraria.GameContent;
 using System;
 using Terraria;
+using Terraria.Audio;
+using Terraria.GameContent;
 using Terraria.GameContent.UI.Elements;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -65,7 +66,7 @@ namespace NPCAttacker.UI
                 Top = { Pixels = slotY5 },
                 Width = { Pixels = 30 },
                 Height = { Pixels = 30 },
-                
+
             };
             ButtonAlterUseType.OnLeftClick += ButtonAlterUseType_OnLeftClick;
             ButtonChannelType.OnLeftClick += ButtonChannelType_OnLeftClick;
@@ -110,7 +111,7 @@ namespace NPCAttacker.UI
                     if (WeaponClassify.UseFlailWeapon2(item)) return true;
                 }
                 else
-                {                    
+                {
                     //悠悠球
                     if (ItemID.Sets.Yoyo[item.type]) return true;
                     if (ItemID.Sets.Spears[item.type]) return false;
@@ -284,6 +285,7 @@ namespace NPCAttacker.UI
                     ButtonChannelType.Recalculate();
                 }
 
+                
             }
         }
 
@@ -472,6 +474,7 @@ namespace NPCAttacker.UI
             {
                 modnpc.AlterUseType = (modnpc.AlterUseType + 1) % 3;
             }
+            SoundEngine.PlaySound(SoundID.MenuTick);
         }
 
         private void ButtonChannelType_OnLeftClick(UIMouseEvent evt, UIElement listeningElement)
@@ -482,6 +485,7 @@ namespace NPCAttacker.UI
             {
                 modnpc.ChannelUseType = (modnpc.ChannelUseType + 1) % 3;
             }
+            SoundEngine.PlaySound(SoundID.MenuTick);
         }
         private void ButtonAlterUseType_OnRightClick(UIMouseEvent evt, UIElement listeningElement)
         {
@@ -495,6 +499,7 @@ namespace NPCAttacker.UI
                     modnpc.AlterUseType = 2;
                 }
             }
+            SoundEngine.PlaySound(SoundID.MenuTick);
         }
         private void ButtonChannelType_OnRightClick(UIMouseEvent evt, UIElement listeningElement)
         {
@@ -508,6 +513,7 @@ namespace NPCAttacker.UI
                     modnpc.ChannelUseType = 2;
                 }
             }
+            SoundEngine.PlaySound(SoundID.MenuTick);
         }
 
 
@@ -542,7 +548,7 @@ namespace NPCAttacker.UI
                     }
 
                 }
-                
+
 
             }
         }

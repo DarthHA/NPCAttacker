@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Graphics;
 using Terraria;
 using Terraria.Audio;
+using Terraria.GameContent;
 using Terraria.GameContent.UI.Elements;
 using Terraria.ID;
 using Terraria.Localization;
@@ -13,20 +14,14 @@ namespace NPCAttacker.UI
 {
     public class UINPCExtraButton : UIState
     {
-        public UIImageButton TextButton;
+        public UIText TextButton;
         private bool HasHover = false;
         public static bool Visible = false;
         public override void OnActivate()
         {
-            Vector2 Pos = Get5ButtonPos(NPCAttacker.FocusText1, NPCAttacker.FocusText3);
-
-            string LocalizedText = NPCAttacker.UITranslation("Arm");
-            Vector2 Size = Get5ButtonSize(LocalizedText);
-            TextButton = new UIImageButton(Terraria.GameContent.TextureAssets.MagicPixel);
-            TextButton.Left.Set(Pos.X, 0f);
-            TextButton.Top.Set(Pos.Y, 0f);
-            TextButton.Width.Set(Size.X, 0f);
-            TextButton.Height.Set(Size.Y, 0f);
+            TextButton = new UIText("");
+            TextButton.Left.Set(0, 0f);
+            TextButton.Top.Set(0, 0f);
             TextButton.OnLeftClick += Chat_OnClick;
 
             Append(TextButton);
@@ -36,20 +31,31 @@ namespace NPCAttacker.UI
         public override void Update(GameTime gameTime)
         {
             base.Update(gameTime);
+            if (Main.LocalPlayer.talkNPC == -1) return;
+            NPC npc = Main.npc[Main.LocalPlayer.talkNPC];
+            if (!npc.IsTownNPC()) return;
             Vector2 Pos = Get5ButtonPos(NPCAttacker.FocusText1, NPCAttacker.FocusText3);
-            string LocalizedText = NPCAttacker.UITranslation("Arm");
-            Vector2 Size = Get5ButtonSize(LocalizedText);
-            TextButton.Left.Set(Pos.X, 0f);
-            TextButton.Top.Set(Pos.Y, 0f);
-            TextButton.Width.Set(Size.X, 0f);
-            TextButton.Height.Set(Size.Y, 0f);
-            Append(TextButton);
-            if (MouseHovering() && !HasHover)
+            string LocalizedText = Main.npcChatText == "" ? "" : NPCAttacker.UITranslation("Arm");
+            float multiplier = TextButton.IsMouseHovering ? 1.25f : 1f;
+            TextButton.Left.Set(Pos.X + (TextButton.IsMouseHovering ? 0 : 4), 0f);
+            TextButton.Top.Set(Pos.Y + (TextButton.IsMouseHovering ? 0 : 4), 0f);
+            TextButton.SetText(LocalizedText,0.9f * multiplier, false);
+            if (npc.type == NPCID.Nurse || npc.type == NPCID.Dryad)
+            {
+                TextButton.TextColor = CombatText.HealLife;
+            }
+            else
+            {
+                TextButton.TextColor = Color.Red;
+            }
+            TextButton.TextColor *= Main.mouseTextColor / 255f;
+            TextButton.Recalculate();
+            if (TextButton.IsMouseHovering && !HasHover)
             {
                 SoundEngine.PlaySound(SoundID.MenuTick);
                 HasHover = true;
             }
-            if (!MouseHovering() && HasHover)
+            if (!TextButton.IsMouseHovering && HasHover)
             {
                 SoundEngine.PlaySound(SoundID.MenuTick);
                 HasHover = false;
@@ -72,44 +78,9 @@ namespace NPCAttacker.UI
             }
         }
 
-
-        public override void Draw(SpriteBatch spriteBatch)
-        {
-            Vector2 Pos = Get5ButtonPos(NPCAttacker.FocusText1, NPCAttacker.FocusText3);
-            string LocalizedText = NPCAttacker.UITranslation("Arm");
-            Vector2 Size = Get5ButtonSize(LocalizedText);
-            Vector2 Scale = new(0.9f);
-            if (MouseHovering()) Scale *= 1.1f;
-            Vector2 Unit = new(1f);
-            Color chatColor = Color.Red;
-            if (Main.LocalPlayer.talkNPC != -1)
-            {
-                if (Main.npc[Main.LocalPlayer.talkNPC].type == NPCID.Nurse || Main.npc[Main.LocalPlayer.talkNPC].type == NPCID.Dryad)
-                {
-                    chatColor = CombatText.HealLife;
-                }
-            }
-            ChatManager.DrawColorCodedStringWithShadow(Main.spriteBatch, Terraria.GameContent.FontAssets.MouseText.Value, LocalizedText, Pos + Size * Unit * 0.5f, chatColor, 0f, Size * 0.5f, Scale * Unit, -1f, 2f);
-        }
-
-        public bool MouseHovering()
-        {
-            Vector2 Pos = Get5ButtonPos(NPCAttacker.FocusText1, NPCAttacker.FocusText3);
-            string LocalizedText = NPCAttacker.UITranslation("Arm");
-            Vector2 Size = Get5ButtonSize(LocalizedText);
-            if (Main.mouseX > Pos.X && Main.mouseX < Pos.X + Size.X)
-            {
-                if (Main.mouseY > Pos.Y && Main.mouseY < Pos.Y + Size.Y)
-                {
-                    return true;
-                }
-            }
-            return false;
-        }
-
         public Vector2 Get5ButtonPos(string focusText1, string focusText3)
         {
-            DynamicSpriteFont font = Terraria.GameContent.FontAssets.MouseText.Value;
+            DynamicSpriteFont font = FontAssets.MouseText.Value;
             Utils.WordwrapString(Main.npcChatText, font, 460, 10, out int numLines);
             numLines++;
 
@@ -148,13 +119,6 @@ namespace NPCAttacker.UI
             //CurrentPos = new (CurrentPos.X + stringSize.X * UnitX.X + 30f, PosY);
             return CurrentPos;
         }
-
-        public Vector2 Get5ButtonSize(string focusText4)
-        {
-            Vector2 baseScale = new(0.9f);
-            return ChatManager.GetStringSize(Terraria.GameContent.FontAssets.MouseText.Value, focusText4, baseScale);
-        }
-
 
     }
 }

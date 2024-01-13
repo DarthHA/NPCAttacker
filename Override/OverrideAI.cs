@@ -10,7 +10,6 @@ using Terraria.GameContent.Drawing;
 using Terraria.GameContent.Events;
 using Terraria.ID;
 using Terraria.ModLoader;
-using static Humanizer.In;
 
 namespace NPCAttacker.Override
 {
@@ -2963,6 +2962,7 @@ namespace NPCAttacker.Override
                 {
                     ReadyToFight = false;
                 }
+
                 if (ReadyToFight && Npc.type == NPCID.Mechanic && Npc.localAI[0] == 1f)
                 {
                     ReadyToFight = false;

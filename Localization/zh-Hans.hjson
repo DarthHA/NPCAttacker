@@ -236,8 +236,8 @@ Mods: {
 			BlueFireProj.DisplayName: ""
 			PiranhaGunProj.DisplayName: ""
 			TwilightBowProj.DisplayName: ""
-			// DragonRageProj.DisplayName: Dragon Rage Proj
-			// EndlessBookProj.DisplayName: Endless Book Proj
+			DragonRageProj.DisplayName: ""
+			EndlessBookProj.DisplayName: ""
 		}
 	}
 }

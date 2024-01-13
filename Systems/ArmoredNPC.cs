@@ -2,10 +2,8 @@
 using Microsoft.Xna.Framework.Graphics;
 using NPCAttacker.Override;
 using Terraria;
-using Terraria.Chat;
 using Terraria.GameContent;
 using Terraria.ID;
-using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace NPCAttacker
@@ -103,7 +101,7 @@ namespace NPCAttacker
             {
                 npc.StrikeInstantKill();
             }
-            else if(!Armor.IsAir && (Armor.type == 5129 || Armor.type == ItemID.RottenEgg))
+            else if (!Armor.IsAir && (Armor.type == 5129 || Armor.type == ItemID.RottenEgg))
             {
                 npc.StrikeInstantKill();
             }
@@ -229,7 +227,7 @@ namespace NPCAttacker
         {
             if (npc.IsTownNPC())
             {
-                if (actMode != ActMode.Default || Selected)
+                if (actMode != ActMode.Default || Selected || AlertMode)
                 {
                     return false;
                 }

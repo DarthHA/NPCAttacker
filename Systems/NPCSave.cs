@@ -1,13 +1,10 @@
 ﻿using Microsoft.Xna.Framework;
-using Steamworks;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using Terraria;
 using Terraria.Localization;
 using Terraria.ModLoader;
 using Terraria.ModLoader.IO;
-using static Humanizer.In;
 
 namespace NPCAttacker.Systems
 {
@@ -319,6 +316,7 @@ namespace NPCAttacker.Systems
         public int Team = 0;
         public int AlterUseType = 0;
         public int ChannelUseType = 0;
+        public bool AlertMode = false;
 
 
         public NPCInfoSaver(NPC npc)
@@ -340,6 +338,8 @@ namespace NPCAttacker.Systems
                 Armor = modnpc.Armor.IsAir ? new Item() : modnpc.Armor;
                 AlterUseType = modnpc.AlterUseType;
                 ChannelUseType = modnpc.ChannelUseType;
+                Team = modnpc.Team;
+                AlertMode = modnpc.AlertMode;
             }
         }
         public NPCInfoSaver()
@@ -359,6 +359,8 @@ namespace NPCAttacker.Systems
                 ["Armor"] = Armor,
                 ["AlterUseType"] = AlterUseType,
                 ["ChannelUseType"] = ChannelUseType,
+                ["Team"] = Team,
+                ["AlertMode"] = AlertMode,
             };
         }
 
@@ -374,6 +376,8 @@ namespace NPCAttacker.Systems
                 Armor = tag.Get<Item>("Armor"),
                 AlterUseType = tag.GetInt("AlterUseType"),
                 ChannelUseType = tag.GetInt("ChannelUseType"),
+                Team = tag.GetInt("Team"),
+                AlertMode = tag.GetBool("AlertMode"),
             };
 
             return myData;
@@ -414,6 +418,8 @@ namespace NPCAttacker.Systems
                         modnpc.Armor = NPCUtils.CloneItem(saveinfo.Armor);
                         modnpc.AlterUseType = saveinfo.AlterUseType;
                         modnpc.ChannelUseType = saveinfo.ChannelUseType;
+                        modnpc.Team = saveinfo.Team;
+                        modnpc.AlertMode = saveinfo.AlertMode;
                         break;
                     }
 

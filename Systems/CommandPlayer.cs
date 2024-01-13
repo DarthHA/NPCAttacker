@@ -1,4 +1,4 @@
-using Microsoft.Xna.Framework;
+ï»¿using Microsoft.Xna.Framework;
 using NPCAttacker.Buffs;
 using NPCAttacker.Items;
 using NPCAttacker.NPCs;
@@ -18,7 +18,7 @@ namespace NPCAttacker.Systems
 
         public override void ProcessTriggers(TriggersSet triggersSet)
         {
-
+            if (Player.HeldItem.type != ModContent.ItemType<AttackerStick>()) return;
             if (NPCAttacker.Team1Key.JustPressed)
             {
                 TeamProcess(1);
@@ -357,11 +357,11 @@ namespace NPCAttacker.Systems
 
         private void TeamProcess(int team)
         {
-            if (NPCAttacker.ForceAttackKey.Current)         //Ñ¡¶Ó
+            if (NPCAttacker.ForceAttackKey.Current)         //é€‰é˜Ÿ
             {
                 if (NPCUtils.AnyNPCSelected())
                 {
-                    bool AllIsThisTeam = true;  //Ñ¡ÖĞµÄÈËÊÇ·ñÈ«ÊÇ¶ÓÎéÀïµÄ£¬Èç¹ûÊÇ£¬ÄÇ¾Í°ÑÕâĞ©ÈËÌŞ³ı£¬Èç¹û²»ÊÇ£¬¾ÍÈ«Èë¶Ó
+                    bool AllIsThisTeam = true;  //é€‰ä¸­çš„äººæ˜¯å¦å…¨æ˜¯é˜Ÿä¼é‡Œçš„ï¼Œå¦‚æœæ˜¯ï¼Œé‚£å°±æŠŠè¿™äº›äººå‰”é™¤ï¼Œå¦‚æœä¸æ˜¯ï¼Œå°±å…¨å…¥é˜Ÿ
                     foreach (NPC npc in Main.npc)
                     {
                         if (npc.active)
